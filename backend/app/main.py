@@ -7,8 +7,14 @@ from sqlalchemy import text
 from sqlalchemy.orm import Session
 
 from .database import Base, SessionLocal, engine, get_db
-from .models import Customer
-from .schemas import CustomerCreate, CustomerRead, CustomerUpdate
+from .models import Component, Customer, FilterPlant
+from .schemas import (
+    CustomerCreate,
+    CustomerRead,
+    CustomerUpdate,
+    FilterPlantCreate,
+    FilterPlantRead,
+)
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -52,6 +58,7 @@ def root():
             "db_health": "/db-health",
             "customers": "/customers",
             "customer_get": "/customers/{customer_id}",
+            "filter_plants": "/customers/{customer_id}/filter-plants",
             "customer_delete": "/customers/{customer_id}",
         },
     }
@@ -112,6 +119,48 @@ def update_customer(
     db.commit()
     db.refresh(customer)
     return customer
+
+
+@app.get("/customers/{customer_id}/filter-plants", response_model=list[FilterPlantRead])
+def list_filter_plants(customer_id: int, db: Session = Depends(get_db)):
+    customer = db.get(Customer, customer_id)
+    if not customer:
+        raise HTTPException(status_code=404, detail="Customer not found.")
+
+    return (
+        db.query(FilterPlant)
+        .filter(FilterPlant.customer_id == customer_id)
+        .order_by(FilterPlant.id.asc())
+        .all()
+    )
+
+
+@app.post(
+    "/customers/{customer_id}/filter-plants", response_model=FilterPlantRead, status_code=201
+)
+def create_filter_plant(
+    customer_id: int, payload: FilterPlantCreate, db: Session = Depends(get_db)
+):
+    customer = db.get(Customer, customer_id)
+    if not customer:
+        raise HTTPException(status_code=404, detail="Customer not found.")
+
+    description = payload.description.strip()
+    if not description:
+        raise HTTPException(status_code=400, detail="Description is required.")
+
+    if payload.year_built < 1800 or payload.year_built > 2100:
+        raise HTTPException(status_code=400, detail="Year built is invalid.")
+
+    filter_plant = FilterPlant(
+        customer_id=customer_id,
+        description=description,
+        year_built=payload.year_built,
+    )
+    db.add(filter_plant)
+    db.commit()
+    db.refresh(filter_plant)
+    return filter_plant
 
 
 @app.delete("/customers/{customer_id}", status_code=204)

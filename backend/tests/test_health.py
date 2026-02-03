@@ -103,3 +103,35 @@ def test_update_customer():
     payload = response.json()
     assert payload["id"] == created["id"]
     assert payload["name"] == "Updated Customer"
+
+
+def test_create_filter_plant():
+    if not _db_available():
+        pytest.skip("Database is not available.")
+
+    customer = client.post("/customers", json={"name": f"Plant Customer {uuid.uuid4()}"}).json()
+    response = client.post(
+        f"/customers/{customer['id']}/filter-plants",
+        json={"description": "Industriefilter A", "year_built": 2020},
+    )
+    assert response.status_code == 201
+    payload = response.json()
+    assert payload["customer_id"] == customer["id"]
+    assert payload["description"] == "Industriefilter A"
+    assert payload["year_built"] == 2020
+
+
+def test_list_filter_plants():
+    if not _db_available():
+        pytest.skip("Database is not available.")
+
+    customer = client.post("/customers", json={"name": f"Plant List {uuid.uuid4()}"}).json()
+    client.post(
+        f"/customers/{customer['id']}/filter-plants",
+        json={"description": "Filter B", "year_built": 2018},
+    )
+
+    response = client.get(f"/customers/{customer['id']}/filter-plants")
+    assert response.status_code == 200
+    payload = response.json()
+    assert len(payload) >= 1

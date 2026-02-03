@@ -6,6 +6,18 @@ export type Customer = {
   name: string;
 };
 
+export type FilterPlant = {
+  id: number;
+  customer_id: number;
+  description: string;
+  year_built: number;
+};
+
+export type FilterPlantCreate = {
+  description: string;
+  year_built: number;
+};
+
 @Injectable({ providedIn: 'root' })
 export class CustomersService {
   private readonly http = inject(HttpClient);
@@ -17,6 +29,17 @@ export class CustomersService {
 
   getCustomer(id: number) {
     return this.http.get<Customer>(`${this.baseUrl}/customers/${id}`);
+  }
+
+  listFilterPlants(customerId: number) {
+    return this.http.get<FilterPlant[]>(`${this.baseUrl}/customers/${customerId}/filter-plants`);
+  }
+
+  createFilterPlant(customerId: number, payload: FilterPlantCreate) {
+    return this.http.post<FilterPlant>(
+      `${this.baseUrl}/customers/${customerId}/filter-plants`,
+      payload
+    );
   }
 
   createCustomer(name: string) {

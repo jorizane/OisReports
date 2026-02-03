@@ -14,3 +14,17 @@ class CustomerRead(BaseModel):
 
 class CustomerUpdate(BaseModel):
     name: str
+
+
+class FilterPlantCreate(BaseModel):
+    description: str
+    year_built: int
+
+
+class FilterPlantRead(BaseModel):
+    id: int
+    customer_id: int
+    description: str
+    year_built: int
+
+    model_config = ConfigDict(from_attributes=True)

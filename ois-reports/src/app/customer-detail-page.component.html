@@ -19,8 +19,56 @@
     </div>
   </div>
 
+  <div class="plants" *ngIf="!isLoading() && customer()">
+    <div class="plants__header">
+      <h2>Filteranlagen</h2>
+      <button class="primary-button" type="button" (click)="togglePlantForm()">
+        Filteranlage anlegen
+      </button>
+    </div>
+    <form class="plants__form" *ngIf="showPlantForm()" (ngSubmit)="createFilterPlant()">
+      <label class="field">
+        <span class="field__label">Beschreibung</span>
+        <input
+          class="field__input"
+          type="text"
+          name="plantDescription"
+          [(ngModel)]="plantDescription"
+          placeholder="Kurzbeschreibung"
+        />
+      </label>
+      <label class="field">
+        <span class="field__label">Baujahr</span>
+        <input
+          class="field__input"
+          type="number"
+          name="plantYear"
+          [(ngModel)]="plantYear"
+          placeholder="z.B. 2020"
+        />
+      </label>
+      <div class="plants__actions">
+        <button class="ghost-link-button" type="button" (click)="togglePlantForm()">Abbrechen</button>
+        <button class="primary-button" type="submit">Speichern</button>
+      </div>
+    </form>
+    <p class="status status--success" *ngIf="plantSuccess()">{{ plantSuccess() }}</p>
+    <p class="status status--error" *ngIf="plantError()">{{ plantError() }}</p>
+    <div class="plants__list" *ngIf="filterPlants().length > 0">
+      <div class="plants__row" *ngFor="let plant of filterPlants()">
+        <div>
+          <p class="plants__title">{{ plant.description }}</p>
+          <p class="plants__meta">Baujahr {{ plant.year_built }}</p>
+        </div>
+      </div>
+    </div>
+    <p class="empty" *ngIf="filterPlants().length === 0">
+      Noch keine Filteranlagen. Lege oben die erste an.
+    </p>
+  </div>
+
   <div class="actions" *ngIf="customer()">
-    <a class="ghost-link" routerLink="/">Zurück zur Übersicht</a>
+    <a class="ghost-link-button" routerLink="/">Zurück zur Übersicht</a>
     <a class="primary-button" [routerLink]="['/customers', customer()?.id, 'edit']">
       Kunden bearbeiten
     </a>
