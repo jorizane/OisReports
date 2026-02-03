@@ -79,3 +79,15 @@ def test_delete_customer():
     list_response = client.get("/customers")
     assert list_response.status_code == 200
     assert all(customer["id"] != created["id"] for customer in list_response.json())
+
+
+def test_update_customer():
+    if not _db_available():
+        pytest.skip("Database is not available.")
+
+    created = client.post("/customers", json={"name": f"Update Customer {uuid.uuid4()}"}).json()
+    response = client.patch(f"/customers/{created['id']}", json={"name": "Updated Customer"})
+    assert response.status_code == 200
+    payload = response.json()
+    assert payload["id"] == created["id"]
+    assert payload["name"] == "Updated Customer"

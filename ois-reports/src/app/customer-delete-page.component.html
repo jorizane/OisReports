@@ -16,9 +16,19 @@
       <span class="list__name">{{ selectedCustomer()?.name }}</span>
       <button class="danger-button" type="button" (click)="promptDelete()">Löschen</button>
     </div>
-    <p class="empty">
-      Bearbeiten folgt demnächst. Zum Löschen nutze den Button oben.
-    </p>
+    <form class="edit-form" (ngSubmit)="saveChanges()">
+      <label class="field">
+        <span class="field__label">Kundenname</span>
+        <input
+          class="field__input"
+          type="text"
+          name="editCustomerName"
+          [(ngModel)]="editName"
+          placeholder="Kundenname bearbeiten"
+        />
+      </label>
+      <button class="primary-button" type="submit">Änderungen speichern</button>
+    </form>
   </div>
 
   <a class="link" routerLink="/">Zurück zur Übersicht</a>
@@ -45,5 +55,8 @@
   <div class="modal__content modal__content--success">
     <h2>Erfolg</h2>
     <p>{{ successMessage() }}</p>
+    <div class="modal__actions">
+      <button class="ghost-button" type="button" (click)="dismissSuccess()">OK</button>
+    </div>
   </div>
 </div>

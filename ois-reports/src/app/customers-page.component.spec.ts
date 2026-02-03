@@ -58,4 +58,24 @@ describe('CustomersPage', () => {
     expect(rows.length).toBe(1);
     expect(compiled.textContent).toContain('Nova Filters');
   });
+
+  it('should dismiss success popup', () => {
+    window.history.replaceState({ deletedCustomer: 'Nova Filters' }, '');
+
+    const fixture = TestBed.createComponent(CustomersPage);
+    fixture.detectChanges();
+
+    const request = httpMock.expectOne('http://localhost:8000/customers');
+    request.flush([]);
+
+    fixture.detectChanges();
+    const compiled = fixture.nativeElement as HTMLElement;
+    expect(compiled.textContent).toContain('Kunde "Nova Filters" wurde gelöscht.');
+
+    const okButton = compiled.querySelector('.modal .ghost-button') as HTMLButtonElement;
+    okButton.click();
+
+    fixture.detectChanges();
+    expect(compiled.textContent).not.toContain('Kunde "Nova Filters" wurde gelöscht.');
+  });
 });

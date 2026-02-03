@@ -10,3 +10,7 @@ class CustomerRead(BaseModel):
     name: str
 
     model_config = ConfigDict(from_attributes=True)
+
+
+class CustomerUpdate(BaseModel):
+    name: str

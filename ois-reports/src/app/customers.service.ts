@@ -22,4 +22,8 @@ export class CustomersService {
   deleteCustomer(id: number) {
     return this.http.delete(`${this.baseUrl}/customers/${id}`);
   }
+
+  updateCustomer(id: number, name: string) {
+    return this.http.patch<Customer>(`${this.baseUrl}/customers/${id}`, { name });
+  }
 }

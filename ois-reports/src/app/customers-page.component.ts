@@ -18,13 +18,14 @@ export class CustomersPage implements OnInit {
   protected readonly errorMessage = signal('');
   protected readonly successMessage = signal('');
   protected newCustomerName = '';
+  private successTimer: number | null = null;
 
   constructor(private readonly customersService: CustomersService) {}
 
   ngOnInit(): void {
     const state = window.history.state as { deletedCustomer?: string };
     if (state?.deletedCustomer) {
-      this.successMessage.set(`Kunde "${state.deletedCustomer}" wurde gelöscht.`);
+      this.showSuccess(`Kunde "${state.deletedCustomer}" wurde gelöscht.`);
     }
     this.loadCustomers();
   }
@@ -65,6 +66,22 @@ export class CustomersPage implements OnInit {
   }
 
   dismissSuccess(): void {
+    this.clearSuccess();
+  }
+
+  private showSuccess(message: string): void {
+    this.clearSuccess();
+    this.successMessage.set(message);
+    this.successTimer = window.setTimeout(() => {
+      this.clearSuccess();
+    }, 2200);
+  }
+
+  private clearSuccess(): void {
+    if (this.successTimer !== null) {
+      window.clearTimeout(this.successTimer);
+      this.successTimer = null;
+    }
     this.successMessage.set('');
   }
 }

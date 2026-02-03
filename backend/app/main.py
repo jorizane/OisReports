@@ -8,7 +8,7 @@ from sqlalchemy.orm import Session
 
 from .database import Base, SessionLocal, engine, get_db
 from .models import Customer
-from .schemas import CustomerCreate, CustomerRead
+from .schemas import CustomerCreate, CustomerRead, CustomerUpdate
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -82,6 +82,24 @@ def create_customer(payload: CustomerCreate, db: Session = Depends(get_db)):
 
     customer = Customer(name=name)
     db.add(customer)
+    db.commit()
+    db.refresh(customer)
+    return customer
+
+
+@app.patch("/customers/{customer_id}", response_model=CustomerRead)
+def update_customer(
+    customer_id: int, payload: CustomerUpdate, db: Session = Depends(get_db)
+):
+    customer = db.get(Customer, customer_id)
+    if not customer:
+        raise HTTPException(status_code=404, detail="Customer not found.")
+
+    name = payload.name.strip()
+    if not name:
+        raise HTTPException(status_code=400, detail="Name is required.")
+
+    customer.name = name
     db.commit()
     db.refresh(customer)
     return customer

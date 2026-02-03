@@ -1,5 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnInit, signal } from '@angular/core';
+import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 
 import { Customer, CustomersService } from './customers.service';
@@ -7,7 +8,7 @@ import { Customer, CustomersService } from './customers.service';
 @Component({
   selector: 'app-customer-delete-page',
   standalone: true,
-  imports: [CommonModule, RouterLink],
+  imports: [CommonModule, FormsModule, RouterLink],
   templateUrl: './customer-delete-page.component.html',
   styleUrl: './customer-delete-page.component.scss',
 })
@@ -19,6 +20,8 @@ export class CustomerDeletePage implements OnInit {
   protected readonly selectedCustomer = signal<Customer | null>(null);
   protected readonly showConfirm = signal(false);
   protected readonly successMessage = signal('');
+  protected editName = '';
+  private successTimer: number | null = null;
 
   constructor(
     private readonly customersService: CustomersService,
@@ -46,6 +49,7 @@ export class CustomerDeletePage implements OnInit {
           if (match) {
             this.editMode.set(true);
             this.selectedCustomer.set(match);
+            this.editName = match.name;
           } else {
             this.errorMessage.set('Kunde nicht gefunden.');
           }
@@ -80,7 +84,7 @@ export class CustomerDeletePage implements OnInit {
         this.showConfirm.set(false);
         this.selectedCustomer.set(null);
         this.editMode.set(false);
-        this.successMessage.set(`Kunde "${customer.name}" wurde gelöscht.`);
+        this.showSuccess(`Kunde "${customer.name}" wurde gelöscht.`);
         window.setTimeout(() => {
           this.router.navigate(['/'], {
             state: { deletedCustomer: customer.name },
@@ -92,5 +96,49 @@ export class CustomerDeletePage implements OnInit {
         this.showConfirm.set(false);
       },
     });
+  }
+
+  saveChanges(): void {
+    const customer = this.selectedCustomer();
+    if (!customer) {
+      return;
+    }
+
+    const name = this.editName.trim();
+    if (!name) {
+      this.errorMessage.set('Bitte einen Kundennamen eingeben.');
+      return;
+    }
+
+    this.customersService.updateCustomer(customer.id, name).subscribe({
+      next: (updated) => {
+        this.selectedCustomer.set(updated);
+        this.editName = updated.name;
+        this.showSuccess(`Kunde "${updated.name}" wurde aktualisiert.`);
+      },
+      error: () => {
+        this.errorMessage.set('Kunde konnte nicht aktualisiert werden.');
+      },
+    });
+  }
+
+  dismissSuccess(): void {
+    this.clearSuccess();
+  }
+
+  private showSuccess(message: string): void {
+    this.clearSuccess();
+    this.successMessage.set(message);
+    this.successTimer = window.setTimeout(() => {
+      this.clearSuccess();
+    }, 2200);
+  }
+
+  private clearSuccess(): void {
+    if (this.successTimer !== null) {
+      window.clearTimeout(this.successTimer);
+      this.successTimer = null;
+    }
+    this.successMessage.set('');
   }
 }
