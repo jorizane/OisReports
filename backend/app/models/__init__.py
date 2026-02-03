@@ -1,4 +1,5 @@
-from sqlalchemy import Column, ForeignKey, Integer, String
+from sqlalchemy import Column, DateTime, ForeignKey, Integer, String
+from sqlalchemy.sql import func
 from sqlalchemy.orm import relationship
 
 from ..core.database import Base
@@ -23,6 +24,7 @@ class FilterPlant(Base):
 
     customer = relationship("Customer", back_populates="filter_plants")
     components = relationship("Component", back_populates="filter_plant", cascade="all, delete-orphan")
+    reports = relationship("Report", back_populates="filter_plant", cascade="all, delete-orphan")
 
 
 class Component(Base):
@@ -33,3 +35,31 @@ class Component(Base):
     name = Column(String(255), nullable=False)
 
     filter_plant = relationship("FilterPlant", back_populates="components")
+    report_components = relationship(
+        "ReportComponent", back_populates="component", cascade="all, delete-orphan"
+    )
+
+
+class Report(Base):
+    __tablename__ = "reports"
+
+    id = Column(Integer, primary_key=True, index=True)
+    customer_id = Column(Integer, ForeignKey("customers.id"), nullable=False, index=True)
+    filter_plant_id = Column(Integer, ForeignKey("filter_plants.id"), nullable=False, index=True)
+    created_at = Column(DateTime(timezone=True), server_default=func.now(), nullable=False)
+
+    customer = relationship("Customer")
+    filter_plant = relationship("FilterPlant", back_populates="reports")
+    items = relationship("ReportComponent", back_populates="report", cascade="all, delete-orphan")
+
+
+class ReportComponent(Base):
+    __tablename__ = "report_components"
+
+    id = Column(Integer, primary_key=True, index=True)
+    report_id = Column(Integer, ForeignKey("reports.id"), nullable=False, index=True)
+    component_id = Column(Integer, ForeignKey("components.id"), nullable=False, index=True)
+    description = Column(String(1000), nullable=False)
+
+    report = relationship("Report", back_populates="items")
+    component = relationship("Component", back_populates="report_components")

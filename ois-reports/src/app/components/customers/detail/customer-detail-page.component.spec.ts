@@ -96,6 +96,7 @@ describe('CustomerDetailPage', () => {
     const compiled = fixture.nativeElement as HTMLElement;
     expect(compiled.textContent).toContain('Industriefilter A');
     expect(compiled.textContent).toContain('Details');
+    expect(compiled.textContent).toContain('Bericht erstellen');
   });
 
   it('should show plant success popup', () => {

@@ -59,12 +59,27 @@
           <p class="plants__title">{{ plant.description }}</p>
           <p class="plants__meta">Baujahr {{ plant.year_built }}</p>
         </div>
-        <a
-          class="ghost-link-button"
-          [routerLink]="['/customers', customer()?.id, 'filter-plants', plant.id]"
-        >
-          Details
-        </a>
+        <div class="plants__actions">
+          <a
+            class="ghost-link-button"
+            [routerLink]="['/customers', customer()?.id, 'filter-plants', plant.id]"
+          >
+            Details
+          </a>
+          <a
+            class="primary-button"
+            [routerLink]="[
+              '/customers',
+              customer()?.id,
+              'filter-plants',
+              plant.id,
+              'reports',
+              'new'
+            ]"
+          >
+            Bericht erstellen
+          </a>
+        </div>
       </div>
     </div>
     <p class="empty" *ngIf="filterPlants().length === 0">

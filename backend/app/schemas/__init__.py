@@ -49,3 +49,20 @@ class ComponentRead(BaseModel):
 
 class ComponentUpdate(BaseModel):
     name: str
+
+
+class ReportComponentCreate(BaseModel):
+    component_id: int
+    description: str
+
+
+class ReportCreate(BaseModel):
+    component_descriptions: list[ReportComponentCreate]
+
+
+class ReportRead(BaseModel):
+    id: int
+    customer_id: int
+    filter_plant_id: int
+
+    model_config = ConfigDict(from_attributes=True)

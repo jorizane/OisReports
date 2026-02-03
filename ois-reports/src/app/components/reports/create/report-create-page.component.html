@@ -1,0 +1,47 @@
+<section class="panel">
+  <header class="panel__header">
+    <p class="eyebrow">Bericht erstellen</p>
+    <h1>Komponentenbeschreibung</h1>
+    <p class="subtitle">
+      Hinterlege für jede Komponente eine kurze Beschreibung.
+    </p>
+  </header>
+
+  <p class="status status--error" *ngIf="errorMessage()">{{ errorMessage() }}</p>
+  <p class="status" *ngIf="isLoading()">Komponenten werden geladen...</p>
+
+  <div class="list" *ngIf="!isLoading()">
+    <div class="list__row" *ngFor="let component of components(); trackBy: trackByComponentId">
+      <div>
+        <p class="list__name">{{ component.name }}</p>
+        <textarea
+          class="field__textarea"
+          rows="3"
+          [(ngModel)]="component.description"
+          [name]="'desc-' + component.id"
+          placeholder="Beschreibung eingeben"
+        ></textarea>
+      </div>
+    </div>
+  </div>
+
+  <div class="actions" *ngIf="components().length > 0">
+    <a class="ghost-link-button" [routerLink]="['/customers', customerId, 'filter-plants', plantId]">
+      Zurück zur Filteranlage
+    </a>
+    <button class="primary-button" type="button" (click)="saveReport()">
+      Bericht zwischenspeichern
+    </button>
+  </div>
+</section>
+
+<div class="modal modal--success" *ngIf="successMessage()">
+  <div class="modal__overlay"></div>
+  <div class="modal__content modal__content--success">
+    <h2>Erfolg</h2>
+    <p>{{ successMessage() }}</p>
+    <div class="modal__actions">
+      <button class="ghost-button" type="button" (click)="dismissSuccess()">OK</button>
+    </div>
+  </div>
+</div>

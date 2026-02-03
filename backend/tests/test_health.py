@@ -255,3 +255,31 @@ def test_get_update_delete_component():
 
     delete_response = client.delete(f"/components/{component['id']}")
     assert delete_response.status_code == 204
+
+
+def test_create_report():
+    if not _db_available():
+        pytest.skip("Database is not available.")
+
+    customer = client.post("/customers", json={"name": f"Report Customer {uuid.uuid4()}"}).json()
+    plant = client.post(
+        f"/customers/{customer['id']}/filter-plants",
+        json={"description": "Report Plant", "year_built": 2020},
+    ).json()
+    component = client.post(
+        f"/filter-plants/{plant['id']}/components",
+        json={"name": "Messpunkt A"},
+    ).json()
+
+    response = client.post(
+        f"/customers/{customer['id']}/filter-plants/{plant['id']}/reports",
+        json={
+            "component_descriptions": [
+                {"component_id": component["id"], "description": "OK"}
+            ]
+        },
+    )
+    assert response.status_code == 201
+    payload = response.json()
+    assert payload["customer_id"] == customer["id"]
+    assert payload["filter_plant_id"] == plant["id"]

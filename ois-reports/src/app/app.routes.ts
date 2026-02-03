@@ -7,11 +7,16 @@ import { FilterPlantDetailPage } from './components/filter-plants/detail/filter-
 import { FilterPlantEditPage } from './components/filter-plants/edit/filter-plant-edit-page.component';
 import { ComponentDetailPage } from './components/components/detail/component-detail-page.component';
 import { ComponentEditPage } from './components/components/edit/component-edit-page.component';
+import { ReportCreatePage } from './components/reports/create/report-create-page.component';
 
 export const routes: Routes = [
   { path: '', component: CustomersPage },
   { path: 'customers/:id', component: CustomerDetailPage },
   { path: 'customers/:id/filter-plants/:plantId', component: FilterPlantDetailPage },
+  {
+    path: 'customers/:id/filter-plants/:plantId/reports/new',
+    component: ReportCreatePage,
+  },
   {
     path: 'customers/:id/filter-plants/:plantId/components/:componentId',
     component: ComponentDetailPage,
