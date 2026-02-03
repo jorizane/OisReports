@@ -11,6 +11,10 @@ import {
   FilterPlant,
   FilterPlantsService,
 } from '../../../services/filter-plants/filter-plants.service';
+import {
+  Manufacturer,
+  ManufacturersService,
+} from '../../../services/manufacturers/manufacturers.service';
 
 @Component({
   selector: 'app-filter-plant-detail-page',
@@ -22,6 +26,7 @@ import {
 export class FilterPlantDetailPage implements OnInit {
   protected readonly plant = signal<FilterPlant | null>(null);
   protected readonly components = signal<PlantComponent[]>([]);
+  protected readonly manufacturers = signal<Manufacturer[]>([]);
   protected readonly isLoading = signal(false);
   protected readonly errorMessage = signal('');
   protected readonly showComponentForm = signal(false);
@@ -33,6 +38,7 @@ export class FilterPlantDetailPage implements OnInit {
 
   constructor(
     private readonly filterPlantsService: FilterPlantsService,
+    private readonly manufacturersService: ManufacturersService,
     private readonly componentsService: ComponentsService,
     private readonly route: ActivatedRoute
   ) {}
@@ -62,6 +68,27 @@ export class FilterPlantDetailPage implements OnInit {
       error: () => {
         this.errorMessage.set('Filteranlage nicht gefunden.');
         this.isLoading.set(false);
+      },
+    });
+
+    this.loadManufacturers();
+  }
+
+  getManufacturerName(manufacturerId: number | null | undefined): string {
+    if (!manufacturerId) {
+      return 'Nicht zugeordnet';
+    }
+    const match = this.manufacturers().find((item) => item.id === manufacturerId);
+    return match ? match.name : 'Unbekannt';
+  }
+
+  private loadManufacturers(): void {
+    this.manufacturersService.listManufacturers().subscribe({
+      next: (manufacturers) => {
+        this.manufacturers.set(manufacturers);
+      },
+      error: () => {
+        this.errorMessage.set('Hersteller konnten nicht geladen werden.');
       },
     });
   }

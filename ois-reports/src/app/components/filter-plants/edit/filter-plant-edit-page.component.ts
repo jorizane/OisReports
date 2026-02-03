@@ -7,6 +7,10 @@ import {
   FilterPlant,
   FilterPlantsService,
 } from '../../../services/filter-plants/filter-plants.service';
+import {
+  Manufacturer,
+  ManufacturersService,
+} from '../../../services/manufacturers/manufacturers.service';
 
 @Component({
   selector: 'app-filter-plant-edit-page',
@@ -17,16 +21,19 @@ import {
 })
 export class FilterPlantEditPage implements OnInit {
   protected readonly plant = signal<FilterPlant | null>(null);
+  protected readonly manufacturers = signal<Manufacturer[]>([]);
   protected readonly isLoading = signal(false);
   protected readonly errorMessage = signal('');
   protected readonly showConfirm = signal(false);
   protected readonly successMessage = signal('');
   protected description = '';
   protected yearBuilt: number | null = null;
+  protected selectedManufacturerId: number | null = null;
   private successTimer: number | null = null;
 
   constructor(
     private readonly filterPlantsService: FilterPlantsService,
+    private readonly manufacturersService: ManufacturersService,
     private readonly route: ActivatedRoute,
     private readonly router: Router
   ) {}
@@ -45,11 +52,25 @@ export class FilterPlantEditPage implements OnInit {
         this.plant.set(plant);
         this.description = plant.description;
         this.yearBuilt = plant.year_built;
+        this.selectedManufacturerId = plant.manufacturer_id ?? null;
         this.isLoading.set(false);
       },
       error: () => {
         this.errorMessage.set('Filteranlage nicht gefunden.');
         this.isLoading.set(false);
+      },
+    });
+
+    this.loadManufacturers();
+  }
+
+  private loadManufacturers(): void {
+    this.manufacturersService.listManufacturers().subscribe({
+      next: (manufacturers) => {
+        this.manufacturers.set(manufacturers);
+      },
+      error: () => {
+        this.errorMessage.set('Hersteller konnten nicht geladen werden.');
       },
     });
   }
@@ -73,13 +94,23 @@ export class FilterPlantEditPage implements OnInit {
       return;
     }
 
+    if (!this.selectedManufacturerId) {
+      this.errorMessage.set('Bitte einen Hersteller auswählen.');
+      return;
+    }
+
     this.filterPlantsService
-      .updateFilterPlant(plant.id, { description, year_built: year })
+      .updateFilterPlant(plant.id, {
+        description,
+        year_built: year,
+        manufacturer_id: this.selectedManufacturerId,
+      })
       .subscribe({
         next: (updated) => {
           this.plant.set(updated);
           this.description = updated.description;
           this.yearBuilt = updated.year_built;
+          this.selectedManufacturerId = updated.manufacturer_id ?? null;
           this.showSuccess('Filteranlage wurde aktualisiert.');
         },
         error: () => {

@@ -10,6 +10,7 @@ import { ComponentEditPage } from './components/components/edit/component-edit-p
 import { ReportCreatePage } from './components/reports/create/report-create-page.component';
 import { ReportDetailPage } from './components/reports/detail/report-detail-page.component';
 import { ReportsPage } from './components/reports/list/reports-page.component';
+import { ManufacturersPage } from './components/manufacturers/list/manufacturers-page.component';
 
 export const routes: Routes = [
   { path: '', component: CustomersPage },
@@ -21,6 +22,7 @@ export const routes: Routes = [
   },
   { path: 'reports/:reportId', component: ReportDetailPage },
   { path: 'reports', component: ReportsPage },
+  { path: 'manufacturers', component: ManufacturersPage },
   {
     path: 'customers/:id/filter-plants/:plantId/components/:componentId',
     component: ComponentDetailPage,

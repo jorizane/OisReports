@@ -42,9 +42,14 @@ describe('FilterPlantEditPage', () => {
     request.flush({
       id: 12,
       customer_id: 4,
+      manufacturer_id: 2,
       description: 'Filteranlage X',
       year_built: 2015,
     });
+
+    const manufacturersRequest = httpMock.expectOne('http://localhost:8000/manufacturers');
+    expect(manufacturersRequest.request.method).toBe('GET');
+    manufacturersRequest.flush([{ id: 2, name: 'FilterTech' }]);
 
     fixture.detectChanges();
     const compiled = fixture.nativeElement as HTMLElement;
@@ -59,25 +64,37 @@ describe('FilterPlantEditPage', () => {
     request.flush({
       id: 12,
       customer_id: 4,
+      manufacturer_id: 2,
       description: 'Filteranlage X',
       year_built: 2015,
     });
 
+    const manufacturersRequest = httpMock.expectOne('http://localhost:8000/manufacturers');
+    manufacturersRequest.flush([{ id: 2, name: 'FilterTech' }]);
+
     const component = fixture.componentInstance as FilterPlantEditPage & {
       description: string;
       yearBuilt: number | null;
+      selectedManufacturerId: number | null;
       saveChanges: () => void;
     };
 
     component.description = 'Filteranlage X2';
     component.yearBuilt = 2018;
+    component.selectedManufacturerId = 2;
     component.saveChanges();
 
     const updateRequest = httpMock.expectOne('http://localhost:8000/filter-plants/12');
     expect(updateRequest.request.method).toBe('PATCH');
+    expect(updateRequest.request.body).toEqual({
+      description: 'Filteranlage X2',
+      year_built: 2018,
+      manufacturer_id: 2,
+    });
     updateRequest.flush({
       id: 12,
       customer_id: 4,
+      manufacturer_id: 2,
       description: 'Filteranlage X2',
       year_built: 2018,
     });
@@ -95,9 +112,13 @@ describe('FilterPlantEditPage', () => {
     request.flush({
       id: 12,
       customer_id: 4,
+      manufacturer_id: 2,
       description: 'Filteranlage X',
       year_built: 2015,
     });
+
+    const manufacturersRequest = httpMock.expectOne('http://localhost:8000/manufacturers');
+    manufacturersRequest.flush([]);
 
     const component = fixture.componentInstance as FilterPlantEditPage & {
       promptDelete: () => void;

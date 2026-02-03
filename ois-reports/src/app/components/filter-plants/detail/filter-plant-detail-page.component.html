@@ -18,6 +18,10 @@
       <span class="detail__value">{{ plant()?.description }}</span>
     </div>
     <div class="detail__row">
+      <span class="detail__label">Hersteller</span>
+      <span class="detail__value">{{ getManufacturerName(plant()?.manufacturer_id) }}</span>
+    </div>
+    <div class="detail__row">
       <span class="detail__label">Baujahr</span>
       <span class="detail__value">{{ plant()?.year_built }}</span>
     </div>

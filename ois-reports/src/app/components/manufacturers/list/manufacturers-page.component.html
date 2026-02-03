@@ -1,0 +1,39 @@
+<section class="panel">
+  <header class="panel__header">
+    <p class="eyebrow">Herstellerübersicht</p>
+    <h1>Hersteller</h1>
+    <p class="subtitle">Verwalte Hersteller für Filteranlagen und Komponenten.</p>
+  </header>
+
+  <form class="panel__form" (ngSubmit)="addManufacturer()">
+    <label class="field">
+      <span class="field__label">Neuer Herstellername</span>
+      <input
+        class="field__input"
+        type="text"
+        name="manufacturerName"
+        [(ngModel)]="newManufacturerName"
+        placeholder="Herstellername eingeben"
+        autocomplete="off"
+      />
+    </label>
+    <button class="primary-button" type="submit">Hersteller anlegen</button>
+  </form>
+
+  <p class="status status--error" *ngIf="errorMessage()">{{ errorMessage() }}</p>
+  <p class="status" *ngIf="isLoading()">Hersteller werden geladen...</p>
+
+  <div class="list" *ngIf="!isLoading()">
+    <div class="list__header">
+      <span>ID</span>
+      <span>Name</span>
+    </div>
+    <div class="list__row" *ngFor="let manufacturer of manufacturers()">
+      <span class="list__id">#{{ manufacturer.id }}</span>
+      <span class="list__name">{{ manufacturer.name }}</span>
+    </div>
+    <p class="empty" *ngIf="manufacturers().length === 0">
+      Noch keine Hersteller. Lege oben den ersten an.
+    </p>
+  </div>
+</section>

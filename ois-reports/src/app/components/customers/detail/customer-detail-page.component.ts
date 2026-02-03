@@ -8,6 +8,10 @@ import {
   FilterPlant,
   FilterPlantsService,
 } from '../../../services/filter-plants/filter-plants.service';
+import {
+  Manufacturer,
+  ManufacturersService,
+} from '../../../services/manufacturers/manufacturers.service';
 import { ReportRead, ReportsService } from '../../../services/reports/reports.service';
 
 @Component({
@@ -20,6 +24,7 @@ import { ReportRead, ReportsService } from '../../../services/reports/reports.se
 export class CustomerDetailPage implements OnInit {
   protected readonly customer = signal<Customer | null>(null);
   protected readonly filterPlants = signal<FilterPlant[]>([]);
+  protected readonly manufacturers = signal<Manufacturer[]>([]);
   protected readonly reports = signal<ReportRead[]>([]);
   protected readonly isLoading = signal(false);
   protected readonly errorMessage = signal('');
@@ -29,11 +34,13 @@ export class CustomerDetailPage implements OnInit {
   protected readonly plantSuccess = signal('');
   protected plantDescription = '';
   protected plantYear: number | null = null;
+  protected selectedManufacturerId: number | null = null;
   private plantSuccessTimer: number | null = null;
 
   constructor(
     private readonly customersService: CustomersService,
     private readonly filterPlantsService: FilterPlantsService,
+    private readonly manufacturersService: ManufacturersService,
     private readonly reportsService: ReportsService,
     private readonly route: ActivatedRoute
   ) {}
@@ -64,6 +71,8 @@ export class CustomerDetailPage implements OnInit {
         this.isLoading.set(false);
       },
     });
+
+    this.loadManufacturers();
   }
 
   private loadFilterPlants(customerId: number): void {
@@ -88,6 +97,17 @@ export class CustomerDetailPage implements OnInit {
     });
   }
 
+  private loadManufacturers(): void {
+    this.manufacturersService.listManufacturers().subscribe({
+      next: (manufacturers) => {
+        this.manufacturers.set(manufacturers);
+      },
+      error: () => {
+        this.plantError.set('Hersteller konnten nicht geladen werden.');
+      },
+    });
+  }
+
   togglePlantForm(): void {
     this.plantError.set('');
     this.plantSuccess.set('');
@@ -102,6 +122,7 @@ export class CustomerDetailPage implements OnInit {
 
     const description = this.plantDescription.trim();
     const year = this.plantYear ?? 0;
+    const manufacturerId = this.selectedManufacturerId;
 
     if (!description) {
       this.plantError.set('Bitte eine Beschreibung eingeben.');
@@ -113,13 +134,23 @@ export class CustomerDetailPage implements OnInit {
       return;
     }
 
-    this.filterPlantsService
-      .createFilterPlant(customer.id, { description, year_built: year })
-      .subscribe({
+    if (!manufacturerId) {
+      this.plantError.set('Bitte einen Hersteller auswählen.');
+      return;
+    }
+
+    const payload = {
+      description,
+      year_built: year,
+      manufacturer_id: manufacturerId,
+    };
+
+    this.filterPlantsService.createFilterPlant(customer.id, payload).subscribe({
         next: (plant) => {
           this.filterPlants.update((items) => [...items, plant]);
           this.plantDescription = '';
           this.plantYear = null;
+          this.selectedManufacturerId = null;
           this.plantError.set('');
           this.showPlantSuccess('Filteranlage wurde angelegt.');
           this.showPlantForm.set(false);

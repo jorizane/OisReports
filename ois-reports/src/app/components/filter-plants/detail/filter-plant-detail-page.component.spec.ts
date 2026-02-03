@@ -42,6 +42,7 @@ describe('FilterPlantDetailPage', () => {
     request.flush({
       id: 11,
       customer_id: 5,
+      manufacturer_id: 3,
       description: 'Filteranlage A',
       year_built: 2022,
     });
@@ -52,9 +53,14 @@ describe('FilterPlantDetailPage', () => {
     expect(componentsRequest.request.method).toBe('GET');
     componentsRequest.flush([]);
 
+    const manufacturersRequest = httpMock.expectOne('http://localhost:8000/manufacturers');
+    expect(manufacturersRequest.request.method).toBe('GET');
+    manufacturersRequest.flush([{ id: 3, name: 'FilterTech' }]);
+
     fixture.detectChanges();
     const compiled = fixture.nativeElement as HTMLElement;
     expect(compiled.textContent).toContain('Filteranlage A');
+    expect(compiled.textContent).toContain('FilterTech');
     expect(compiled.textContent).toContain('2022');
   });
 
@@ -66,6 +72,7 @@ describe('FilterPlantDetailPage', () => {
     request.flush({
       id: 11,
       customer_id: 5,
+      manufacturer_id: 3,
       description: 'Filteranlage A',
       year_built: 2022,
     });
@@ -74,6 +81,9 @@ describe('FilterPlantDetailPage', () => {
       'http://localhost:8000/filter-plants/11/components'
     );
     componentsRequest.flush([]);
+
+    const manufacturersRequest = httpMock.expectOne('http://localhost:8000/manufacturers');
+    manufacturersRequest.flush([]);
 
     const component = fixture.componentInstance as FilterPlantDetailPage & {
       componentName: string;

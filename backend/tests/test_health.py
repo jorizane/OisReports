@@ -68,6 +68,31 @@ def test_create_customer_requires_name():
     assert response.status_code == 400
 
 
+def test_create_manufacturer():
+    if not _db_available():
+        pytest.skip("Database is not available.")
+
+    name = f"Test Manufacturer {uuid.uuid4()}"
+    response = client.post("/manufacturers", json={"name": name})
+    assert response.status_code == 201
+    payload = response.json()
+    assert payload["id"] > 0
+    assert payload["name"] == name
+
+
+def test_list_manufacturers_includes_created_manufacturer():
+    if not _db_available():
+        pytest.skip("Database is not available.")
+
+    name = f"List Manufacturer {uuid.uuid4()}"
+    created = client.post("/manufacturers", json={"name": name}).json()
+
+    response = client.get("/manufacturers")
+    assert response.status_code == 200
+    manufacturers = response.json()
+    assert any(item["id"] == created["id"] for item in manufacturers)
+
+
 def test_get_customer_by_id():
     if not _db_available():
         pytest.skip("Database is not available.")
@@ -110,13 +135,22 @@ def test_create_filter_plant():
         pytest.skip("Database is not available.")
 
     customer = client.post("/customers", json={"name": f"Plant Customer {uuid.uuid4()}"}).json()
+    manufacturer = client.post(
+        "/manufacturers",
+        json={"name": f"Plant Manufacturer {uuid.uuid4()}"},
+    ).json()
     response = client.post(
         f"/customers/{customer['id']}/filter-plants",
-        json={"description": "Industriefilter A", "year_built": 2020},
+        json={
+            "description": "Industriefilter A",
+            "year_built": 2020,
+            "manufacturer_id": manufacturer["id"],
+        },
     )
     assert response.status_code == 201
     payload = response.json()
     assert payload["customer_id"] == customer["id"]
+    assert payload["manufacturer_id"] == manufacturer["id"]
     assert payload["description"] == "Industriefilter A"
     assert payload["year_built"] == 2020
 
@@ -126,9 +160,17 @@ def test_list_filter_plants():
         pytest.skip("Database is not available.")
 
     customer = client.post("/customers", json={"name": f"Plant List {uuid.uuid4()}"}).json()
+    manufacturer = client.post(
+        "/manufacturers",
+        json={"name": f"Plant List Manufacturer {uuid.uuid4()}"},
+    ).json()
     client.post(
         f"/customers/{customer['id']}/filter-plants",
-        json={"description": "Filter B", "year_built": 2018},
+        json={
+            "description": "Filter B",
+            "year_built": 2018,
+            "manufacturer_id": manufacturer["id"],
+        },
     )
 
     response = client.get(f"/customers/{customer['id']}/filter-plants")
@@ -142,9 +184,17 @@ def test_get_filter_plant():
         pytest.skip("Database is not available.")
 
     customer = client.post("/customers", json={"name": f"Plant Get {uuid.uuid4()}"}).json()
+    manufacturer = client.post(
+        "/manufacturers",
+        json={"name": f"Plant Get Manufacturer {uuid.uuid4()}"},
+    ).json()
     plant = client.post(
         f"/customers/{customer['id']}/filter-plants",
-        json={"description": "Filter C", "year_built": 2019},
+        json={
+            "description": "Filter C",
+            "year_built": 2019,
+            "manufacturer_id": manufacturer["id"],
+        },
     ).json()
 
     response = client.get(f"/filter-plants/{plant['id']}")
@@ -159,14 +209,26 @@ def test_update_filter_plant():
         pytest.skip("Database is not available.")
 
     customer = client.post("/customers", json={"name": f"Plant Update {uuid.uuid4()}"}).json()
+    manufacturer = client.post(
+        "/manufacturers",
+        json={"name": f"Plant Update Manufacturer {uuid.uuid4()}"},
+    ).json()
     plant = client.post(
         f"/customers/{customer['id']}/filter-plants",
-        json={"description": "Filter D", "year_built": 2016},
+        json={
+            "description": "Filter D",
+            "year_built": 2016,
+            "manufacturer_id": manufacturer["id"],
+        },
     ).json()
 
     response = client.patch(
         f"/filter-plants/{plant['id']}",
-        json={"description": "Filter D Updated", "year_built": 2018},
+        json={
+            "description": "Filter D Updated",
+            "year_built": 2018,
+            "manufacturer_id": manufacturer["id"],
+        },
     )
     assert response.status_code == 200
     payload = response.json()
@@ -179,9 +241,17 @@ def test_delete_filter_plant():
         pytest.skip("Database is not available.")
 
     customer = client.post("/customers", json={"name": f"Plant Delete {uuid.uuid4()}"}).json()
+    manufacturer = client.post(
+        "/manufacturers",
+        json={"name": f"Plant Delete Manufacturer {uuid.uuid4()}"},
+    ).json()
     plant = client.post(
         f"/customers/{customer['id']}/filter-plants",
-        json={"description": "Filter E", "year_built": 2014},
+        json={
+            "description": "Filter E",
+            "year_built": 2014,
+            "manufacturer_id": manufacturer["id"],
+        },
     ).json()
 
     response = client.delete(f"/filter-plants/{plant['id']}")
@@ -193,9 +263,17 @@ def test_create_component():
         pytest.skip("Database is not available.")
 
     customer = client.post("/customers", json={"name": f"Comp Customer {uuid.uuid4()}"}).json()
+    manufacturer = client.post(
+        "/manufacturers",
+        json={"name": f"Comp Manufacturer {uuid.uuid4()}"},
+    ).json()
     plant = client.post(
         f"/customers/{customer['id']}/filter-plants",
-        json={"description": "Component Plant", "year_built": 2021},
+        json={
+            "description": "Component Plant",
+            "year_built": 2021,
+            "manufacturer_id": manufacturer["id"],
+        },
     ).json()
 
     response = client.post(
@@ -213,9 +291,17 @@ def test_list_components():
         pytest.skip("Database is not available.")
 
     customer = client.post("/customers", json={"name": f"Comp List {uuid.uuid4()}"}).json()
+    manufacturer = client.post(
+        "/manufacturers",
+        json={"name": f"Comp List Manufacturer {uuid.uuid4()}"},
+    ).json()
     plant = client.post(
         f"/customers/{customer['id']}/filter-plants",
-        json={"description": "Component Plant 2", "year_built": 2017},
+        json={
+            "description": "Component Plant 2",
+            "year_built": 2017,
+            "manufacturer_id": manufacturer["id"],
+        },
     ).json()
 
     client.post(
@@ -234,9 +320,17 @@ def test_get_update_delete_component():
         pytest.skip("Database is not available.")
 
     customer = client.post("/customers", json={"name": f"Comp Get {uuid.uuid4()}"}).json()
+    manufacturer = client.post(
+        "/manufacturers",
+        json={"name": f"Comp Get Manufacturer {uuid.uuid4()}"},
+    ).json()
     plant = client.post(
         f"/customers/{customer['id']}/filter-plants",
-        json={"description": "Component Plant 3", "year_built": 2015},
+        json={
+            "description": "Component Plant 3",
+            "year_built": 2015,
+            "manufacturer_id": manufacturer["id"],
+        },
     ).json()
 
     component = client.post(
@@ -262,9 +356,17 @@ def test_create_report():
         pytest.skip("Database is not available.")
 
     customer = client.post("/customers", json={"name": f"Report Customer {uuid.uuid4()}"}).json()
+    manufacturer = client.post(
+        "/manufacturers",
+        json={"name": f"Report Manufacturer {uuid.uuid4()}"},
+    ).json()
     plant = client.post(
         f"/customers/{customer['id']}/filter-plants",
-        json={"description": "Report Plant", "year_built": 2020},
+        json={
+            "description": "Report Plant",
+            "year_built": 2020,
+            "manufacturer_id": manufacturer["id"],
+        },
     ).json()
     component = client.post(
         f"/filter-plants/{plant['id']}/components",
@@ -290,9 +392,17 @@ def test_list_reports():
         pytest.skip("Database is not available.")
 
     customer = client.post("/customers", json={"name": f"Report List {uuid.uuid4()}"}).json()
+    manufacturer = client.post(
+        "/manufacturers",
+        json={"name": f"Report List Manufacturer {uuid.uuid4()}"},
+    ).json()
     plant = client.post(
         f"/customers/{customer['id']}/filter-plants",
-        json={"description": "Report List Plant", "year_built": 2021},
+        json={
+            "description": "Report List Plant",
+            "year_built": 2021,
+            "manufacturer_id": manufacturer["id"],
+        },
     ).json()
     component = client.post(
         f"/filter-plants/{plant['id']}/components",
@@ -320,9 +430,17 @@ def test_list_customer_reports():
         pytest.skip("Database is not available.")
 
     customer = client.post("/customers", json={"name": f"Customer Reports {uuid.uuid4()}"}).json()
+    manufacturer = client.post(
+        "/manufacturers",
+        json={"name": f"Customer Reports Manufacturer {uuid.uuid4()}"},
+    ).json()
     plant = client.post(
         f"/customers/{customer['id']}/filter-plants",
-        json={"description": "Customer Report Plant", "year_built": 2022},
+        json={
+            "description": "Customer Report Plant",
+            "year_built": 2022,
+            "manufacturer_id": manufacturer["id"],
+        },
     ).json()
     component = client.post(
         f"/filter-plants/{plant['id']}/components",
@@ -349,9 +467,17 @@ def test_get_report_detail():
         pytest.skip("Database is not available.")
 
     customer = client.post("/customers", json={"name": f"Report Detail {uuid.uuid4()}"}).json()
+    manufacturer = client.post(
+        "/manufacturers",
+        json={"name": f"Report Detail Manufacturer {uuid.uuid4()}"},
+    ).json()
     plant = client.post(
         f"/customers/{customer['id']}/filter-plants",
-        json={"description": "Detail Plant", "year_built": 2023},
+        json={
+            "description": "Detail Plant",
+            "year_built": 2023,
+            "manufacturer_id": manufacturer["id"],
+        },
     ).json()
     component = client.post(
         f"/filter-plants/{plant['id']}/components",

@@ -22,6 +22,7 @@ describe('App', () => {
     const compiled = fixture.nativeElement as HTMLElement;
     expect(compiled.textContent).toContain('OIS Berichte');
     expect(compiled.textContent).toContain('Kundenübersicht');
+    expect(compiled.textContent).toContain('Herstellerübersicht');
     expect(compiled.textContent).toContain('Berichtsübersicht');
   });
 

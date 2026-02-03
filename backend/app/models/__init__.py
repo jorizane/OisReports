@@ -5,6 +5,15 @@ from sqlalchemy.orm import relationship
 from ..core.database import Base
 
 
+class Manufacturer(Base):
+    __tablename__ = "manufacturers"
+
+    id = Column(Integer, primary_key=True, index=True)
+    name = Column(String(255), nullable=False)
+
+    filter_plants = relationship("FilterPlant", back_populates="manufacturer")
+
+
 class Customer(Base):
     __tablename__ = "customers"
 
@@ -19,10 +28,12 @@ class FilterPlant(Base):
 
     id = Column(Integer, primary_key=True, index=True)
     customer_id = Column(Integer, ForeignKey("customers.id"), nullable=False, index=True)
+    manufacturer_id = Column(Integer, ForeignKey("manufacturers.id"), nullable=False, index=True)
     description = Column(String(500), nullable=False)
     year_built = Column(Integer, nullable=False)
 
     customer = relationship("Customer", back_populates="filter_plants")
+    manufacturer = relationship("Manufacturer", back_populates="filter_plants")
     components = relationship("Component", back_populates="filter_plant", cascade="all, delete-orphan")
     reports = relationship("Report", back_populates="filter_plant", cascade="all, delete-orphan")
 

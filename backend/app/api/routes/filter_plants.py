@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 
 from ...core.database import get_db
-from ...models import Customer, FilterPlant
+from ...models import Customer, FilterPlant, Manufacturer
 from ...schemas import FilterPlantCreate, FilterPlantRead, FilterPlantUpdate
 
 router = APIRouter(tags=["filter-plants"])
@@ -47,8 +47,13 @@ def create_filter_plant(
     if payload.year_built < 1800 or payload.year_built > 2100:
         raise HTTPException(status_code=400, detail="Year built is invalid.")
 
+    manufacturer = db.get(Manufacturer, payload.manufacturer_id)
+    if not manufacturer:
+        raise HTTPException(status_code=404, detail="Manufacturer not found.")
+
     filter_plant = FilterPlant(
         customer_id=customer_id,
+        manufacturer_id=payload.manufacturer_id,
         description=description,
         year_built=payload.year_built,
     )
@@ -73,8 +78,13 @@ def update_filter_plant(
     if payload.year_built < 1800 or payload.year_built > 2100:
         raise HTTPException(status_code=400, detail="Year built is invalid.")
 
+    manufacturer = db.get(Manufacturer, payload.manufacturer_id)
+    if not manufacturer:
+        raise HTTPException(status_code=404, detail="Manufacturer not found.")
+
     filter_plant.description = description
     filter_plant.year_built = payload.year_built
+    filter_plant.manufacturer_id = payload.manufacturer_id
     db.commit()
     db.refresh(filter_plant)
     return filter_plant

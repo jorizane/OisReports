@@ -47,6 +47,10 @@ describe('CustomerDetailPage', () => {
     expect(plantsRequest.request.method).toBe('GET');
     plantsRequest.flush([]);
 
+    const manufacturersRequest = httpMock.expectOne('http://localhost:8000/manufacturers');
+    expect(manufacturersRequest.request.method).toBe('GET');
+    manufacturersRequest.flush([]);
+
     const reportsRequest = httpMock.expectOne('http://localhost:8000/customers/4/reports');
     expect(reportsRequest.request.method).toBe('GET');
     reportsRequest.flush([]);
@@ -69,12 +73,16 @@ describe('CustomerDetailPage', () => {
     );
     plantsRequest.flush([]);
 
+    const manufacturersRequest = httpMock.expectOne('http://localhost:8000/manufacturers');
+    manufacturersRequest.flush([]);
+
     const reportsRequest = httpMock.expectOne('http://localhost:8000/customers/4/reports');
     reportsRequest.flush([]);
 
     const component = fixture.componentInstance as CustomerDetailPage & {
       plantDescription: string;
       plantYear: number | null;
+      selectedManufacturerId: number | null;
       togglePlantForm: () => void;
       createFilterPlant: () => void;
     };
@@ -82,6 +90,7 @@ describe('CustomerDetailPage', () => {
     component.togglePlantForm();
     component.plantDescription = 'Industriefilter A';
     component.plantYear = 2020;
+    component.selectedManufacturerId = 7;
     component.createFilterPlant();
 
     const createRequest = httpMock.expectOne(
@@ -91,10 +100,12 @@ describe('CustomerDetailPage', () => {
     expect(createRequest.request.body).toEqual({
       description: 'Industriefilter A',
       year_built: 2020,
+      manufacturer_id: 7,
     });
     createRequest.flush({
       id: 12,
       customer_id: 4,
+      manufacturer_id: 7,
       description: 'Industriefilter A',
       year_built: 2020,
     });
@@ -118,12 +129,16 @@ describe('CustomerDetailPage', () => {
     );
     plantsRequest.flush([]);
 
+    const manufacturersRequest = httpMock.expectOne('http://localhost:8000/manufacturers');
+    manufacturersRequest.flush([]);
+
     const reportsRequest = httpMock.expectOne('http://localhost:8000/customers/4/reports');
     reportsRequest.flush([]);
 
     const component = fixture.componentInstance as CustomerDetailPage & {
       plantDescription: string;
       plantYear: number | null;
+      selectedManufacturerId: number | null;
       togglePlantForm: () => void;
       createFilterPlant: () => void;
     };
@@ -131,6 +146,7 @@ describe('CustomerDetailPage', () => {
     component.togglePlantForm();
     component.plantDescription = 'Filteranlage Test';
     component.plantYear = 2021;
+    component.selectedManufacturerId = 3;
     component.createFilterPlant();
 
     const createRequest = httpMock.expectOne(
@@ -139,6 +155,7 @@ describe('CustomerDetailPage', () => {
     createRequest.flush({
       id: 14,
       customer_id: 4,
+      manufacturer_id: 3,
       description: 'Filteranlage Test',
       year_built: 2021,
     });

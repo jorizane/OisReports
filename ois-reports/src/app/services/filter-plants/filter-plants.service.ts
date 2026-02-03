@@ -4,6 +4,7 @@ import { inject, Injectable } from '@angular/core';
 export type FilterPlant = {
   id: number;
   customer_id: number;
+  manufacturer_id: number;
   description: string;
   year_built: number;
 };
@@ -11,6 +12,7 @@ export type FilterPlant = {
 export type FilterPlantCreate = {
   description: string;
   year_built: number;
+  manufacturer_id: number;
 };
 
 @Injectable({ providedIn: 'root' })

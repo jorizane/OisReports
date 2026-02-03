@@ -18,14 +18,27 @@ class CustomerUpdate(BaseModel):
     name: str
 
 
+class ManufacturerCreate(BaseModel):
+    name: str
+
+
+class ManufacturerRead(BaseModel):
+    id: int
+    name: str
+
+    model_config = ConfigDict(from_attributes=True)
+
+
 class FilterPlantCreate(BaseModel):
     description: str
     year_built: int
+    manufacturer_id: int
 
 
 class FilterPlantRead(BaseModel):
     id: int
     customer_id: int
+    manufacturer_id: int
     description: str
     year_built: int
 
@@ -35,6 +48,7 @@ class FilterPlantRead(BaseModel):
 class FilterPlantUpdate(BaseModel):
     description: str
     year_built: int
+    manufacturer_id: int
 
 
 class ComponentCreate(BaseModel):

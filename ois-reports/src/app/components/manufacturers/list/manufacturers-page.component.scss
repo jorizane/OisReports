@@ -1,0 +1,154 @@
+@import url('https://fonts.googleapis.com/css2?family=Onest:wght@300;400;500;600;700&display=swap');
+
+.panel {
+  width: min(760px, 100%);
+  background: #ffffff;
+  border-radius: 24px;
+  padding: 2.5rem;
+  box-shadow: 0 24px 60px rgba(15, 23, 42, 0.12);
+  border: 1px solid rgba(15, 23, 42, 0.08);
+  display: grid;
+  gap: 2rem;
+}
+
+.panel__header h1 {
+  font-size: clamp(2rem, 3vw, 2.6rem);
+  margin: 0.5rem 0 0.75rem;
+}
+
+.eyebrow {
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #006b78;
+  margin: 0;
+}
+
+.subtitle {
+  margin: 0;
+  color: #222222;
+  line-height: 1.6;
+}
+
+.panel__form {
+  display: grid;
+  gap: 1rem;
+  align-items: end;
+  grid-template-columns: 1fr auto;
+}
+
+.field {
+  display: grid;
+  gap: 0.5rem;
+}
+
+.field__label {
+  font-size: 0.85rem;
+  color: #222222;
+  font-weight: 600;
+}
+
+.field__input {
+  padding: 0.85rem 1rem;
+  border-radius: 14px;
+  border: 1px solid #d1d5db;
+  font-size: 1rem;
+  transition: border 0.2s ease, box-shadow 0.2s ease;
+}
+
+.field__input:focus {
+  outline: none;
+  border-color: #0f766e;
+  box-shadow: 0 0 0 3px rgba(13, 148, 136, 0.2);
+}
+
+.primary-button {
+  padding: 0.85rem 1.5rem;
+  border-radius: 999px;
+  border: none;
+  background: #0f766e;
+  color: #ffffff;
+  font-weight: 600;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  box-shadow: 0 12px 25px rgba(15, 118, 110, 0.25);
+}
+
+.primary-button:hover {
+  transform: translateY(-1px);
+}
+
+.status {
+  margin: 0;
+  font-size: 0.9rem;
+  color: #222222;
+}
+
+.status--error {
+  color: #c64444;
+}
+
+.list {
+  border-top: 1px solid #e5e7eb;
+  padding-top: 1.5rem;
+  display: grid;
+  gap: 0.75rem;
+}
+
+.list__header,
+.list__row {
+  display: grid;
+  grid-template-columns: 110px 1fr;
+  align-items: center;
+}
+
+.list__header {
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: #222222;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.list__row {
+  padding: 0.75rem 1rem;
+  border-radius: 12px;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+}
+
+.list__id {
+  color: #222222;
+  font-weight: 600;
+}
+
+.list__name {
+  font-size: 1rem;
+}
+
+.empty {
+  margin: 0.5rem 0 0;
+  color: #222222;
+}
+
+@media (max-width: 640px) {
+  .panel {
+    padding: 2rem 1.5rem;
+  }
+
+  .panel__form {
+    grid-template-columns: 1fr;
+  }
+
+  .primary-button {
+    width: 100%;
+  }
+
+  .list__header,
+  .list__row {
+    grid-template-columns: 90px 1fr;
+    gap: 0.5rem;
+  }
+}

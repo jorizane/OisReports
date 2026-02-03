@@ -25,6 +25,20 @@
         />
       </label>
       <label class="field">
+        <span class="field__label">Hersteller</span>
+        <select
+          class="field__input"
+          name="manufacturerId"
+          [(ngModel)]="selectedManufacturerId"
+          required
+        >
+          <option [ngValue]="null" disabled>Hersteller auswählen</option>
+          <option *ngFor="let manufacturer of manufacturers()" [ngValue]="manufacturer.id">
+            {{ manufacturer.name }}
+          </option>
+        </select>
+      </label>
+      <label class="field">
         <span class="field__label">Baujahr</span>
         <input
           class="field__input"
