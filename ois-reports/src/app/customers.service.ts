@@ -15,6 +15,10 @@ export class CustomersService {
     return this.http.get<Customer[]>(`${this.baseUrl}/customers`);
   }
 
+  getCustomer(id: number) {
+    return this.http.get<Customer>(`${this.baseUrl}/customers/${id}`);
+  }
+
   createCustomer(name: string) {
     return this.http.post<Customer>(`${this.baseUrl}/customers`, { name });
   }

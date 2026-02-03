@@ -51,6 +51,7 @@ def root():
             "health": "/health",
             "db_health": "/db-health",
             "customers": "/customers",
+            "customer_get": "/customers/{customer_id}",
             "customer_delete": "/customers/{customer_id}",
         },
     }
@@ -72,6 +73,14 @@ def db_health():
 @app.get("/customers", response_model=list[CustomerRead])
 def list_customers(db: Session = Depends(get_db)):
     return db.query(Customer).order_by(Customer.id.asc()).all()
+
+
+@app.get("/customers/{customer_id}", response_model=CustomerRead)
+def get_customer(customer_id: int, db: Session = Depends(get_db)):
+    customer = db.get(Customer, customer_id)
+    if not customer:
+        raise HTTPException(status_code=404, detail="Customer not found.")
+    return customer
 
 
 @app.post("/customers", response_model=CustomerRead, status_code=201)

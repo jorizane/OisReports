@@ -34,7 +34,7 @@
     <div class="list__row" *ngFor="let customer of customers()">
       <span class="list__id">#{{ customer.id }}</span>
       <span class="list__name">{{ customer.name }}</span>
-      <a class="link-button" [routerLink]="['/customers', customer.id, 'edit']">Bearbeiten</a>
+      <a class="link-button" [routerLink]="['/customers', customer.id]">Details</a>
     </div>
     <p class="empty" *ngIf="customers().length === 0">Noch keine Kunden. Lege oben den ersten an.</p>
   </div>

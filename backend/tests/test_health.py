@@ -68,6 +68,18 @@ def test_create_customer_requires_name():
     assert response.status_code == 400
 
 
+def test_get_customer_by_id():
+    if not _db_available():
+        pytest.skip("Database is not available.")
+
+    created = client.post("/customers", json={"name": f"Get Customer {uuid.uuid4()}"}).json()
+    response = client.get(f"/customers/{created['id']}")
+    assert response.status_code == 200
+    payload = response.json()
+    assert payload["id"] == created["id"]
+    assert payload["name"] == created["name"]
+
+
 def test_delete_customer():
     if not _db_available():
         pytest.skip("Database is not available.")

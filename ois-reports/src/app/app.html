@@ -1,15 +1,15 @@
 <main class="shell">
   <nav class="shell__nav">
-    <div class="shell__brand">
+    <a class="shell__brand" routerLink="/">
       <img class="shell__logo-image" src="assets/logo-filterwartung.png" alt="OIS" />
       <div>
         <p class="shell__title">OIS Berichte</p>
         <p class="shell__subtitle">Industriefiltration im Blick</p>
       </div>
-    </div>
+    </a>
     <div class="shell__links">
       <a routerLink="/" routerLinkActive="is-active" [routerLinkActiveOptions]="{ exact: true }">
-        Kunden
+        Kundenübersicht
       </a>
     </div>
   </nav>

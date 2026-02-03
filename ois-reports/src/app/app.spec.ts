@@ -21,7 +21,15 @@ describe('App', () => {
     fixture.detectChanges();
     const compiled = fixture.nativeElement as HTMLElement;
     expect(compiled.textContent).toContain('OIS Berichte');
-    expect(compiled.textContent).toContain('Kunden');
+    expect(compiled.textContent).toContain('Kundenübersicht');
+  });
+
+  it('should link logo to customer overview', () => {
+    const fixture = TestBed.createComponent(App);
+    fixture.detectChanges();
+    const compiled = fixture.nativeElement as HTMLElement;
+    const logoLink = compiled.querySelector('.shell__brand') as HTMLAnchorElement | null;
+    expect(logoLink).toBeTruthy();
   });
 
 });

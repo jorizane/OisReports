@@ -48,7 +48,7 @@
     </div>
   </div>
 
-  <a class="link" routerLink="/">Zurück zur Übersicht</a>
+  <a class="link" [routerLink]="['/customers', selectedCustomer()?.id]">Zurück zum Kunden</a>
 </section>
 
 <div class="modal" *ngIf="showConfirm()">

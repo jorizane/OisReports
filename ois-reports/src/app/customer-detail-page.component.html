@@ -1,0 +1,28 @@
+<section class="panel">
+  <header class="panel__header">
+    <p class="eyebrow">Kundenübersicht</p>
+    <h1>Kundendetails</h1>
+    <p class="subtitle">Alle wichtigen Informationen zum ausgewählten Kunden.</p>
+  </header>
+
+  <p class="status status--error" *ngIf="errorMessage()">{{ errorMessage() }}</p>
+  <p class="status" *ngIf="isLoading()">Kunde wird geladen...</p>
+
+  <div class="detail" *ngIf="!isLoading() && customer()">
+    <div class="detail__row">
+      <span class="detail__label">ID</span>
+      <span class="detail__value">#{{ customer()?.id }}</span>
+    </div>
+    <div class="detail__row">
+      <span class="detail__label">Name</span>
+      <span class="detail__value">{{ customer()?.name }}</span>
+    </div>
+  </div>
+
+  <div class="actions" *ngIf="customer()">
+    <a class="ghost-link" routerLink="/">Zurück zur Übersicht</a>
+    <a class="primary-button" [routerLink]="['/customers', customer()?.id, 'edit']">
+      Kunden bearbeiten
+    </a>
+  </div>
+</section>
