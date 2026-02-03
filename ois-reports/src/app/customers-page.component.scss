@@ -27,7 +27,7 @@
 
 .subtitle {
   margin: 0;
-  color: #4b5563;
+  color: #222222;
   line-height: 1.6;
 }
 
@@ -45,7 +45,7 @@
 
 .field__label {
   font-size: 0.85rem;
-  color: #374151;
+  color: #222222;
   font-weight: 600;
 }
 
@@ -95,15 +95,15 @@
 .status {
   margin: 0;
   font-size: 0.9rem;
-  color: #4b5563;
+  color: #222222;
 }
 
 .status--error {
-  color: #b91c1c;
+  color: #c64444;
 }
 
 .status--success {
-  color: #166534;
+  color: #222222;
   background: rgba(34, 197, 94, 0.15);
   padding: 0.5rem 0.85rem;
   border-radius: 999px;
@@ -134,7 +134,7 @@
   box-shadow: 0 30px 80px rgba(22, 163, 74, 0.35);
   display: grid;
   gap: 1.5rem;
-  color: #166534;
+  color: #222222;
 }
 
 .modal__content h2 {
@@ -151,9 +151,9 @@
 .ghost-button {
   padding: 0.5rem 1rem;
   border-radius: 999px;
-  border: 1px solid rgba(22, 101, 52, 0.3);
+  border: 1px solid rgba(34, 34, 34, 0.3);
   background: transparent;
-  color: #166534;
+  color: #222222;
   font-weight: 600;
   cursor: pointer;
 }
@@ -175,7 +175,7 @@
 .list__header {
   font-size: 0.8rem;
   font-weight: 700;
-  color: #6b7280;
+  color: #222222;
   text-transform: uppercase;
   letter-spacing: 0.08em;
 }
@@ -188,7 +188,7 @@
 }
 
 .list__id {
-  color: #0f172a;
+  color: #222222;
   font-weight: 600;
 }
 
@@ -198,7 +198,7 @@
 
 .empty {
   margin: 0.5rem 0 0;
-  color: #6b7280;
+  color: #222222;
 }
 
 

@@ -4,13 +4,13 @@
   border-radius: 24px;
   padding: 2.5rem;
   box-shadow: 0 24px 60px rgba(15, 23, 42, 0.12);
-  border: 1px solid rgba(220, 38, 38, 0.2);
+  border: 1px solid rgba(15, 118, 110, 0.2);
   display: grid;
   gap: 2rem;
 }
 
 .panel--danger {
-  border-color: rgba(220, 38, 38, 0.35);
+  border-color: rgba(15, 118, 110, 0.35);
 }
 
 .panel__header h1 {
@@ -18,29 +18,34 @@
   margin: 0.5rem 0 0.75rem;
 }
 
+.panel__header {
+  display: grid;
+  gap: 0.5rem;
+}
+
 .eyebrow {
   text-transform: uppercase;
   letter-spacing: 0.12em;
   font-size: 0.75rem;
   font-weight: 600;
-  color: #b91c1c;
+  color: #0f766e;
   margin: 0;
 }
 
 .subtitle {
   margin: 0;
-  color: #4b5563;
+  color: #222222;
   line-height: 1.6;
 }
 
 .status {
   margin: 0;
   font-size: 0.9rem;
-  color: #4b5563;
+  color: #222222;
 }
 
 .status--error {
-  color: #b91c1c;
+  color: #c64444;
 }
 
 .list__row {
@@ -51,7 +56,7 @@
 }
 
 .list__id {
-  color: #7f1d1d;
+  color: #222222;
   font-weight: 600;
 }
 
@@ -61,7 +66,7 @@
 
 .empty {
   margin: 0.5rem 0 0;
-  color: #6b7280;
+  color: #222222;
 }
 
 .single {
@@ -71,12 +76,12 @@
 
 .single__row {
   display: grid;
-  grid-template-columns: 110px 1fr 120px;
+  grid-template-columns: 110px 1fr;
   align-items: center;
   padding: 0.85rem 1rem;
   border-radius: 12px;
-  background: #fff7f7;
-  border: 1px solid #fecaca;
+  background: rgba(15, 118, 110, 0.12);
+  border: 1px solid rgba(15, 118, 110, 0.35);
 }
 
 .link {
@@ -91,6 +96,11 @@
   margin-top: 0.5rem;
 }
 
+.edit-form__actions {
+  display: flex;
+  justify-content: flex-end;
+}
+
 .field {
   display: grid;
   gap: 0.5rem;
@@ -98,7 +108,7 @@
 
 .field__label {
   font-size: 0.85rem;
-  color: #374151;
+  color: #222222;
   font-weight: 600;
 }
 
@@ -117,7 +127,7 @@
 }
 
 .primary-button {
-  padding: 0.85rem 1.5rem;
+  padding: 0.6rem 1.4rem;
   border-radius: 999px;
   border: none;
   background: #0f766e;
@@ -135,15 +145,38 @@
 }
 
 .danger-button {
-  padding: 0.5rem 1rem;
+  padding: 0.6rem 1.4rem;
   border-radius: 999px;
   border: none;
-  background: #dc2626;
+  background: #c64444;
   color: #ffffff;
   font-weight: 600;
-  font-size: 0.85rem;
+  font-size: 0.95rem;
   cursor: pointer;
-  box-shadow: 0 10px 20px rgba(220, 38, 38, 0.3);
+  box-shadow: 0 10px 20px rgba(198, 68, 68, 0.3);
+}
+
+.danger-zone {
+  margin-top: 1.5rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid rgba(198, 68, 68, 0.25);
+  display: grid;
+  gap: 0.75rem;
+}
+
+.danger-zone__title {
+  margin: 0;
+  font-weight: 700;
+  color: #c64444;
+}
+
+.danger-zone__text {
+  margin: 0;
+  color: #222222;
+}
+
+.danger-button--footer {
+  justify-self: end;
 }
 
 .modal {
@@ -170,19 +203,19 @@
   box-shadow: 0 30px 80px rgba(185, 28, 28, 0.35);
   display: grid;
   gap: 1.5rem;
-  color: #7f1d1d;
+  color: #222222;
 }
 
 .modal__content--success {
   background: #ecfdf3;
   border-color: #bbf7d0;
   box-shadow: 0 30px 80px rgba(22, 163, 74, 0.35);
-  color: #166534;
+  color: #222222;
 }
 
 .modal--success .ghost-button {
-  border-color: rgba(22, 101, 52, 0.3);
-  color: #166534;
+  border-color: rgba(34, 34, 34, 0.3);
+  color: #222222;
 }
 
 .modal__content h2 {

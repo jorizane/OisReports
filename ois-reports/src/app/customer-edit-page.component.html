@@ -1,7 +1,9 @@
 <section class="panel panel--danger">
   <header class="panel__header">
-    <p class="eyebrow">Bearbeiten oder löschen</p>
-    <h1>Kundenverwaltung</h1>
+    <div>
+      <p class="eyebrow">Bearbeiten oder löschen</p>
+      <h1>Kundenverwaltung</h1>
+    </div>
     <p class="subtitle">
       Diese Seite wird später zur Bearbeitungsansicht. Löschen kann nicht rückgängig gemacht werden.
     </p>
@@ -14,7 +16,6 @@
     <div class="single__row">
       <span class="list__id">#{{ selectedCustomer()?.id }}</span>
       <span class="list__name">{{ selectedCustomer()?.name }}</span>
-      <button class="danger-button" type="button" (click)="promptDelete()">Löschen</button>
     </div>
     <form class="edit-form" (ngSubmit)="saveChanges()">
       <label class="field">
@@ -27,8 +28,24 @@
           placeholder="Kundenname bearbeiten"
         />
       </label>
-      <button class="primary-button" type="submit">Änderungen speichern</button>
+      <div class="edit-form__actions">
+        <button class="primary-button" type="submit">Änderungen speichern</button>
+      </div>
     </form>
+
+    <div class="danger-zone">
+      <p class="danger-zone__title">Löschen</p>
+      <p class="danger-zone__text">
+        Entferne diesen Kunden dauerhaft. Dieser Schritt kann nicht rückgängig gemacht werden.
+      </p>
+      <button
+        class="danger-button danger-button--footer"
+        type="button"
+        (click)="promptDelete()"
+      >
+        Kunde löschen
+      </button>
+    </div>
   </div>
 
   <a class="link" routerLink="/">Zurück zur Übersicht</a>

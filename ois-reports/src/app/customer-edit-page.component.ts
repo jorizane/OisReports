@@ -6,13 +6,13 @@ import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { Customer, CustomersService } from './customers.service';
 
 @Component({
-  selector: 'app-customer-delete-page',
+  selector: 'app-customer-edit-page',
   standalone: true,
   imports: [CommonModule, FormsModule, RouterLink],
-  templateUrl: './customer-delete-page.component.html',
-  styleUrl: './customer-delete-page.component.scss',
+  templateUrl: './customer-edit-page.component.html',
+  styleUrl: './customer-edit-page.component.scss',
 })
-export class CustomerDeletePage implements OnInit {
+export class CustomerEditPage implements OnInit {
   protected readonly customers = signal<Customer[]>([]);
   protected readonly isLoading = signal(false);
   protected readonly errorMessage = signal('');

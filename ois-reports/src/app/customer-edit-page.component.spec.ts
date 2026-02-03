@@ -3,14 +3,14 @@ import { provideHttpClientTesting, HttpTestingController } from '@angular/common
 import { TestBed } from '@angular/core/testing';
 import { ActivatedRoute, convertToParamMap, provideRouter } from '@angular/router';
 
-import { CustomerDeletePage } from './customer-delete-page.component';
+import { CustomerEditPage } from './customer-edit-page.component';
 
-describe('CustomerDeletePage', () => {
+describe('CustomerEditPage', () => {
   let httpMock: HttpTestingController;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [CustomerDeletePage],
+      imports: [CustomerEditPage],
       providers: [
         provideHttpClient(),
         provideHttpClientTesting(),
@@ -34,7 +34,7 @@ describe('CustomerDeletePage', () => {
   });
 
   it('should load selected customer by route id', () => {
-    const fixture = TestBed.createComponent(CustomerDeletePage);
+    const fixture = TestBed.createComponent(CustomerEditPage);
     fixture.detectChanges();
 
     const request = httpMock.expectOne('http://localhost:8000/customers');
@@ -51,7 +51,7 @@ describe('CustomerDeletePage', () => {
   });
 
   it('should delete selected customer after confirmation', () => {
-    const fixture = TestBed.createComponent(CustomerDeletePage);
+    const fixture = TestBed.createComponent(CustomerEditPage);
     fixture.detectChanges();
 
     const request = httpMock.expectOne('http://localhost:8000/customers');
@@ -60,7 +60,7 @@ describe('CustomerDeletePage', () => {
       { id: 9, name: 'Orion Filters' },
     ]);
 
-    const component = fixture.componentInstance as CustomerDeletePage & {
+    const component = fixture.componentInstance as CustomerEditPage & {
       promptDelete: () => void;
       confirmDelete: () => void;
     };
@@ -78,7 +78,7 @@ describe('CustomerDeletePage', () => {
   });
 
   it('should dismiss success popup', () => {
-    const fixture = TestBed.createComponent(CustomerDeletePage);
+    const fixture = TestBed.createComponent(CustomerEditPage);
     fixture.detectChanges();
 
     const request = httpMock.expectOne('http://localhost:8000/customers');
@@ -87,7 +87,7 @@ describe('CustomerDeletePage', () => {
       { id: 9, name: 'Orion Filters' },
     ]);
 
-    const component = fixture.componentInstance as CustomerDeletePage & {
+    const component = fixture.componentInstance as CustomerEditPage & {
       promptDelete: () => void;
       confirmDelete: () => void;
     };
@@ -110,7 +110,7 @@ describe('CustomerDeletePage', () => {
   });
 
   it('should update selected customer name', () => {
-    const fixture = TestBed.createComponent(CustomerDeletePage);
+    const fixture = TestBed.createComponent(CustomerEditPage);
     fixture.detectChanges();
 
     const request = httpMock.expectOne('http://localhost:8000/customers');
@@ -119,7 +119,7 @@ describe('CustomerDeletePage', () => {
       { id: 9, name: 'Orion Filters' },
     ]);
 
-    const component = fixture.componentInstance as CustomerDeletePage & {
+    const component = fixture.componentInstance as CustomerEditPage & {
       editName: string;
       saveChanges: () => void;
     };
