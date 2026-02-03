@@ -3,7 +3,14 @@ import { Component, OnInit, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 
-import { Component as PlantComponent, CustomersService, FilterPlant } from './customers.service';
+import {
+  Component as PlantComponent,
+  ComponentsService,
+} from '../../../services/components/components.service';
+import {
+  FilterPlant,
+  FilterPlantsService,
+} from '../../../services/filter-plants/filter-plants.service';
 
 @Component({
   selector: 'app-filter-plant-detail-page',
@@ -25,7 +32,8 @@ export class FilterPlantDetailPage implements OnInit {
   private componentSuccessTimer: number | null = null;
 
   constructor(
-    private readonly customersService: CustomersService,
+    private readonly filterPlantsService: FilterPlantsService,
+    private readonly componentsService: ComponentsService,
     private readonly route: ActivatedRoute
   ) {}
 
@@ -45,7 +53,7 @@ export class FilterPlantDetailPage implements OnInit {
     }
 
     this.isLoading.set(true);
-    this.customersService.getFilterPlant(id).subscribe({
+    this.filterPlantsService.getFilterPlant(id).subscribe({
       next: (plant) => {
         this.plant.set(plant);
         this.isLoading.set(false);
@@ -59,7 +67,7 @@ export class FilterPlantDetailPage implements OnInit {
   }
 
   private loadComponents(filterPlantId: number): void {
-    this.customersService.listComponents(filterPlantId).subscribe({
+    this.componentsService.listComponents(filterPlantId).subscribe({
       next: (components) => {
         this.components.set(components);
       },
@@ -87,7 +95,7 @@ export class FilterPlantDetailPage implements OnInit {
       return;
     }
 
-    this.customersService.createComponent(plant.id, { name }).subscribe({
+    this.componentsService.createComponent(plant.id, { name }).subscribe({
       next: (component) => {
         this.components.update((items) => [...items, component]);
         this.componentName = '';

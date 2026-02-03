@@ -3,7 +3,11 @@ import { Component, OnInit, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 
-import { Customer, CustomersService, FilterPlant } from './customers.service';
+import { Customer, CustomersService } from '../../../services/customers/customers.service';
+import {
+  FilterPlant,
+  FilterPlantsService,
+} from '../../../services/filter-plants/filter-plants.service';
 
 @Component({
   selector: 'app-customer-detail-page',
@@ -26,6 +30,7 @@ export class CustomerDetailPage implements OnInit {
 
   constructor(
     private readonly customersService: CustomersService,
+    private readonly filterPlantsService: FilterPlantsService,
     private readonly route: ActivatedRoute
   ) {}
 
@@ -57,7 +62,7 @@ export class CustomerDetailPage implements OnInit {
   }
 
   private loadFilterPlants(customerId: number): void {
-    this.customersService.listFilterPlants(customerId).subscribe({
+    this.filterPlantsService.listFilterPlants(customerId).subscribe({
       next: (plants) => {
         this.filterPlants.set(plants);
       },
@@ -92,7 +97,7 @@ export class CustomerDetailPage implements OnInit {
       return;
     }
 
-    this.customersService
+    this.filterPlantsService
       .createFilterPlant(customer.id, { description, year_built: year })
       .subscribe({
         next: (plant) => {

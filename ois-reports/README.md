@@ -44,6 +44,17 @@ To execute unit tests with the [Vitest](https://vitest.dev/) test runner, use th
 ng test
 ```
 
+## Project Structure
+
+- `src/app/components/` – UI components grouped by domain
+  - `customers/` (list, detail, edit)
+  - `filter-plants/` (detail, edit)
+  - `components/` (detail, edit)
+- `src/app/services/` – API services grouped by domain
+  - `customers/`
+  - `filter-plants/`
+  - `components/`
+
 ## Running end-to-end tests
 
 For end-to-end (e2e) testing, run:

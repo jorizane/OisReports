@@ -19,7 +19,7 @@ describe('FilterPlantDetailPage', () => {
           provide: ActivatedRoute,
           useValue: {
             snapshot: {
-              paramMap: convertToParamMap({ plantId: '11' }),
+              paramMap: convertToParamMap({ id: '5', plantId: '11' }),
             },
           },
         },

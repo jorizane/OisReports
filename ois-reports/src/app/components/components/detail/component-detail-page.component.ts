@@ -2,7 +2,10 @@ import { CommonModule } from '@angular/common';
 import { Component, OnInit, signal } from '@angular/core';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 
-import { CustomersService, Component as PlantComponent } from './customers.service';
+import {
+  Component as PlantComponent,
+  ComponentsService,
+} from '../../../services/components/components.service';
 
 @Component({
   selector: 'app-component-detail-page',
@@ -20,7 +23,7 @@ export class ComponentDetailPage implements OnInit {
   protected plantId: number | null = null;
 
   constructor(
-    private readonly customersService: CustomersService,
+    private readonly componentsService: ComponentsService,
     private readonly route: ActivatedRoute
   ) {}
 
@@ -38,7 +41,7 @@ export class ComponentDetailPage implements OnInit {
     }
 
     this.isLoading.set(true);
-    this.customersService.getComponent(componentId).subscribe({
+    this.componentsService.getComponent(componentId).subscribe({
       next: (component) => {
         this.component.set(component);
         this.isLoading.set(false);

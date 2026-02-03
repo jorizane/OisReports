@@ -1,12 +1,12 @@
 import { Routes } from '@angular/router';
 
-import { CustomerDetailPage } from './customer-detail-page.component';
-import { CustomerEditPage } from './customer-edit-page.component';
-import { CustomersPage } from './customers-page.component';
-import { ComponentDetailPage } from './component-detail-page.component';
-import { ComponentEditPage } from './component-edit-page.component';
-import { FilterPlantDetailPage } from './filter-plant-detail-page.component';
-import { FilterPlantEditPage } from './filter-plant-edit-page.component';
+import { CustomersPage } from './components/customers/list/customers-page.component';
+import { CustomerDetailPage } from './components/customers/detail/customer-detail-page.component';
+import { CustomerEditPage } from './components/customers/edit/customer-edit-page.component';
+import { FilterPlantDetailPage } from './components/filter-plants/detail/filter-plant-detail-page.component';
+import { FilterPlantEditPage } from './components/filter-plants/edit/filter-plant-edit-page.component';
+import { ComponentDetailPage } from './components/components/detail/component-detail-page.component';
+import { ComponentEditPage } from './components/components/edit/component-edit-page.component';
 
 export const routes: Routes = [
   { path: '', component: CustomersPage },

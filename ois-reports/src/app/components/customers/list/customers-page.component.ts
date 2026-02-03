@@ -3,7 +3,7 @@ import { Component, OnInit, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 
-import { Customer, CustomersService } from './customers.service';
+import { Customer, CustomersService } from '../../../services/customers/customers.service';
 
 @Component({
   selector: 'app-customers-page',

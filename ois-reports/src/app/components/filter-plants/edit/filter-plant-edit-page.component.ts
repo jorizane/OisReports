@@ -3,7 +3,10 @@ import { Component, OnInit, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 
-import { CustomersService, FilterPlant } from './customers.service';
+import {
+  FilterPlant,
+  FilterPlantsService,
+} from '../../../services/filter-plants/filter-plants.service';
 
 @Component({
   selector: 'app-filter-plant-edit-page',
@@ -23,7 +26,7 @@ export class FilterPlantEditPage implements OnInit {
   private successTimer: number | null = null;
 
   constructor(
-    private readonly customersService: CustomersService,
+    private readonly filterPlantsService: FilterPlantsService,
     private readonly route: ActivatedRoute,
     private readonly router: Router
   ) {}
@@ -37,7 +40,7 @@ export class FilterPlantEditPage implements OnInit {
     }
 
     this.isLoading.set(true);
-    this.customersService.getFilterPlant(id).subscribe({
+    this.filterPlantsService.getFilterPlant(id).subscribe({
       next: (plant) => {
         this.plant.set(plant);
         this.description = plant.description;
@@ -70,7 +73,7 @@ export class FilterPlantEditPage implements OnInit {
       return;
     }
 
-    this.customersService
+    this.filterPlantsService
       .updateFilterPlant(plant.id, { description, year_built: year })
       .subscribe({
         next: (updated) => {
@@ -102,7 +105,7 @@ export class FilterPlantEditPage implements OnInit {
       return;
     }
 
-    this.customersService.deleteFilterPlant(plant.id).subscribe({
+    this.filterPlantsService.deleteFilterPlant(plant.id).subscribe({
       next: () => {
         this.showConfirm.set(false);
         this.showSuccess('Filteranlage wurde gelöscht.');

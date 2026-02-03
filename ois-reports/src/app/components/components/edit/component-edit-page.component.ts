@@ -3,7 +3,10 @@ import { Component, OnInit, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 
-import { Component as PlantComponent, CustomersService } from './customers.service';
+import {
+  Component as PlantComponent,
+  ComponentsService,
+} from '../../../services/components/components.service';
 
 @Component({
   selector: 'app-component-edit-page',
@@ -24,7 +27,7 @@ export class ComponentEditPage implements OnInit {
   private successTimer: number | null = null;
 
   constructor(
-    private readonly customersService: CustomersService,
+    private readonly componentsService: ComponentsService,
     private readonly route: ActivatedRoute,
     private readonly router: Router
   ) {}
@@ -44,7 +47,7 @@ export class ComponentEditPage implements OnInit {
     }
 
     this.isLoading.set(true);
-    this.customersService.getComponent(componentId).subscribe({
+    this.componentsService.getComponent(componentId).subscribe({
       next: (component) => {
         this.component.set(component);
         this.name = component.name;
@@ -69,7 +72,7 @@ export class ComponentEditPage implements OnInit {
       return;
     }
 
-    this.customersService.updateComponent(component.id, { name }).subscribe({
+    this.componentsService.updateComponent(component.id, { name }).subscribe({
       next: (updated) => {
         this.component.set(updated);
         this.name = updated.name;
@@ -98,7 +101,7 @@ export class ComponentEditPage implements OnInit {
       return;
     }
 
-    this.customersService.deleteComponent(component.id).subscribe({
+    this.componentsService.deleteComponent(component.id).subscribe({
       next: () => {
         this.showConfirm.set(false);
         this.showSuccess('Komponente wurde gelöscht.');
