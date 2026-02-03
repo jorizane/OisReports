@@ -1,0 +1,34 @@
+<section class="panel">
+  <header class="panel__header">
+    <p class="eyebrow">Filteranlage</p>
+    <h1>Filteranlagen-Details</h1>
+    <p class="subtitle">Stammdaten und Eckpunkte der Filteranlage.</p>
+  </header>
+
+  <p class="status status--error" *ngIf="errorMessage()">{{ errorMessage() }}</p>
+  <p class="status" *ngIf="isLoading()">Filteranlage wird geladen...</p>
+
+  <div class="detail" *ngIf="!isLoading() && plant()">
+    <div class="detail__row">
+      <span class="detail__label">ID</span>
+      <span class="detail__value">#{{ plant()?.id }}</span>
+    </div>
+    <div class="detail__row">
+      <span class="detail__label">Beschreibung</span>
+      <span class="detail__value">{{ plant()?.description }}</span>
+    </div>
+    <div class="detail__row">
+      <span class="detail__label">Baujahr</span>
+      <span class="detail__value">{{ plant()?.year_built }}</span>
+    </div>
+  </div>
+
+  <div class="actions" *ngIf="plant()">
+    <a class="ghost-link-button" [routerLink]="['/customers', plant()?.customer_id]">
+      Zurück zum Kunden
+    </a>
+    <a class="primary-button" [routerLink]="['/customers', plant()?.customer_id, 'filter-plants', plant()?.id, 'edit']">
+      Filteranlage bearbeiten
+    </a>
+  </div>
+</section>

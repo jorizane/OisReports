@@ -42,6 +42,18 @@ export class CustomersService {
     );
   }
 
+  getFilterPlant(filterPlantId: number) {
+    return this.http.get<FilterPlant>(`${this.baseUrl}/filter-plants/${filterPlantId}`);
+  }
+
+  updateFilterPlant(filterPlantId: number, payload: FilterPlantCreate) {
+    return this.http.patch<FilterPlant>(`${this.baseUrl}/filter-plants/${filterPlantId}`, payload);
+  }
+
+  deleteFilterPlant(filterPlantId: number) {
+    return this.http.delete(`${this.baseUrl}/filter-plants/${filterPlantId}`);
+  }
+
   createCustomer(name: string) {
     return this.http.post<Customer>(`${this.baseUrl}/customers`, { name });
   }

@@ -1,0 +1,88 @@
+<section class="panel">
+  <header class="panel__header">
+    <p class="eyebrow">Filteranlage bearbeiten</p>
+    <h1>Filteranlagenverwaltung</h1>
+    <p class="subtitle">Bearbeite die Details der Filteranlage oder lösche sie.</p>
+  </header>
+
+  <p class="status status--error" *ngIf="errorMessage()">{{ errorMessage() }}</p>
+  <p class="status" *ngIf="isLoading()">Filteranlage wird geladen...</p>
+
+  <div class="single" *ngIf="!isLoading() && plant()">
+    <div class="single__row">
+      <span class="list__id">#{{ plant()?.id }}</span>
+      <span class="list__name">{{ plant()?.description }}</span>
+    </div>
+    <form class="edit-form" (ngSubmit)="saveChanges()">
+      <label class="field">
+        <span class="field__label">Beschreibung</span>
+        <input
+          class="field__input"
+          type="text"
+          name="plantDescription"
+          [(ngModel)]="description"
+          placeholder="Beschreibung"
+        />
+      </label>
+      <label class="field">
+        <span class="field__label">Baujahr</span>
+        <input
+          class="field__input"
+          type="number"
+          name="yearBuilt"
+          [(ngModel)]="yearBuilt"
+          placeholder="z.B. 2020"
+        />
+      </label>
+      <div class="edit-form__actions">
+        <button class="primary-button" type="submit">Änderungen speichern</button>
+      </div>
+    </form>
+
+    <div class="danger-zone">
+      <p class="danger-zone__title">Löschen</p>
+      <p class="danger-zone__text">
+        Entferne diese Filteranlage dauerhaft. Dieser Schritt kann nicht rückgängig gemacht werden.
+      </p>
+      <button class="danger-button danger-button--footer" type="button" (click)="promptDelete()">
+        Filteranlage löschen
+      </button>
+    </div>
+  </div>
+
+  <div class="actions" *ngIf="plant()">
+    <a class="ghost-link-button" [routerLink]="['/customers', plant()?.customer_id]">
+      Zurück zum Kunden
+    </a>
+    <a class="ghost-link-button" [routerLink]="['/customers', plant()?.customer_id, 'filter-plants', plant()?.id]">
+      Zurück zur Filteranlage
+    </a>
+  </div>
+</section>
+
+<div class="modal" *ngIf="showConfirm()">
+  <div class="modal__overlay" (click)="cancelDelete()"></div>
+  <div class="modal__content">
+    <h2>Filteranlage löschen?</h2>
+    <p>
+      Du löschst
+      <strong>{{ plant()?.description }}</strong>.
+      Dieser Vorgang ist endgültig.
+    </p>
+    <div class="modal__actions">
+      <button class="ghost-button" type="button" (click)="cancelDelete()">Abbrechen</button>
+      <button class="danger-button" type="button" (click)="confirmDelete()">Löschen</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal modal--success" *ngIf="successMessage()">
+  <div class="modal__overlay"></div>
+  <div class="modal__content modal__content--success">
+    <h2>Erfolg</h2>
+    <p>{{ successMessage() }}</p>
+    <div class="modal__actions">
+      <button class="ghost-button" type="button" (click)="dismissSuccess()">OK</button>
+    </div>
+  </div>
+</div>

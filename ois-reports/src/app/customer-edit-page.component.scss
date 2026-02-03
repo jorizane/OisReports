@@ -90,6 +90,18 @@
   text-decoration: none;
 }
 
+.ghost-link-button {
+  padding: 0.6rem 1.4rem;
+  border-radius: 999px;
+  border: 1px solid rgba(34, 34, 34, 0.25);
+  background: transparent;
+  color: #222222;
+  font-weight: 600;
+  cursor: pointer;
+  text-decoration: none;
+  justify-self: start;
+}
+
 .edit-form {
   display: grid;
   gap: 1rem;

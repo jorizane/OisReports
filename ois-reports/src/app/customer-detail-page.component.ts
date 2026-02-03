@@ -22,6 +22,7 @@ export class CustomerDetailPage implements OnInit {
   protected readonly plantSuccess = signal('');
   protected plantDescription = '';
   protected plantYear: number | null = null;
+  private plantSuccessTimer: number | null = null;
 
   constructor(
     private readonly customersService: CustomersService,
@@ -34,6 +35,11 @@ export class CustomerDetailPage implements OnInit {
     if (!id) {
       this.errorMessage.set('Kunde nicht gefunden.');
       return;
+    }
+
+    const state = window.history.state as { deletedPlant?: string };
+    if (state?.deletedPlant) {
+      this.showPlantSuccess(`Filteranlage "${state.deletedPlant}" wurde gelöscht.`);
     }
 
     this.isLoading.set(true);
@@ -94,12 +100,32 @@ export class CustomerDetailPage implements OnInit {
           this.plantDescription = '';
           this.plantYear = null;
           this.plantError.set('');
-          this.plantSuccess.set('Filteranlage wurde angelegt.');
+          this.showPlantSuccess('Filteranlage wurde angelegt.');
           this.showPlantForm.set(false);
         },
         error: () => {
           this.plantError.set('Filteranlage konnte nicht angelegt werden.');
         },
       });
+  }
+
+  dismissPlantSuccess(): void {
+    this.clearPlantSuccess();
+  }
+
+  private showPlantSuccess(message: string): void {
+    this.clearPlantSuccess();
+    this.plantSuccess.set(message);
+    this.plantSuccessTimer = window.setTimeout(() => {
+      this.clearPlantSuccess();
+    }, 2200);
+  }
+
+  private clearPlantSuccess(): void {
+    if (this.plantSuccessTimer !== null) {
+      window.clearTimeout(this.plantSuccessTimer);
+      this.plantSuccessTimer = null;
+    }
+    this.plantSuccess.set('');
   }
 }

@@ -48,7 +48,9 @@
     </div>
   </div>
 
-  <a class="link" [routerLink]="['/customers', selectedCustomer()?.id]">Zurück zum Kunden</a>
+  <a class="ghost-link-button" [routerLink]="['/customers', selectedCustomer()?.id]">
+    Zurück zum Kunden
+  </a>
 </section>
 
 <div class="modal" *ngIf="showConfirm()">

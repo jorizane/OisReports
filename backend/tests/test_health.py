@@ -135,3 +135,54 @@ def test_list_filter_plants():
     assert response.status_code == 200
     payload = response.json()
     assert len(payload) >= 1
+
+
+def test_get_filter_plant():
+    if not _db_available():
+        pytest.skip("Database is not available.")
+
+    customer = client.post("/customers", json={"name": f"Plant Get {uuid.uuid4()}"}).json()
+    plant = client.post(
+        f"/customers/{customer['id']}/filter-plants",
+        json={"description": "Filter C", "year_built": 2019},
+    ).json()
+
+    response = client.get(f"/filter-plants/{plant['id']}")
+    assert response.status_code == 200
+    payload = response.json()
+    assert payload["id"] == plant["id"]
+    assert payload["customer_id"] == customer["id"]
+
+
+def test_update_filter_plant():
+    if not _db_available():
+        pytest.skip("Database is not available.")
+
+    customer = client.post("/customers", json={"name": f"Plant Update {uuid.uuid4()}"}).json()
+    plant = client.post(
+        f"/customers/{customer['id']}/filter-plants",
+        json={"description": "Filter D", "year_built": 2016},
+    ).json()
+
+    response = client.patch(
+        f"/filter-plants/{plant['id']}",
+        json={"description": "Filter D Updated", "year_built": 2018},
+    )
+    assert response.status_code == 200
+    payload = response.json()
+    assert payload["description"] == "Filter D Updated"
+    assert payload["year_built"] == 2018
+
+
+def test_delete_filter_plant():
+    if not _db_available():
+        pytest.skip("Database is not available.")
+
+    customer = client.post("/customers", json={"name": f"Plant Delete {uuid.uuid4()}"}).json()
+    plant = client.post(
+        f"/customers/{customer['id']}/filter-plants",
+        json={"description": "Filter E", "year_built": 2014},
+    ).json()
+
+    response = client.delete(f"/filter-plants/{plant['id']}")
+    assert response.status_code == 204

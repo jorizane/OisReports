@@ -28,3 +28,8 @@ class FilterPlantRead(BaseModel):
     year_built: int
 
     model_config = ConfigDict(from_attributes=True)
+
+
+class FilterPlantUpdate(BaseModel):
+    description: str
+    year_built: int

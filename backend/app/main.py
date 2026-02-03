@@ -14,6 +14,7 @@ from .schemas import (
     CustomerUpdate,
     FilterPlantCreate,
     FilterPlantRead,
+    FilterPlantUpdate,
 )
 
 @asynccontextmanager
@@ -59,6 +60,9 @@ def root():
             "customers": "/customers",
             "customer_get": "/customers/{customer_id}",
             "filter_plants": "/customers/{customer_id}/filter-plants",
+            "filter_plant_get": "/filter-plants/{filter_plant_id}",
+            "filter_plant_update": "/filter-plants/{filter_plant_id}",
+            "filter_plant_delete": "/filter-plants/{filter_plant_id}",
             "customer_delete": "/customers/{customer_id}",
         },
     }
@@ -135,6 +139,14 @@ def list_filter_plants(customer_id: int, db: Session = Depends(get_db)):
     )
 
 
+@app.get("/filter-plants/{filter_plant_id}", response_model=FilterPlantRead)
+def get_filter_plant(filter_plant_id: int, db: Session = Depends(get_db)):
+    filter_plant = db.get(FilterPlant, filter_plant_id)
+    if not filter_plant:
+        raise HTTPException(status_code=404, detail="Filter plant not found.")
+    return filter_plant
+
+
 @app.post(
     "/customers/{customer_id}/filter-plants", response_model=FilterPlantRead, status_code=201
 )
@@ -161,6 +173,39 @@ def create_filter_plant(
     db.commit()
     db.refresh(filter_plant)
     return filter_plant
+
+
+@app.patch("/filter-plants/{filter_plant_id}", response_model=FilterPlantRead)
+def update_filter_plant(
+    filter_plant_id: int, payload: FilterPlantUpdate, db: Session = Depends(get_db)
+):
+    filter_plant = db.get(FilterPlant, filter_plant_id)
+    if not filter_plant:
+        raise HTTPException(status_code=404, detail="Filter plant not found.")
+
+    description = payload.description.strip()
+    if not description:
+        raise HTTPException(status_code=400, detail="Description is required.")
+
+    if payload.year_built < 1800 or payload.year_built > 2100:
+        raise HTTPException(status_code=400, detail="Year built is invalid.")
+
+    filter_plant.description = description
+    filter_plant.year_built = payload.year_built
+    db.commit()
+    db.refresh(filter_plant)
+    return filter_plant
+
+
+@app.delete("/filter-plants/{filter_plant_id}", status_code=204)
+def delete_filter_plant(filter_plant_id: int, db: Session = Depends(get_db)):
+    filter_plant = db.get(FilterPlant, filter_plant_id)
+    if not filter_plant:
+        raise HTTPException(status_code=404, detail="Filter plant not found.")
+
+    db.delete(filter_plant)
+    db.commit()
+    return None
 
 
 @app.delete("/customers/{customer_id}", status_code=204)

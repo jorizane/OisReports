@@ -52,7 +52,6 @@
         <button class="primary-button" type="submit">Speichern</button>
       </div>
     </form>
-    <p class="status status--success" *ngIf="plantSuccess()">{{ plantSuccess() }}</p>
     <p class="status status--error" *ngIf="plantError()">{{ plantError() }}</p>
     <div class="plants__list" *ngIf="filterPlants().length > 0">
       <div class="plants__row" *ngFor="let plant of filterPlants()">
@@ -60,6 +59,12 @@
           <p class="plants__title">{{ plant.description }}</p>
           <p class="plants__meta">Baujahr {{ plant.year_built }}</p>
         </div>
+        <a
+          class="ghost-link-button"
+          [routerLink]="['/customers', customer()?.id, 'filter-plants', plant.id]"
+        >
+          Details
+        </a>
       </div>
     </div>
     <p class="empty" *ngIf="filterPlants().length === 0">
@@ -74,3 +79,14 @@
     </a>
   </div>
 </section>
+
+<div class="modal modal--success" *ngIf="plantSuccess()">
+  <div class="modal__overlay"></div>
+  <div class="modal__content modal__content--success">
+    <h2>Erfolg</h2>
+    <p>{{ plantSuccess() }}</p>
+    <div class="modal__actions">
+      <button class="ghost-button" type="button" (click)="dismissPlantSuccess()">OK</button>
+    </div>
+  </div>
+</div>
