@@ -11,6 +11,7 @@ import { ReportCreatePage } from './components/reports/create/report-create-page
 import { ReportDetailPage } from './components/reports/detail/report-detail-page.component';
 import { ReportsPage } from './components/reports/list/reports-page.component';
 import { ManufacturersPage } from './components/manufacturers/list/manufacturers-page.component';
+import { ManufacturerDetailPage } from './components/manufacturers/detail/manufacturer-detail-page.component';
 
 export const routes: Routes = [
   { path: '', component: CustomersPage },
@@ -22,6 +23,7 @@ export const routes: Routes = [
   },
   { path: 'reports/:reportId', component: ReportDetailPage },
   { path: 'reports', component: ReportsPage },
+  { path: 'manufacturers/:id', component: ManufacturerDetailPage },
   { path: 'manufacturers', component: ManufacturersPage },
   {
     path: 'customers/:id/filter-plants/:plantId/components/:componentId',

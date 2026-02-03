@@ -93,6 +93,30 @@ def test_list_manufacturers_includes_created_manufacturer():
     assert any(item["id"] == created["id"] for item in manufacturers)
 
 
+def test_list_manufacturer_filter_plants():
+    if not _db_available():
+        pytest.skip("Database is not available.")
+
+    manufacturer = client.post(
+        "/manufacturers",
+        json={"name": f"Plant Manufacturer {uuid.uuid4()}"},
+    ).json()
+    customer = client.post("/customers", json={"name": f"Plant Owner {uuid.uuid4()}"}).json()
+    plant = client.post(
+        f"/customers/{customer['id']}/filter-plants",
+        json={
+            "description": "Manufacturer Plant",
+            "year_built": 2020,
+            "manufacturer_id": manufacturer["id"],
+        },
+    ).json()
+
+    response = client.get(f"/manufacturers/{manufacturer['id']}/filter-plants")
+    assert response.status_code == 200
+    payload = response.json()
+    assert any(item["id"] == plant["id"] for item in payload)
+
+
 def test_get_customer_by_id():
     if not _db_available():
         pytest.skip("Database is not available.")

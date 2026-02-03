@@ -71,7 +71,16 @@
       <div class="plants__row" *ngFor="let plant of filterPlants()">
         <div>
           <p class="plants__title">{{ plant.description }}</p>
-          <p class="plants__meta">Baujahr {{ plant.year_built }}</p>
+          <p class="plants__meta">
+            Hersteller
+            <a
+              class="plants__link plants__link--truncate"
+              [routerLink]="['/manufacturers', plant.manufacturer_id]"
+            >
+              {{ getManufacturerName(plant.manufacturer_id) }}
+            </a>
+            · Baujahr {{ plant.year_built }}
+          </p>
         </div>
         <div class="plants__actions">
           <a

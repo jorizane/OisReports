@@ -17,6 +17,7 @@ def root():
             "customer_get": "/customers/{customer_id}",
             "manufacturers": "/manufacturers",
             "manufacturer_get": "/manufacturers/{manufacturer_id}",
+            "manufacturer_filter_plants": "/manufacturers/{manufacturer_id}/filter-plants",
             "filter_plants": "/customers/{customer_id}/filter-plants",
             "filter_plant_get": "/filter-plants/{filter_plant_id}",
             "filter_plant_update": "/filter-plants/{filter_plant_id}",

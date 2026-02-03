@@ -165,6 +165,25 @@
   color: #222222;
 }
 
+.plants__link {
+  color: #0f766e;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.plants__link--truncate {
+  display: inline-block;
+  max-width: 220px;
+  vertical-align: bottom;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.plants__link:hover {
+  text-decoration: underline;
+}
+
 .reports {
   display: grid;
   gap: 1rem;

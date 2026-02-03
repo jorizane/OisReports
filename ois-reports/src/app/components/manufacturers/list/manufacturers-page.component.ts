@@ -1,6 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnInit, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { RouterLink } from '@angular/router';
 
 import {
   Manufacturer,
@@ -10,7 +11,7 @@ import {
 @Component({
   selector: 'app-manufacturers-page',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, RouterLink],
   templateUrl: './manufacturers-page.component.html',
   styleUrl: './manufacturers-page.component.scss',
 })

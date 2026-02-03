@@ -108,6 +108,11 @@ export class CustomerDetailPage implements OnInit {
     });
   }
 
+  getManufacturerName(manufacturerId: number): string {
+    const match = this.manufacturers().find((item) => item.id === manufacturerId);
+    return match ? match.name : 'Unbekannt';
+  }
+
   togglePlantForm(): void {
     this.plantError.set('');
     this.plantSuccess.set('');

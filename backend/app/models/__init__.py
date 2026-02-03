@@ -9,7 +9,7 @@ class Manufacturer(Base):
     __tablename__ = "manufacturers"
 
     id = Column(Integer, primary_key=True, index=True)
-    name = Column(String(255), nullable=False)
+    name = Column(String(100), nullable=False)
 
     filter_plants = relationship("FilterPlant", back_populates="manufacturer")
 

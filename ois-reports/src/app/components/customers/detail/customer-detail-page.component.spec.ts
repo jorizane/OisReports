@@ -45,11 +45,19 @@ describe('CustomerDetailPage', () => {
       'http://localhost:8000/customers/4/filter-plants'
     );
     expect(plantsRequest.request.method).toBe('GET');
-    plantsRequest.flush([]);
+    plantsRequest.flush([
+      {
+        id: 12,
+        customer_id: 4,
+        manufacturer_id: 7,
+        description: 'Industriefilter A',
+        year_built: 2020,
+      },
+    ]);
 
     const manufacturersRequest = httpMock.expectOne('http://localhost:8000/manufacturers');
     expect(manufacturersRequest.request.method).toBe('GET');
-    manufacturersRequest.flush([]);
+    manufacturersRequest.flush([{ id: 7, name: 'FilterTech' }]);
 
     const reportsRequest = httpMock.expectOne('http://localhost:8000/customers/4/reports');
     expect(reportsRequest.request.method).toBe('GET');
@@ -59,6 +67,7 @@ describe('CustomerDetailPage', () => {
     const compiled = fixture.nativeElement as HTMLElement;
     expect(compiled.textContent).toContain('Aqua Filters');
     expect(compiled.textContent).toContain('#4');
+    expect(compiled.textContent).toContain('FilterTech');
   });
 
   it('should create a filter plant', () => {
@@ -71,10 +80,18 @@ describe('CustomerDetailPage', () => {
     const plantsRequest = httpMock.expectOne(
       'http://localhost:8000/customers/4/filter-plants'
     );
-    plantsRequest.flush([]);
+    plantsRequest.flush([
+      {
+        id: 12,
+        customer_id: 4,
+        manufacturer_id: 7,
+        description: 'Industriefilter A',
+        year_built: 2020,
+      },
+    ]);
 
     const manufacturersRequest = httpMock.expectOne('http://localhost:8000/manufacturers');
-    manufacturersRequest.flush([]);
+    manufacturersRequest.flush([{ id: 7, name: 'FilterTech' }]);
 
     const reportsRequest = httpMock.expectOne('http://localhost:8000/customers/4/reports');
     reportsRequest.flush([]);
@@ -127,10 +144,18 @@ describe('CustomerDetailPage', () => {
     const plantsRequest = httpMock.expectOne(
       'http://localhost:8000/customers/4/filter-plants'
     );
-    plantsRequest.flush([]);
+    plantsRequest.flush([
+      {
+        id: 12,
+        customer_id: 4,
+        manufacturer_id: 7,
+        description: 'Industriefilter A',
+        year_built: 2020,
+      },
+    ]);
 
     const manufacturersRequest = httpMock.expectOne('http://localhost:8000/manufacturers');
-    manufacturersRequest.flush([]);
+    manufacturersRequest.flush([{ id: 7, name: 'FilterTech' }]);
 
     const reportsRequest = httpMock.expectOne('http://localhost:8000/customers/4/reports');
     reportsRequest.flush([]);

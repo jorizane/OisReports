@@ -15,6 +15,10 @@ export class ManufacturersService {
     return this.http.get<Manufacturer[]>(`${this.baseUrl}/manufacturers`);
   }
 
+  getManufacturer(manufacturerId: number) {
+    return this.http.get<Manufacturer>(`${this.baseUrl}/manufacturers/${manufacturerId}`);
+  }
+
   createManufacturer(name: string) {
     return this.http.post<Manufacturer>(`${this.baseUrl}/manufacturers`, { name });
   }

@@ -1,0 +1,48 @@
+<section class="panel">
+  <header class="panel__header">
+    <p class="eyebrow">Hersteller</p>
+    <h1>Herstellerdetails</h1>
+    <p class="subtitle">Alle Filteranlagen dieses Herstellers.</p>
+  </header>
+
+  <p class="status status--error" *ngIf="errorMessage()">{{ errorMessage() }}</p>
+  <p class="status" *ngIf="isLoading()">Hersteller wird geladen...</p>
+
+  <div class="detail" *ngIf="!isLoading() && manufacturer()">
+    <div class="detail__row">
+      <span class="detail__label">ID</span>
+      <span class="detail__value">#{{ manufacturer()?.id }}</span>
+    </div>
+    <div class="detail__row">
+      <span class="detail__label">Name</span>
+      <span class="detail__value">{{ manufacturer()?.name }}</span>
+    </div>
+  </div>
+
+  <div class="plants" *ngIf="!isLoading() && manufacturer()">
+    <div class="plants__header">
+      <h2>Filteranlagen</h2>
+    </div>
+    <div class="plants__list" *ngIf="filterPlants().length > 0">
+      <div class="plants__row" *ngFor="let plant of filterPlants()">
+        <div>
+          <p class="plants__title">{{ plant.description }}</p>
+          <p class="plants__meta">Baujahr {{ plant.year_built }}</p>
+        </div>
+        <a
+          class="ghost-link-button"
+          [routerLink]="['/customers', plant.customer_id, 'filter-plants', plant.id]"
+        >
+          Details
+        </a>
+      </div>
+    </div>
+    <p class="empty" *ngIf="filterPlants().length === 0">
+      Noch keine Filteranlagen vorhanden.
+    </p>
+  </div>
+
+  <div class="actions" *ngIf="manufacturer()">
+    <a class="ghost-link-button" routerLink="/manufacturers">Zurück zur Herstellerübersicht</a>
+  </div>
+</section>

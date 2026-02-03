@@ -14,6 +14,7 @@
         name="manufacturerName"
         [(ngModel)]="newManufacturerName"
         placeholder="Herstellername eingeben"
+        maxlength="100"
         autocomplete="off"
       />
     </label>
@@ -27,10 +28,12 @@
     <div class="list__header">
       <span>ID</span>
       <span>Name</span>
+      <span>Aktion</span>
     </div>
     <div class="list__row" *ngFor="let manufacturer of manufacturers()">
       <span class="list__id">#{{ manufacturer.id }}</span>
       <span class="list__name">{{ manufacturer.name }}</span>
+      <a class="link-button" [routerLink]="['/manufacturers', manufacturer.id]">Details</a>
     </div>
     <p class="empty" *ngIf="manufacturers().length === 0">
       Noch keine Hersteller. Lege oben den ersten an.

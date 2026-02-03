@@ -24,6 +24,12 @@ export class FilterPlantsService {
     return this.http.get<FilterPlant[]>(`${this.baseUrl}/customers/${customerId}/filter-plants`);
   }
 
+  listFilterPlantsByManufacturer(manufacturerId: number) {
+    return this.http.get<FilterPlant[]>(
+      `${this.baseUrl}/manufacturers/${manufacturerId}/filter-plants`
+    );
+  }
+
   createFilterPlant(customerId: number, payload: FilterPlantCreate) {
     return this.http.post<FilterPlant>(
       `${this.baseUrl}/customers/${customerId}/filter-plants`,

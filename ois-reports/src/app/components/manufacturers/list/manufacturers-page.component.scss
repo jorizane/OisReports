@@ -100,7 +100,7 @@
 .list__header,
 .list__row {
   display: grid;
-  grid-template-columns: 110px 1fr;
+  grid-template-columns: 110px 1fr 120px;
   align-items: center;
 }
 
@@ -117,6 +117,17 @@
   border-radius: 12px;
   background: #f8fafc;
   border: 1px solid #e2e8f0;
+}
+
+.link-button {
+  padding: 0.5rem 1rem;
+  border-radius: 999px;
+  border: 1px solid rgba(15, 118, 110, 0.3);
+  color: #0f766e;
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 0.85rem;
+  justify-self: start;
 }
 
 .list__id {
@@ -150,5 +161,9 @@
   .list__row {
     grid-template-columns: 90px 1fr;
     gap: 0.5rem;
+  }
+
+  .list__row {
+    grid-template-columns: 90px 1fr;
   }
 }

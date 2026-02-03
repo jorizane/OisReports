@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from pydantic import BaseModel, ConfigDict
+from pydantic import BaseModel, ConfigDict, Field
 
 
 class CustomerCreate(BaseModel):
@@ -19,7 +19,7 @@ class CustomerUpdate(BaseModel):
 
 
 class ManufacturerCreate(BaseModel):
-    name: str
+    name: str = Field(..., max_length=100)
 
 
 class ManufacturerRead(BaseModel):
