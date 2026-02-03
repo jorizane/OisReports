@@ -24,6 +24,7 @@ def root():
             "component_update": "/components/{component_id}",
             "component_delete": "/components/{component_id}",
             "report_create": "/customers/{customer_id}/filter-plants/{filter_plant_id}/reports",
+            "reports": "/reports",
             "customer_delete": "/customers/{customer_id}",
         },
     }

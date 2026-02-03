@@ -3,9 +3,27 @@ from sqlalchemy.orm import Session
 
 from ...core.database import get_db
 from ...models import Component, Customer, FilterPlant, Report, ReportComponent
-from ...schemas import ReportCreate, ReportRead
+from ...schemas import ReportCreate, ReportListRead, ReportRead
 
 router = APIRouter(tags=["reports"])
+
+
+@router.get("/reports", response_model=list[ReportListRead])
+def list_reports(db: Session = Depends(get_db)):
+    reports = db.query(Report).order_by(Report.created_at.desc()).all()
+    return [
+        ReportListRead(
+            id=report.id,
+            customer_id=report.customer_id,
+            customer_name=report.customer.name if report.customer else "",
+            filter_plant_id=report.filter_plant_id,
+            filter_plant_description=report.filter_plant.description
+            if report.filter_plant
+            else "",
+            created_at=report.created_at,
+        )
+        for report in reports
+    ]
 
 
 @router.post(

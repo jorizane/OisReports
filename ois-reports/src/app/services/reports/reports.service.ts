@@ -13,7 +13,10 @@ export type ReportCreate = {
 export type ReportRead = {
   id: number;
   customer_id: number;
+  customer_name: string;
   filter_plant_id: number;
+  filter_plant_description: string;
+  created_at: string;
 };
 
 @Injectable({ providedIn: 'root' })
@@ -26,5 +29,9 @@ export class ReportsService {
       `${this.baseUrl}/customers/${customerId}/filter-plants/${filterPlantId}/reports`,
       payload
     );
+  }
+
+  listReports() {
+    return this.http.get<ReportRead[]>(`${this.baseUrl}/reports`);
   }
 }

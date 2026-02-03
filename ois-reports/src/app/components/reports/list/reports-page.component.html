@@ -1,0 +1,35 @@
+<section class="panel">
+  <header class="panel__header">
+    <p class="eyebrow">Berichte</p>
+    <h1>Berichtsübersicht</h1>
+    <p class="subtitle">Alle bisher erstellten Berichte im Überblick.</p>
+  </header>
+
+  <p class="status status--error" *ngIf="errorMessage()">{{ errorMessage() }}</p>
+  <p class="status" *ngIf="isLoading()">Berichte werden geladen...</p>
+
+  <div class="list" *ngIf="!isLoading()">
+    <div class="list__header">
+      <span>ID</span>
+      <span>Kunde</span>
+      <span>Filteranlage</span>
+      <span>Datum</span>
+    </div>
+    <div class="list__row" *ngFor="let report of reports()">
+      <span class="list__id">#{{ report.id }}</span>
+      <a class="link-button" [routerLink]="['/customers', report.customer_id]">
+        {{ report.customer_name }}
+      </a>
+      <a
+        class="link-button"
+        [routerLink]="['/customers', report.customer_id, 'filter-plants', report.filter_plant_id]"
+      >
+        {{ report.filter_plant_description }}
+      </a>
+      <span>{{ report.created_at | date: 'short' }}</span>
+    </div>
+    <p class="empty" *ngIf="reports().length === 0">
+      Noch keine Berichte vorhanden.
+    </p>
+  </div>
+</section>

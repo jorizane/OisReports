@@ -283,3 +283,33 @@ def test_create_report():
     payload = response.json()
     assert payload["customer_id"] == customer["id"]
     assert payload["filter_plant_id"] == plant["id"]
+
+
+def test_list_reports():
+    if not _db_available():
+        pytest.skip("Database is not available.")
+
+    customer = client.post("/customers", json={"name": f"Report List {uuid.uuid4()}"}).json()
+    plant = client.post(
+        f"/customers/{customer['id']}/filter-plants",
+        json={"description": "Report List Plant", "year_built": 2021},
+    ).json()
+    component = client.post(
+        f"/filter-plants/{plant['id']}/components",
+        json={"name": "Messpunkt B"},
+    ).json()
+    client.post(
+        f"/customers/{customer['id']}/filter-plants/{plant['id']}/reports",
+        json={
+            "component_descriptions": [
+                {"component_id": component["id"], "description": "OK"}
+            ]
+        },
+    )
+
+    response = client.get("/reports")
+    assert response.status_code == 200
+    payload = response.json()
+    assert len(payload) >= 1
+    assert "customer_name" in payload[0]
+    assert "filter_plant_description" in payload[0]

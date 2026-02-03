@@ -55,10 +55,12 @@ describe('ReportCreatePage', () => {
 
     const component = fixture.componentInstance as ReportCreatePage & {
       saveReport: () => void;
-      updateDescription: (id: number, value: string) => void;
+      components: () => { id: number; name: string; description: string }[];
     };
 
-    component.updateDescription(5, 'Alles ok');
+    component.components.update((items) =>
+      items.map((item) => (item.id === 5 ? { ...item, description: 'Alles ok' } : item))
+    );
     component.saveReport();
 
     const saveRequest = httpMock.expectOne(
