@@ -6,6 +6,14 @@ services:
       - "8000:8000"
     volumes:
       - ./backend:/app
+    environment:
+      POSTGRES_USER: ois
+      POSTGRES_PASSWORD: ois
+      POSTGRES_DB: ois_reports
+      POSTGRES_HOST: db
+      POSTGRES_PORT: "5432"
+    depends_on:
+      - db
 
   frontend:
     build: ./ois-reports
@@ -14,3 +22,17 @@ services:
     volumes:
       - ./ois-reports:/app
     command: ng serve --host 0.0.0.0 --port 4200
+
+  db:
+    image: postgres:16
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: ois
+      POSTGRES_PASSWORD: ois
+      POSTGRES_DB: ois_reports
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+volumes:
+  postgres_data:

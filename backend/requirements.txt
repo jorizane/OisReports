@@ -4,3 +4,6 @@ sqlalchemy
 pydantic
 jinja2
 weasyprint
+psycopg2-binary
+pytest
+httpx
