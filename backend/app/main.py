@@ -50,6 +50,8 @@ def root():
         "endpoints": {
             "health": "/health",
             "db_health": "/db-health",
+            "customers": "/customers",
+            "customer_delete": "/customers/{customer_id}",
         },
     }
 
@@ -83,3 +85,14 @@ def create_customer(payload: CustomerCreate, db: Session = Depends(get_db)):
     db.commit()
     db.refresh(customer)
     return customer
+
+
+@app.delete("/customers/{customer_id}", status_code=204)
+def delete_customer(customer_id: int, db: Session = Depends(get_db)):
+    customer = db.get(Customer, customer_id)
+    if not customer:
+        raise HTTPException(status_code=404, detail="Customer not found.")
+
+    db.delete(customer)
+    db.commit()
+    return None

@@ -1,0 +1,52 @@
+<section class="panel">
+  <header class="panel__header">
+    <p class="eyebrow">Kundenübersicht</p>
+    <h1>Kunden</h1>
+    <p class="subtitle">
+      Verwalte Industriefilter-Kunden und behalte die Berichte zentral im Blick.
+    </p>
+  </header>
+
+  <form class="panel__form" (ngSubmit)="addCustomer()">
+    <label class="field">
+      <span class="field__label">Neuer Kundenname</span>
+      <input
+        class="field__input"
+        type="text"
+        name="customerName"
+        [(ngModel)]="newCustomerName"
+        placeholder="Kundenname eingeben"
+        autocomplete="off"
+      />
+    </label>
+    <button class="primary-button" type="submit">Kunde anlegen</button>
+  </form>
+
+  <p class="status status--error" *ngIf="errorMessage()">{{ errorMessage() }}</p>
+  <p class="status" *ngIf="isLoading()">Kunden werden geladen...</p>
+
+  <div class="list" *ngIf="!isLoading()">
+    <div class="list__header">
+      <span>ID</span>
+      <span>Name</span>
+      <span>Aktion</span>
+    </div>
+    <div class="list__row" *ngFor="let customer of customers()">
+      <span class="list__id">#{{ customer.id }}</span>
+      <span class="list__name">{{ customer.name }}</span>
+      <a class="link-button" [routerLink]="['/customers', customer.id, 'edit']">Bearbeiten</a>
+    </div>
+    <p class="empty" *ngIf="customers().length === 0">Noch keine Kunden. Lege oben den ersten an.</p>
+  </div>
+</section>
+
+<div class="modal modal--success" *ngIf="successMessage()">
+  <div class="modal__overlay"></div>
+  <div class="modal__content">
+    <h2>Erfolg</h2>
+    <p>{{ successMessage() }}</p>
+    <div class="modal__actions">
+      <button class="ghost-button" type="button" (click)="dismissSuccess()">OK</button>
+    </div>
+  </div>
+</div>

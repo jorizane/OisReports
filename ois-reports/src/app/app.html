@@ -1,43 +1,20 @@
-<main class="page">
-  <section class="panel">
-    <header class="panel__header">
-      <p class="eyebrow">OIS Reports</p>
-      <h1>Customers</h1>
-      <p class="subtitle">
-        Manage industrial filtration customers and keep their report history in one place.
-      </p>
-    </header>
-
-    <form class="panel__form" (ngSubmit)="addCustomer()">
-      <label class="field">
-        <span class="field__label">New customer name</span>
-        <input
-          class="field__input"
-          type="text"
-          name="customerName"
-          [(ngModel)]="newCustomerName"
-          placeholder="Enter customer name"
-          autocomplete="off"
-        />
-      </label>
-      <button class="primary-button" type="submit">Add customer</button>
-    </form>
-
-    <p class="status status--error" *ngIf="errorMessage()">{{ errorMessage() }}</p>
-    <p class="status" *ngIf="isLoading()">Loading customers...</p>
-
-    <div class="list" *ngIf="!isLoading()">
-      <div class="list__header">
-        <span>ID</span>
-        <span>Name</span>
+<main class="shell">
+  <nav class="shell__nav">
+    <div class="shell__brand">
+      <span class="shell__logo">OIS</span>
+      <div>
+        <p class="shell__title">OIS Berichte</p>
+        <p class="shell__subtitle">Industriefiltration im Blick</p>
       </div>
-      <div class="list__row" *ngFor="let customer of customers()">
-        <span class="list__id">#{{ customer.id }}</span>
-        <span class="list__name">{{ customer.name }}</span>
-      </div>
-      <p class="empty" *ngIf="customers().length === 0">
-        No customers yet. Add the first one above.
-      </p>
     </div>
+    <div class="shell__links">
+      <a routerLink="/" routerLinkActive="is-active" [routerLinkActiveOptions]="{ exact: true }">
+        Kunden
+      </a>
+    </div>
+  </nav>
+
+  <section class="shell__content">
+    <router-outlet />
   </section>
 </main>

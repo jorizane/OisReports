@@ -1,0 +1,49 @@
+<section class="panel panel--danger">
+  <header class="panel__header">
+    <p class="eyebrow">Bearbeiten oder löschen</p>
+    <h1>Kundenverwaltung</h1>
+    <p class="subtitle">
+      Diese Seite wird später zur Bearbeitungsansicht. Löschen kann nicht rückgängig gemacht werden.
+    </p>
+  </header>
+
+  <p class="status status--error" *ngIf="errorMessage()">{{ errorMessage() }}</p>
+  <p class="status" *ngIf="isLoading()">Kunde wird geladen...</p>
+
+  <div class="single" *ngIf="!isLoading() && editMode() && selectedCustomer()">
+    <div class="single__row">
+      <span class="list__id">#{{ selectedCustomer()?.id }}</span>
+      <span class="list__name">{{ selectedCustomer()?.name }}</span>
+      <button class="danger-button" type="button" (click)="promptDelete()">Löschen</button>
+    </div>
+    <p class="empty">
+      Bearbeiten folgt demnächst. Zum Löschen nutze den Button oben.
+    </p>
+  </div>
+
+  <a class="link" routerLink="/">Zurück zur Übersicht</a>
+</section>
+
+<div class="modal" *ngIf="showConfirm()">
+  <div class="modal__overlay" (click)="cancelDelete()"></div>
+  <div class="modal__content">
+    <h2>Kunde löschen?</h2>
+    <p>
+      Du löschst
+      <strong>{{ selectedCustomer()?.name }}</strong>.
+      Dieser Vorgang ist endgültig.
+    </p>
+    <div class="modal__actions">
+      <button class="ghost-button" type="button" (click)="cancelDelete()">Abbrechen</button>
+      <button class="danger-button" type="button" (click)="confirmDelete()">Löschen</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal modal--success" *ngIf="successMessage()">
+  <div class="modal__overlay"></div>
+  <div class="modal__content modal__content--success">
+    <h2>Erfolg</h2>
+    <p>{{ successMessage() }}</p>
+  </div>
+</div>

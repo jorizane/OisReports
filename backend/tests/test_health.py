@@ -66,3 +66,16 @@ def test_create_customer_requires_name():
 
     response = client.post("/customers", json={"name": "   "})
     assert response.status_code == 400
+
+
+def test_delete_customer():
+    if not _db_available():
+        pytest.skip("Database is not available.")
+
+    created = client.post("/customers", json={"name": f"Delete Customer {uuid.uuid4()}"}).json()
+    delete_response = client.delete(f"/customers/{created['id']}")
+    assert delete_response.status_code == 204
+
+    list_response = client.get("/customers")
+    assert list_response.status_code == 200
+    assert all(customer["id"] != created["id"] for customer in list_response.json())
