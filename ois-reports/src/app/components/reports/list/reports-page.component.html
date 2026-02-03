@@ -17,15 +17,20 @@
     </div>
     <div class="list__row" *ngFor="let report of reports()">
       <span class="list__id">#{{ report.id }}</span>
-      <a class="link-button" [routerLink]="['/customers', report.customer_id]">
-        {{ report.customer_name }}
-      </a>
-      <a
-        class="link-button"
-        [routerLink]="['/customers', report.customer_id, 'filter-plants', report.filter_plant_id]"
-      >
-        {{ report.filter_plant_description }}
-      </a>
+      <div class="list__customer">
+        <a
+          class="link-button link-button--truncate link-button--customer"
+          [routerLink]="['/customers', report.customer_id]"
+        >
+          {{ report.customer_name }}
+        </a>
+      </div>
+        <a
+          class="link-button link-button--truncate"
+          [routerLink]="['/customers', report.customer_id, 'filter-plants', report.filter_plant_id]"
+        >
+          {{ report.filter_plant_description }}
+        </a>
       <span>{{ report.created_at | date: 'short' }}</span>
     </div>
     <p class="empty" *ngIf="reports().length === 0">

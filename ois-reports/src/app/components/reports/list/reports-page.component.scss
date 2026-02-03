@@ -49,8 +49,9 @@
 .list__header,
 .list__row {
   display: grid;
-  grid-template-columns: 110px 1fr 1fr 140px;
+  grid-template-columns: 80px minmax(0, 1fr) minmax(0, 1fr) 140px;
   align-items: center;
+  gap: 0.6rem;
 }
 
 .list__header {
@@ -71,9 +72,17 @@
 .list__id {
   color: #222222;
   font-weight: 600;
+  width: calc(80px - 1rem);
+  padding-left: 0.4rem;
+}
+
+.list__customer {
+  margin-left: -1rem;
 }
 
 .link-button {
+  display: inline-flex;
+  align-items: center;
   padding: 0.35rem 0.8rem;
   border-radius: 999px;
   border: 1px solid rgba(15, 118, 110, 0.3);
@@ -82,6 +91,20 @@
   font-weight: 600;
   font-size: 0.85rem;
   justify-self: start;
+  min-width: 0;
+}
+
+.link-button--truncate {
+  display: inline-block;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.link-button--customer {
+  max-width: 220px;
+  width: auto;
 }
 
 .empty {
