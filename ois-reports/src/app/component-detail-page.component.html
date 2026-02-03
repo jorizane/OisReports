@@ -1,0 +1,33 @@
+<section class="panel">
+  <header class="panel__header">
+    <p class="eyebrow">Komponente</p>
+    <h1>Komponenten-Details</h1>
+    <p class="subtitle">Stammdaten der Komponente.</p>
+  </header>
+
+  <p class="status status--error" *ngIf="errorMessage()">{{ errorMessage() }}</p>
+  <p class="status" *ngIf="isLoading()">Komponente wird geladen...</p>
+
+  <div class="detail" *ngIf="!isLoading() && component()">
+    <div class="detail__row">
+      <span class="detail__label">ID</span>
+      <span class="detail__value">#{{ component()?.id }}</span>
+    </div>
+    <div class="detail__row">
+      <span class="detail__label">Name</span>
+      <span class="detail__value">{{ component()?.name }}</span>
+    </div>
+  </div>
+
+  <div class="actions" *ngIf="component()">
+    <a class="ghost-link-button" [routerLink]="['/customers', customerId, 'filter-plants', plantId]">
+      Zurück zur Filteranlage
+    </a>
+    <a
+      class="primary-button"
+      [routerLink]="['/customers', customerId, 'filter-plants', plantId, 'components', component()?.id, 'edit']"
+    >
+      Komponente bearbeiten
+    </a>
+  </div>
+</section>

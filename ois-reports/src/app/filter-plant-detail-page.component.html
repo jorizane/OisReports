@@ -23,6 +23,59 @@
     </div>
   </div>
 
+  <div class="components" *ngIf="!isLoading() && plant()">
+    <div class="components__header">
+      <h2>Komponenten</h2>
+      <button class="primary-button" type="button" (click)="toggleComponentForm()">
+        Komponente anlegen
+      </button>
+    </div>
+    <form
+      class="components__form"
+      *ngIf="showComponentForm()"
+      (ngSubmit)="createComponent()"
+    >
+      <label class="field">
+        <span class="field__label">Name</span>
+        <input
+          class="field__input"
+          type="text"
+          name="componentName"
+          [(ngModel)]="componentName"
+          placeholder="Komponentenname"
+        />
+      </label>
+      <div class="components__actions">
+        <button class="ghost-link-button" type="button" (click)="toggleComponentForm()">
+          Abbrechen
+        </button>
+        <button class="primary-button" type="submit">Speichern</button>
+      </div>
+    </form>
+    <p class="status status--error" *ngIf="componentError()">{{ componentError() }}</p>
+    <div class="components__list" *ngIf="components().length > 0">
+      <div class="components__row" *ngFor="let component of components()">
+        <p class="components__name">{{ component.name }}</p>
+        <a
+          class="ghost-link-button"
+          [routerLink]="[
+            '/customers',
+            customerId,
+            'filter-plants',
+            plant()?.id,
+            'components',
+            component.id
+          ]"
+        >
+          Details
+        </a>
+      </div>
+    </div>
+    <p class="empty" *ngIf="components().length === 0">
+      Noch keine Komponenten. Lege oben die erste an.
+    </p>
+  </div>
+
   <div class="actions" *ngIf="plant()">
     <a class="ghost-link-button" [routerLink]="['/customers', plant()?.customer_id]">
       Zurück zum Kunden
@@ -32,3 +85,14 @@
     </a>
   </div>
 </section>
+
+<div class="modal modal--success" *ngIf="componentSuccess()">
+  <div class="modal__overlay"></div>
+  <div class="modal__content modal__content--success">
+    <h2>Erfolg</h2>
+    <p>{{ componentSuccess() }}</p>
+    <div class="modal__actions">
+      <button class="ghost-button" type="button" (click)="dismissComponentSuccess()">OK</button>
+    </div>
+  </div>
+</div>

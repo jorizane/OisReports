@@ -33,3 +33,19 @@ class FilterPlantRead(BaseModel):
 class FilterPlantUpdate(BaseModel):
     description: str
     year_built: int
+
+
+class ComponentCreate(BaseModel):
+    name: str
+
+
+class ComponentRead(BaseModel):
+    id: int
+    filter_plant_id: int
+    name: str
+
+    model_config = ConfigDict(from_attributes=True)
+
+
+class ComponentUpdate(BaseModel):
+    name: str

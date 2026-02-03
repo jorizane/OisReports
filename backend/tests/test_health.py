@@ -186,3 +186,72 @@ def test_delete_filter_plant():
 
     response = client.delete(f"/filter-plants/{plant['id']}")
     assert response.status_code == 204
+
+
+def test_create_component():
+    if not _db_available():
+        pytest.skip("Database is not available.")
+
+    customer = client.post("/customers", json={"name": f"Comp Customer {uuid.uuid4()}"}).json()
+    plant = client.post(
+        f"/customers/{customer['id']}/filter-plants",
+        json={"description": "Component Plant", "year_built": 2021},
+    ).json()
+
+    response = client.post(
+        f"/filter-plants/{plant['id']}/components",
+        json={"name": "Pump A"},
+    )
+    assert response.status_code == 201
+    payload = response.json()
+    assert payload["filter_plant_id"] == plant["id"]
+    assert payload["name"] == "Pump A"
+
+
+def test_list_components():
+    if not _db_available():
+        pytest.skip("Database is not available.")
+
+    customer = client.post("/customers", json={"name": f"Comp List {uuid.uuid4()}"}).json()
+    plant = client.post(
+        f"/customers/{customer['id']}/filter-plants",
+        json={"description": "Component Plant 2", "year_built": 2017},
+    ).json()
+
+    client.post(
+        f"/filter-plants/{plant['id']}/components",
+        json={"name": "Ventil B"},
+    )
+
+    response = client.get(f"/filter-plants/{plant['id']}/components")
+    assert response.status_code == 200
+    payload = response.json()
+    assert len(payload) >= 1
+
+
+def test_get_update_delete_component():
+    if not _db_available():
+        pytest.skip("Database is not available.")
+
+    customer = client.post("/customers", json={"name": f"Comp Get {uuid.uuid4()}"}).json()
+    plant = client.post(
+        f"/customers/{customer['id']}/filter-plants",
+        json={"description": "Component Plant 3", "year_built": 2015},
+    ).json()
+
+    component = client.post(
+        f"/filter-plants/{plant['id']}/components",
+        json={"name": "Filterkorb"},
+    ).json()
+
+    get_response = client.get(f"/components/{component['id']}")
+    assert get_response.status_code == 200
+
+    update_response = client.patch(
+        f"/components/{component['id']}",
+        json={"name": "Filterkorb XL"},
+    )
+    assert update_response.status_code == 200
+
+    delete_response = client.delete(f"/components/{component['id']}")
+    assert delete_response.status_code == 204

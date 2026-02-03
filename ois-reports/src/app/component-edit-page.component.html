@@ -1,0 +1,75 @@
+<section class="panel">
+  <header class="panel__header">
+    <p class="eyebrow">Komponente bearbeiten</p>
+    <h1>Komponentenverwaltung</h1>
+    <p class="subtitle">Bearbeite die Komponente oder lösche sie.</p>
+  </header>
+
+  <p class="status status--error" *ngIf="errorMessage()">{{ errorMessage() }}</p>
+  <p class="status" *ngIf="isLoading()">Komponente wird geladen...</p>
+
+  <div class="single" *ngIf="!isLoading() && component()">
+    <div class="single__row">
+      <span class="list__id">#{{ component()?.id }}</span>
+      <span class="list__name">{{ component()?.name }}</span>
+    </div>
+    <form class="edit-form" (ngSubmit)="saveChanges()">
+      <label class="field">
+        <span class="field__label">Name</span>
+        <input
+          class="field__input"
+          type="text"
+          name="componentName"
+          [(ngModel)]="name"
+          placeholder="Komponentenname"
+        />
+      </label>
+      <div class="edit-form__actions">
+        <button class="primary-button" type="submit">Änderungen speichern</button>
+      </div>
+    </form>
+
+    <div class="danger-zone">
+      <p class="danger-zone__title">Löschen</p>
+      <p class="danger-zone__text">
+        Entferne diese Komponente dauerhaft. Dieser Schritt kann nicht rückgängig gemacht werden.
+      </p>
+      <button class="danger-button danger-button--footer" type="button" (click)="promptDelete()">
+        Komponente löschen
+      </button>
+    </div>
+  </div>
+
+  <div class="actions" *ngIf="component()">
+    <a class="ghost-link-button" [routerLink]="['/customers', customerId, 'filter-plants', plantId]">
+      Zurück zur Filteranlage
+    </a>
+  </div>
+</section>
+
+<div class="modal" *ngIf="showConfirm()">
+  <div class="modal__overlay" (click)="cancelDelete()"></div>
+  <div class="modal__content">
+    <h2>Komponente löschen?</h2>
+    <p>
+      Du löschst
+      <strong>{{ component()?.name }}</strong>.
+      Dieser Vorgang ist endgültig.
+    </p>
+    <div class="modal__actions">
+      <button class="ghost-button" type="button" (click)="cancelDelete()">Abbrechen</button>
+      <button class="danger-button" type="button" (click)="confirmDelete()">Löschen</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal modal--success" *ngIf="successMessage()">
+  <div class="modal__overlay"></div>
+  <div class="modal__content modal__content--success">
+    <h2>Erfolg</h2>
+    <p>{{ successMessage() }}</p>
+    <div class="modal__actions">
+      <button class="ghost-button" type="button" (click)="dismissSuccess()">OK</button>
+    </div>
+  </div>
+</div>
