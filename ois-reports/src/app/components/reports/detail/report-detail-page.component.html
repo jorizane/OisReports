@@ -1,0 +1,56 @@
+<section class="panel">
+  <header class="panel__header">
+    <p class="eyebrow">Berichte</p>
+    <h1>Berichtsdetails</h1>
+    <p class="subtitle">Details und Komponenten des Berichts.</p>
+  </header>
+
+  <p class="status status--error" *ngIf="errorMessage()">{{ errorMessage() }}</p>
+  <p class="status" *ngIf="isLoading()">Bericht wird geladen...</p>
+
+  <div class="detail" *ngIf="!isLoading() && report()">
+    <div class="detail__row">
+      <span class="detail__label">ID</span>
+      <span class="detail__value">#{{ report()?.id }}</span>
+    </div>
+    <div class="detail__row">
+      <span class="detail__label">Kunde</span>
+      <span class="detail__value">{{ report()?.customer_name }}</span>
+    </div>
+    <div class="detail__row">
+      <span class="detail__label">Filteranlage</span>
+      <span class="detail__value">{{ report()?.filter_plant_description }}</span>
+    </div>
+    <div class="detail__row">
+      <span class="detail__label">Datum</span>
+      <span class="detail__value">{{ report()?.created_at | date: 'short' }}</span>
+    </div>
+  </div>
+
+  <div class="components" *ngIf="!isLoading() && report()">
+    <div class="components__header">
+      <h2>Komponenten</h2>
+    </div>
+    <div class="components__list" *ngIf="report()?.components?.length">
+      <div class="components__row" *ngFor="let item of report()?.components">
+        <div>
+          <p class="components__name">{{ item.component_name }}</p>
+          <p class="components__meta">{{ item.description }}</p>
+        </div>
+      </div>
+    </div>
+    <p class="empty" *ngIf="!report()?.components?.length">
+      Keine Komponenten im Bericht.
+    </p>
+  </div>
+
+  <div class="actions" *ngIf="report()">
+    <a class="ghost-link-button" routerLink="/reports">Zurück zur Berichtsübersicht</a>
+    <a
+      class="primary-button"
+      [routerLink]="['/customers', report()?.customer_id, 'filter-plants', report()?.filter_plant_id]"
+    >
+      Zur Filteranlage
+    </a>
+  </div>
+</section>

@@ -80,3 +80,19 @@ class ReportListRead(BaseModel):
     created_at: datetime
 
     model_config = ConfigDict(from_attributes=True)
+
+
+class ReportComponentRead(BaseModel):
+    component_id: int
+    component_name: str
+    description: str
+
+
+class ReportDetailRead(BaseModel):
+    id: int
+    customer_id: int
+    customer_name: str
+    filter_plant_id: int
+    filter_plant_description: str
+    created_at: datetime
+    components: list[ReportComponentRead]

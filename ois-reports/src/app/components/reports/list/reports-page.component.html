@@ -25,12 +25,14 @@
           {{ report.customer_name }}
         </a>
       </div>
+      <div class="list__plant">
         <a
           class="link-button link-button--truncate"
-          [routerLink]="['/customers', report.customer_id, 'filter-plants', report.filter_plant_id]"
+          [routerLink]="['/reports', report.id]"
         >
           {{ report.filter_plant_description }}
         </a>
+      </div>
       <span>{{ report.created_at | date: 'short' }}</span>
     </div>
     <p class="empty" *ngIf="reports().length === 0">

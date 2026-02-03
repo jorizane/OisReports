@@ -8,6 +8,7 @@ import { FilterPlantEditPage } from './components/filter-plants/edit/filter-plan
 import { ComponentDetailPage } from './components/components/detail/component-detail-page.component';
 import { ComponentEditPage } from './components/components/edit/component-edit-page.component';
 import { ReportCreatePage } from './components/reports/create/report-create-page.component';
+import { ReportDetailPage } from './components/reports/detail/report-detail-page.component';
 import { ReportsPage } from './components/reports/list/reports-page.component';
 
 export const routes: Routes = [
@@ -18,6 +19,7 @@ export const routes: Routes = [
     path: 'customers/:id/filter-plants/:plantId/reports/new',
     component: ReportCreatePage,
   },
+  { path: 'reports/:reportId', component: ReportDetailPage },
   { path: 'reports', component: ReportsPage },
   {
     path: 'customers/:id/filter-plants/:plantId/components/:componentId',

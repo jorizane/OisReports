@@ -19,6 +19,16 @@ export type ReportRead = {
   created_at: string;
 };
 
+export type ReportComponentRead = {
+  component_id: number;
+  component_name: string;
+  description: string;
+};
+
+export type ReportDetailRead = ReportRead & {
+  components: ReportComponentRead[];
+};
+
 @Injectable({ providedIn: 'root' })
 export class ReportsService {
   private readonly http = inject(HttpClient);
@@ -33,5 +43,13 @@ export class ReportsService {
 
   listReports() {
     return this.http.get<ReportRead[]>(`${this.baseUrl}/reports`);
+  }
+
+  listCustomerReports(customerId: number) {
+    return this.http.get<ReportRead[]>(`${this.baseUrl}/customers/${customerId}/reports`);
+  }
+
+  getReport(reportId: number) {
+    return this.http.get<ReportDetailRead>(`${this.baseUrl}/reports/${reportId}`);
   }
 }

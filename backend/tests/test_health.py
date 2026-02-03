@@ -313,3 +313,63 @@ def test_list_reports():
     assert len(payload) >= 1
     assert "customer_name" in payload[0]
     assert "filter_plant_description" in payload[0]
+
+
+def test_list_customer_reports():
+    if not _db_available():
+        pytest.skip("Database is not available.")
+
+    customer = client.post("/customers", json={"name": f"Customer Reports {uuid.uuid4()}"}).json()
+    plant = client.post(
+        f"/customers/{customer['id']}/filter-plants",
+        json={"description": "Customer Report Plant", "year_built": 2022},
+    ).json()
+    component = client.post(
+        f"/filter-plants/{plant['id']}/components",
+        json={"name": "Messpunkt C"},
+    ).json()
+    client.post(
+        f"/customers/{customer['id']}/filter-plants/{plant['id']}/reports",
+        json={
+            "component_descriptions": [
+                {"component_id": component["id"], "description": "OK"}
+            ]
+        },
+    )
+
+    response = client.get(f"/customers/{customer['id']}/reports")
+    assert response.status_code == 200
+    payload = response.json()
+    assert len(payload) >= 1
+    assert all(report["customer_id"] == customer["id"] for report in payload)
+
+
+def test_get_report_detail():
+    if not _db_available():
+        pytest.skip("Database is not available.")
+
+    customer = client.post("/customers", json={"name": f"Report Detail {uuid.uuid4()}"}).json()
+    plant = client.post(
+        f"/customers/{customer['id']}/filter-plants",
+        json={"description": "Detail Plant", "year_built": 2023},
+    ).json()
+    component = client.post(
+        f"/filter-plants/{plant['id']}/components",
+        json={"name": "Messpunkt D"},
+    ).json()
+    report = client.post(
+        f"/customers/{customer['id']}/filter-plants/{plant['id']}/reports",
+        json={
+            "component_descriptions": [
+                {"component_id": component["id"], "description": "OK"}
+            ]
+        },
+    ).json()
+
+    response = client.get(f"/reports/{report['id']}")
+    assert response.status_code == 200
+    payload = response.json()
+    assert payload["id"] == report["id"]
+    assert payload["customer_id"] == customer["id"]
+    assert payload["filter_plant_id"] == plant["id"]
+    assert len(payload["components"]) == 1

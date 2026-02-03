@@ -8,6 +8,7 @@ import {
   FilterPlant,
   FilterPlantsService,
 } from '../../../services/filter-plants/filter-plants.service';
+import { ReportRead, ReportsService } from '../../../services/reports/reports.service';
 
 @Component({
   selector: 'app-customer-detail-page',
@@ -19,8 +20,10 @@ import {
 export class CustomerDetailPage implements OnInit {
   protected readonly customer = signal<Customer | null>(null);
   protected readonly filterPlants = signal<FilterPlant[]>([]);
+  protected readonly reports = signal<ReportRead[]>([]);
   protected readonly isLoading = signal(false);
   protected readonly errorMessage = signal('');
+  protected readonly reportError = signal('');
   protected readonly showPlantForm = signal(false);
   protected readonly plantError = signal('');
   protected readonly plantSuccess = signal('');
@@ -31,6 +34,7 @@ export class CustomerDetailPage implements OnInit {
   constructor(
     private readonly customersService: CustomersService,
     private readonly filterPlantsService: FilterPlantsService,
+    private readonly reportsService: ReportsService,
     private readonly route: ActivatedRoute
   ) {}
 
@@ -53,6 +57,7 @@ export class CustomerDetailPage implements OnInit {
         this.customer.set(customer);
         this.isLoading.set(false);
         this.loadFilterPlants(customer.id);
+        this.loadReports(customer.id);
       },
       error: () => {
         this.errorMessage.set('Kunde nicht gefunden.');
@@ -68,6 +73,17 @@ export class CustomerDetailPage implements OnInit {
       },
       error: () => {
         this.errorMessage.set('Filteranlagen konnten nicht geladen werden.');
+      },
+    });
+  }
+
+  private loadReports(customerId: number): void {
+    this.reportsService.listCustomerReports(customerId).subscribe({
+      next: (reports) => {
+        this.reports.set(reports);
+      },
+      error: () => {
+        this.reportError.set('Berichte konnten nicht geladen werden.');
       },
     });
   }

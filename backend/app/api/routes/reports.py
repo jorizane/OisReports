@@ -3,7 +3,13 @@ from sqlalchemy.orm import Session
 
 from ...core.database import get_db
 from ...models import Component, Customer, FilterPlant, Report, ReportComponent
-from ...schemas import ReportCreate, ReportListRead, ReportRead
+from ...schemas import (
+    ReportComponentRead,
+    ReportCreate,
+    ReportDetailRead,
+    ReportListRead,
+    ReportRead,
+)
 
 router = APIRouter(tags=["reports"])
 
@@ -11,6 +17,53 @@ router = APIRouter(tags=["reports"])
 @router.get("/reports", response_model=list[ReportListRead])
 def list_reports(db: Session = Depends(get_db)):
     reports = db.query(Report).order_by(Report.created_at.desc()).all()
+    return [
+        ReportListRead(
+            id=report.id,
+            customer_id=report.customer_id,
+            customer_name=report.customer.name if report.customer else "",
+            filter_plant_id=report.filter_plant_id,
+            filter_plant_description=report.filter_plant.description
+            if report.filter_plant
+            else "",
+            created_at=report.created_at,
+        )
+        for report in reports
+    ]
+
+
+@router.get("/reports/{report_id}", response_model=ReportDetailRead)
+def get_report(report_id: int, db: Session = Depends(get_db)):
+    report = db.get(Report, report_id)
+    if not report:
+        raise HTTPException(status_code=404, detail="Report not found.")
+
+    return ReportDetailRead(
+        id=report.id,
+        customer_id=report.customer_id,
+        customer_name=report.customer.name if report.customer else "",
+        filter_plant_id=report.filter_plant_id,
+        filter_plant_description=report.filter_plant.description if report.filter_plant else "",
+        created_at=report.created_at,
+        components=[
+            ReportComponentRead(
+                component_id=item.component_id,
+                component_name=item.component.name if item.component else "",
+                description=item.description,
+            )
+            for item in report.items
+        ],
+    )
+
+
+@router.get("/customers/{customer_id}/reports", response_model=list[ReportListRead])
+def list_customer_reports(customer_id: int, db: Session = Depends(get_db)):
+    reports = (
+        db.query(Report)
+        .filter(Report.customer_id == customer_id)
+        .order_by(Report.created_at.desc())
+        .all()
+    )
     return [
         ReportListRead(
             id=report.id,

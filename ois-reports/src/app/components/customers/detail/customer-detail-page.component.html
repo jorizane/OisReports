@@ -87,8 +87,36 @@
     </p>
   </div>
 
+  <div class="reports" *ngIf="!isLoading() && customer()">
+    <div class="reports__header">
+      <h2>Berichte</h2>
+      <a class="ghost-link-button" routerLink="/reports">Zur Berichtsübersicht</a>
+    </div>
+    <p class="status status--error" *ngIf="reportError()">{{ reportError() }}</p>
+    <div class="reports__list" *ngIf="reports().length > 0">
+      <div class="reports__row" *ngFor="let report of reports()">
+        <div>
+          <p class="reports__title">Bericht #{{ report.id }}</p>
+          <p class="reports__meta">{{ report.filter_plant_description }}</p>
+        </div>
+        <div class="reports__actions">
+          <span class="reports__date">{{ report.created_at | date: 'short' }}</span>
+          <a
+            class="ghost-link-button"
+            [routerLink]="['/reports', report.id]"
+          >
+            Bericht öffnen
+          </a>
+        </div>
+      </div>
+    </div>
+    <p class="empty" *ngIf="reports().length === 0">
+      Noch keine Berichte vorhanden.
+    </p>
+  </div>
+
   <div class="actions" *ngIf="customer()">
-    <a class="ghost-link-button" routerLink="/">Zurück zur Übersicht</a>
+    <a class="ghost-link-button" routerLink="/">Zurück zur Kundenübersicht</a>
     <a class="primary-button" [routerLink]="['/customers', customer()?.id, 'edit']">
       Kunden bearbeiten
     </a>

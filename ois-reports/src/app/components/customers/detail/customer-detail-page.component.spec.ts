@@ -47,6 +47,10 @@ describe('CustomerDetailPage', () => {
     expect(plantsRequest.request.method).toBe('GET');
     plantsRequest.flush([]);
 
+    const reportsRequest = httpMock.expectOne('http://localhost:8000/customers/4/reports');
+    expect(reportsRequest.request.method).toBe('GET');
+    reportsRequest.flush([]);
+
     fixture.detectChanges();
     const compiled = fixture.nativeElement as HTMLElement;
     expect(compiled.textContent).toContain('Aqua Filters');
@@ -64,6 +68,9 @@ describe('CustomerDetailPage', () => {
       'http://localhost:8000/customers/4/filter-plants'
     );
     plantsRequest.flush([]);
+
+    const reportsRequest = httpMock.expectOne('http://localhost:8000/customers/4/reports');
+    reportsRequest.flush([]);
 
     const component = fixture.componentInstance as CustomerDetailPage & {
       plantDescription: string;
@@ -110,6 +117,9 @@ describe('CustomerDetailPage', () => {
       'http://localhost:8000/customers/4/filter-plants'
     );
     plantsRequest.flush([]);
+
+    const reportsRequest = httpMock.expectOne('http://localhost:8000/customers/4/reports');
+    reportsRequest.flush([]);
 
     const component = fixture.componentInstance as CustomerDetailPage & {
       plantDescription: string;
