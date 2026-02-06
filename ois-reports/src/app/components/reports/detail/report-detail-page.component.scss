@@ -39,6 +39,14 @@
   color: #c64444;
 }
 
+.status--success {
+  color: #222222;
+  background: rgba(34, 197, 94, 0.15);
+  padding: 0.4rem 0.75rem;
+  border-radius: 999px;
+  width: fit-content;
+}
+
 .detail {
   display: grid;
   gap: 1rem;
@@ -133,6 +141,11 @@
   font-weight: 600;
   cursor: pointer;
   text-decoration: none;
+}
+
+.ghost-link-button--disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
 }
 
 .empty {

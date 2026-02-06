@@ -1,0 +1,68 @@
+<section class="panel">
+  <header class="panel__header">
+    <p class="eyebrow">Berichte</p>
+    <h1>Bericht bearbeiten</h1>
+    <p class="subtitle">Passe die Beschreibungen an oder schließe den Bericht ab.</p>
+  </header>
+
+  <p class="status status--error" *ngIf="errorMessage()">{{ errorMessage() }}</p>
+  <p class="status" *ngIf="isLoading()">Bericht wird geladen...</p>
+
+  <div class="status status--success" *ngIf="report()?.completed">
+    Bericht ist abgeschlossen und kann nicht bearbeitet werden.
+  </div>
+
+  <div class="context" *ngIf="report()">
+    <div class="context__item">
+      <span class="context__label">Kunde</span>
+      <span class="context__value">{{ report()?.customer_name }}</span>
+    </div>
+    <div class="context__item">
+      <span class="context__label">Filteranlage</span>
+      <span class="context__value">{{ report()?.filter_plant_description }}</span>
+    </div>
+  </div>
+
+  <div class="completion" *ngIf="report()">
+    <label class="checkbox">
+      <input type="checkbox" [(ngModel)]="completed" [disabled]="!!report()?.completed" />
+      <span>Bericht abgeschlossen</span>
+    </label>
+  </div>
+
+  <div class="list" *ngIf="report()">
+    <div class="list__row" *ngFor="let component of components()">
+      <div>
+        <p class="list__name">{{ component.component_name }}</p>
+        <textarea
+          class="field__textarea"
+          rows="3"
+          [(ngModel)]="component.description"
+          [name]="'desc-' + component.component_id"
+          placeholder="Beschreibung eingeben"
+          [disabled]="!!report()?.completed"
+        ></textarea>
+      </div>
+    </div>
+  </div>
+
+  <div class="actions" *ngIf="report()">
+    <a class="ghost-link-button" [routerLink]="['/reports', report()?.id]">
+      Zurück zum Bericht
+    </a>
+    <button class="primary-button" type="button" (click)="saveReport()" [disabled]="!!report()?.completed">
+      Änderungen speichern
+    </button>
+  </div>
+</section>
+
+<div class="modal modal--success" *ngIf="successMessage()">
+  <div class="modal__overlay"></div>
+  <div class="modal__content modal__content--success">
+    <h2>Erfolg</h2>
+    <p>{{ successMessage() }}</p>
+    <div class="modal__actions">
+      <button class="ghost-button" type="button" (click)="dismissSuccess()">OK</button>
+    </div>
+  </div>
+</div>

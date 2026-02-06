@@ -35,6 +35,7 @@ describe('ReportsPage', () => {
         filter_plant_id: 11,
         filter_plant_description: 'Filteranlage A',
         created_at: '2025-01-01T10:00:00Z',
+        completed: true,
       },
     ]);
 
@@ -43,5 +44,6 @@ describe('ReportsPage', () => {
     expect(compiled.textContent).toContain('#1');
     expect(compiled.textContent).toContain('Aqua Filters');
     expect(compiled.textContent).toContain('Filteranlage A');
+    expect(compiled.textContent).toContain('Abgeschlossen');
   });
 });

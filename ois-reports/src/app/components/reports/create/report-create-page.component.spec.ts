@@ -100,7 +100,13 @@ describe('ReportCreatePage', () => {
       'http://localhost:8000/customers/4/filter-plants/11/reports'
     );
     expect(saveRequest.request.method).toBe('POST');
-    saveRequest.flush({ id: 1, customer_id: 4, filter_plant_id: 11 });
+    saveRequest.flush({
+      id: 1,
+      customer_id: 4,
+      filter_plant_id: 11,
+      created_at: '2025-01-01T10:00:00Z',
+      completed: false,
+    });
 
     fixture.detectChanges();
     const compiled = fixture.nativeElement as HTMLElement;

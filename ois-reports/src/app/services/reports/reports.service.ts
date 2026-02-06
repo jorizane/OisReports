@@ -17,6 +17,7 @@ export type ReportRead = {
   filter_plant_id: number;
   filter_plant_description: string;
   created_at: string;
+  completed: boolean;
 };
 
 export type ReportComponentRead = {
@@ -27,6 +28,11 @@ export type ReportComponentRead = {
 
 export type ReportDetailRead = ReportRead & {
   components: ReportComponentRead[];
+};
+
+export type ReportUpdate = {
+  completed: boolean;
+  component_descriptions: ReportComponentCreate[];
 };
 
 @Injectable({ providedIn: 'root' })
@@ -51,5 +57,9 @@ export class ReportsService {
 
   getReport(reportId: number) {
     return this.http.get<ReportDetailRead>(`${this.baseUrl}/reports/${reportId}`);
+  }
+
+  updateReport(reportId: number, payload: ReportUpdate) {
+    return this.http.patch<ReportDetailRead>(`${this.baseUrl}/reports/${reportId}`, payload);
   }
 }

@@ -14,6 +14,7 @@
       <span>Kunde</span>
       <span>Filteranlage</span>
       <span>Datum</span>
+      <span>Status</span>
       <span>Aktion</span>
     </div>
     <div class="list__row" *ngFor="let report of reports()">
@@ -35,6 +36,9 @@
         </a>
       </div>
       <span>{{ report.created_at | date: 'short' }}</span>
+      <span class="list__status">
+        {{ report.completed ? 'Abgeschlossen' : 'Offen' }}
+      </span>
       <a class="ghost-link-button" [routerLink]="['/reports', report.id]">Details</a>
     </div>
     <p class="empty" *ngIf="reports().length === 0">

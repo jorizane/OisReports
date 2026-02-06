@@ -47,6 +47,20 @@
   <div class="actions" *ngIf="report()">
     <a class="ghost-link-button" routerLink="/reports">Zurück zur Berichtsübersicht</a>
     <a
+      class="ghost-link-button"
+      [routerLink]="['/reports', report()?.id, 'edit']"
+      *ngIf="!report()?.completed"
+    >
+      Bericht bearbeiten
+    </a>
+    <span
+      class="ghost-link-button ghost-link-button--disabled"
+      *ngIf="report()?.completed"
+    >
+      Bericht bearbeiten
+    </span>
+    <span class="status status--success" *ngIf="report()?.completed">Abgeschlossen</span>
+    <a
       class="primary-button"
       [routerLink]="['/customers', report()?.customer_id, 'filter-plants', report()?.filter_plant_id]"
     >

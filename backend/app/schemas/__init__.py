@@ -95,6 +95,7 @@ class ReportRead(BaseModel):
     customer_id: int
     filter_plant_id: int
     created_at: datetime
+    completed: bool
 
     model_config = ConfigDict(from_attributes=True)
 
@@ -106,6 +107,7 @@ class ReportListRead(BaseModel):
     filter_plant_id: int
     filter_plant_description: str
     created_at: datetime
+    completed: bool
 
     model_config = ConfigDict(from_attributes=True)
 
@@ -123,4 +125,10 @@ class ReportDetailRead(BaseModel):
     filter_plant_id: int
     filter_plant_description: str
     created_at: datetime
+    completed: bool
     components: list[ReportComponentRead]
+
+
+class ReportUpdate(BaseModel):
+    completed: bool
+    component_descriptions: list[ReportComponentCreate]

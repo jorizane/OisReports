@@ -1,4 +1,4 @@
-from sqlalchemy import Column, DateTime, ForeignKey, Integer, String
+from sqlalchemy import Boolean, Column, DateTime, ForeignKey, Integer, String
 from sqlalchemy.sql import func
 from sqlalchemy.orm import relationship
 
@@ -69,6 +69,7 @@ class Report(Base):
     customer_id = Column(Integer, ForeignKey("customers.id"), nullable=False, index=True)
     filter_plant_id = Column(Integer, ForeignKey("filter_plants.id"), nullable=False, index=True)
     created_at = Column(DateTime(timezone=True), server_default=func.now(), nullable=False)
+    completed = Column(Boolean, nullable=False, server_default="false")
 
     customer = relationship("Customer")
     filter_plant = relationship("FilterPlant", back_populates="reports")

@@ -503,6 +503,7 @@ def test_create_report():
     payload = response.json()
     assert payload["customer_id"] == customer["id"]
     assert payload["filter_plant_id"] == plant["id"]
+    assert payload["completed"] is False
 
 
 def test_list_reports():
@@ -545,6 +546,7 @@ def test_list_reports():
     assert len(payload) >= 1
     assert "customer_name" in payload[0]
     assert "filter_plant_description" in payload[0]
+    assert "completed" in payload[0]
 
 
 def test_list_customer_reports():
@@ -629,3 +631,63 @@ def test_get_report_detail():
     assert payload["customer_id"] == customer["id"]
     assert payload["filter_plant_id"] == plant["id"]
     assert len(payload["components"]) == 1
+    assert payload["completed"] is False
+
+
+def test_update_report_and_mark_completed():
+    if not _db_available():
+        pytest.skip("Database is not available.")
+
+    client_item = _create_client()
+    customer = client.post(
+        "/customers",
+        json={"name": f"Report Update {uuid.uuid4()}", "client_id": client_item["id"]},
+    ).json()
+    manufacturer = client.post(
+        "/manufacturers",
+        json={"name": f"Report Update Manufacturer {uuid.uuid4()}"},
+    ).json()
+    plant = client.post(
+        f"/customers/{customer['id']}/filter-plants",
+        json={
+            "description": "Update Plant",
+            "year_built": 2023,
+            "manufacturer_id": manufacturer["id"],
+        },
+    ).json()
+    component = client.post(
+        f"/filter-plants/{plant['id']}/components",
+        json={"name": "Messpunkt E"},
+    ).json()
+    report = client.post(
+        f"/customers/{customer['id']}/filter-plants/{plant['id']}/reports",
+        json={
+            "component_descriptions": [
+                {"component_id": component["id"], "description": "OK"}
+            ]
+        },
+    ).json()
+
+    response = client.patch(
+        f"/reports/{report['id']}",
+        json={
+            "completed": True,
+            "component_descriptions": [
+                {"component_id": component["id"], "description": "Alles erledigt"}
+            ],
+        },
+    )
+    assert response.status_code == 200
+    payload = response.json()
+    assert payload["completed"] is True
+
+    second = client.patch(
+        f"/reports/{report['id']}",
+        json={
+            "completed": True,
+            "component_descriptions": [
+                {"component_id": component["id"], "description": "Nochmal"}
+            ],
+        },
+    )
+    assert second.status_code == 400

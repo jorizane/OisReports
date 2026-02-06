@@ -46,6 +46,7 @@ describe('ReportDetailPage', () => {
       filter_plant_id: 10,
       filter_plant_description: 'Filteranlage X',
       created_at: '2025-01-01T10:00:00Z',
+      completed: true,
       components: [
         {
           component_id: 99,
@@ -62,5 +63,6 @@ describe('ReportDetailPage', () => {
     expect(compiled.textContent).toContain('Aqua Filters');
     expect(compiled.textContent).toContain('Messpunkt A');
     expect(compiled.textContent).toContain('Alles ok');
+    expect(compiled.textContent).toContain('Abgeschlossen');
   });
 });

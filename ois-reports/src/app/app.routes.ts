@@ -10,6 +10,7 @@ import { ComponentDetailPage } from './components/components/detail/component-de
 import { ComponentEditPage } from './components/components/edit/component-edit-page.component';
 import { ReportCreatePage } from './components/reports/create/report-create-page.component';
 import { ReportDetailPage } from './components/reports/detail/report-detail-page.component';
+import { ReportEditPage } from './components/reports/edit/report-edit-page.component';
 import { ReportsPage } from './components/reports/list/reports-page.component';
 import { ManufacturersPage } from './components/manufacturers/list/manufacturers-page.component';
 import { ManufacturerDetailPage } from './components/manufacturers/detail/manufacturer-detail-page.component';
@@ -24,6 +25,7 @@ export const routes: Routes = [
     component: ReportCreatePage,
   },
   { path: 'reports/:reportId', component: ReportDetailPage },
+  { path: 'reports/:reportId/edit', component: ReportEditPage },
   { path: 'reports', component: ReportsPage },
   { path: 'manufacturers/:id', component: ManufacturerDetailPage },
   { path: 'manufacturers', component: ManufacturersPage },

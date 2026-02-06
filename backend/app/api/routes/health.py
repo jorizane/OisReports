@@ -30,6 +30,7 @@ def root():
             "component_delete": "/components/{component_id}",
             "customer_reports": "/customers/{customer_id}/reports",
             "report_get": "/reports/{report_id}",
+            "report_update": "/reports/{report_id}",
             "report_create": "/customers/{customer_id}/filter-plants/{filter_plant_id}/reports",
             "reports": "/reports",
             "customer_delete": "/customers/{customer_id}",
