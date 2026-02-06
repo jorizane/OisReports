@@ -28,6 +28,20 @@
           placeholder="Kundenname bearbeiten"
         />
       </label>
+      <label class="field">
+        <span class="field__label">Auftraggeber</span>
+        <select
+          class="field__input"
+          name="editClientId"
+          [(ngModel)]="selectedClientId"
+          required
+        >
+          <option [ngValue]="null" disabled>Auftraggeber auswählen</option>
+          <option *ngFor="let client of clients()" [ngValue]="client.id">
+            {{ client.name }}
+          </option>
+        </select>
+      </label>
       <div class="edit-form__actions">
         <button class="primary-button" type="submit">Änderungen speichern</button>
       </div>

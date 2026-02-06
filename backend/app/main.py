@@ -6,7 +6,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from .api.router import api_router
 from .core.database import Base, SessionLocal, engine
-from .models import Customer
+from .models import Client, Customer
 
 
 @asynccontextmanager
@@ -23,8 +23,16 @@ async def lifespan(app: FastAPI):
 
     db = SessionLocal()
     try:
-        if db.query(Customer).count() == 0:
-            db.add(Customer(name="Initial Customer"))
+        if db.query(Client).count() == 0:
+            client = Client(name="Initial Client")
+            db.add(client)
+            db.commit()
+            db.refresh(client)
+        else:
+            client = db.query(Client).order_by(Client.id.asc()).first()
+
+        if client and db.query(Customer).count() == 0:
+            db.add(Customer(name="Initial Customer", client_id=client.id))
             db.commit()
     finally:
         db.close()

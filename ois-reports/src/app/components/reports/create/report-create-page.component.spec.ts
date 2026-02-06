@@ -37,6 +37,24 @@ describe('ReportCreatePage', () => {
     const fixture = TestBed.createComponent(ReportCreatePage);
     fixture.detectChanges();
 
+    const clientsRequest = httpMock.expectOne('http://localhost:8000/clients');
+    expect(clientsRequest.request.method).toBe('GET');
+    clientsRequest.flush([{ id: 1, name: 'Auftraggeber A' }]);
+
+    const customerRequest = httpMock.expectOne('http://localhost:8000/customers/4');
+    expect(customerRequest.request.method).toBe('GET');
+    customerRequest.flush({ id: 4, name: 'Kunde A', client_id: 1 });
+
+    const plantRequest = httpMock.expectOne('http://localhost:8000/filter-plants/11');
+    expect(plantRequest.request.method).toBe('GET');
+    plantRequest.flush({
+      id: 11,
+      customer_id: 4,
+      manufacturer_id: 2,
+      description: 'Filteranlage X',
+      year_built: 2020,
+    });
+
     const request = httpMock.expectOne('http://localhost:8000/filter-plants/11/components');
     expect(request.request.method).toBe('GET');
     request.flush([{ id: 5, filter_plant_id: 11, name: 'Pumpe A' }]);
@@ -49,6 +67,21 @@ describe('ReportCreatePage', () => {
   it('should save report', () => {
     const fixture = TestBed.createComponent(ReportCreatePage);
     fixture.detectChanges();
+
+    const clientsRequest = httpMock.expectOne('http://localhost:8000/clients');
+    clientsRequest.flush([{ id: 1, name: 'Auftraggeber A' }]);
+
+    const customerRequest = httpMock.expectOne('http://localhost:8000/customers/4');
+    customerRequest.flush({ id: 4, name: 'Kunde A', client_id: 1 });
+
+    const plantRequest = httpMock.expectOne('http://localhost:8000/filter-plants/11');
+    plantRequest.flush({
+      id: 11,
+      customer_id: 4,
+      manufacturer_id: 2,
+      description: 'Filteranlage X',
+      year_built: 2020,
+    });
 
     const request = httpMock.expectOne('http://localhost:8000/filter-plants/11/components');
     request.flush([{ id: 5, filter_plant_id: 11, name: 'Pumpe A' }]);

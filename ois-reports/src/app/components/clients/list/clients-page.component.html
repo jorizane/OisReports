@@ -1,0 +1,39 @@
+<section class="panel">
+  <header class="panel__header">
+    <p class="eyebrow">Auftraggeberübersicht</p>
+    <h1>Auftraggeber</h1>
+    <p class="subtitle">Verwalte Auftraggeber, die mehrere Kunden betreuen.</p>
+  </header>
+
+  <form class="panel__form" (ngSubmit)="addClient()">
+    <label class="field">
+      <span class="field__label">Neuer Auftraggeber</span>
+      <input
+        class="field__input"
+        type="text"
+        name="clientName"
+        [(ngModel)]="newClientName"
+        placeholder="Auftraggeber eingeben"
+        autocomplete="off"
+      />
+    </label>
+    <button class="primary-button" type="submit">Auftraggeber anlegen</button>
+  </form>
+
+  <p class="status status--error" *ngIf="errorMessage()">{{ errorMessage() }}</p>
+  <p class="status" *ngIf="isLoading()">Auftraggeber werden geladen...</p>
+
+  <div class="list" *ngIf="!isLoading()">
+    <div class="list__header">
+      <span>ID</span>
+      <span>Name</span>
+    </div>
+    <div class="list__row" *ngFor="let client of clients()">
+      <span class="list__id">#{{ client.id }}</span>
+      <span class="list__name">{{ client.name }}</span>
+    </div>
+    <p class="empty" *ngIf="clients().length === 0">
+      Noch keine Auftraggeber. Lege oben den ersten an.
+    </p>
+  </div>
+</section>

@@ -11,6 +11,12 @@ from app.main import app
 client = TestClient(app)
 
 
+def _create_client() -> dict:
+    response = client.post("/clients", json={"name": f"Client {uuid.uuid4()}"})
+    assert response.status_code == 201
+    return response.json()
+
+
 def _db_available() -> bool:
     try:
         with engine.connect() as connection:
@@ -39,8 +45,11 @@ def test_create_customer():
     if not _db_available():
         pytest.skip("Database is not available.")
 
+    client_item = _create_client()
     name = f"Test Customer {uuid.uuid4()}"
-    response = client.post("/customers", json={"name": name})
+    response = client.post(
+        "/customers", json={"name": name, "client_id": client_item["id"]}
+    )
     assert response.status_code == 201
     payload = response.json()
     assert payload["id"] > 0
@@ -51,8 +60,11 @@ def test_list_customers_includes_created_customer():
     if not _db_available():
         pytest.skip("Database is not available.")
 
+    client_item = _create_client()
     name = f"List Customer {uuid.uuid4()}"
-    created = client.post("/customers", json={"name": name}).json()
+    created = client.post(
+        "/customers", json={"name": name, "client_id": client_item["id"]}
+    ).json()
 
     response = client.get("/customers")
     assert response.status_code == 200
@@ -64,8 +76,35 @@ def test_create_customer_requires_name():
     if not _db_available():
         pytest.skip("Database is not available.")
 
-    response = client.post("/customers", json={"name": "   "})
+    client_item = _create_client()
+    response = client.post(
+        "/customers", json={"name": "   ", "client_id": client_item["id"]}
+    )
     assert response.status_code == 400
+
+
+def test_create_client():
+    if not _db_available():
+        pytest.skip("Database is not available.")
+
+    name = f"Test Client {uuid.uuid4()}"
+    response = client.post("/clients", json={"name": name})
+    assert response.status_code == 201
+    payload = response.json()
+    assert payload["id"] > 0
+    assert payload["name"] == name
+
+
+def test_list_clients_includes_created_client():
+    if not _db_available():
+        pytest.skip("Database is not available.")
+
+    created = client.post("/clients", json={"name": f"List Client {uuid.uuid4()}"}).json()
+
+    response = client.get("/clients")
+    assert response.status_code == 200
+    clients = response.json()
+    assert any(item["id"] == created["id"] for item in clients)
 
 
 def test_create_manufacturer():
@@ -101,7 +140,11 @@ def test_list_manufacturer_filter_plants():
         "/manufacturers",
         json={"name": f"Plant Manufacturer {uuid.uuid4()}"},
     ).json()
-    customer = client.post("/customers", json={"name": f"Plant Owner {uuid.uuid4()}"}).json()
+    client_item = _create_client()
+    customer = client.post(
+        "/customers",
+        json={"name": f"Plant Owner {uuid.uuid4()}", "client_id": client_item["id"]},
+    ).json()
     plant = client.post(
         f"/customers/{customer['id']}/filter-plants",
         json={
@@ -121,7 +164,11 @@ def test_get_customer_by_id():
     if not _db_available():
         pytest.skip("Database is not available.")
 
-    created = client.post("/customers", json={"name": f"Get Customer {uuid.uuid4()}"}).json()
+    client_item = _create_client()
+    created = client.post(
+        "/customers",
+        json={"name": f"Get Customer {uuid.uuid4()}", "client_id": client_item["id"]},
+    ).json()
     response = client.get(f"/customers/{created['id']}")
     assert response.status_code == 200
     payload = response.json()
@@ -133,7 +180,11 @@ def test_delete_customer():
     if not _db_available():
         pytest.skip("Database is not available.")
 
-    created = client.post("/customers", json={"name": f"Delete Customer {uuid.uuid4()}"}).json()
+    client_item = _create_client()
+    created = client.post(
+        "/customers",
+        json={"name": f"Delete Customer {uuid.uuid4()}", "client_id": client_item["id"]},
+    ).json()
     delete_response = client.delete(f"/customers/{created['id']}")
     assert delete_response.status_code == 204
 
@@ -146,8 +197,15 @@ def test_update_customer():
     if not _db_available():
         pytest.skip("Database is not available.")
 
-    created = client.post("/customers", json={"name": f"Update Customer {uuid.uuid4()}"}).json()
-    response = client.patch(f"/customers/{created['id']}", json={"name": "Updated Customer"})
+    client_item = _create_client()
+    created = client.post(
+        "/customers",
+        json={"name": f"Update Customer {uuid.uuid4()}", "client_id": client_item["id"]},
+    ).json()
+    response = client.patch(
+        f"/customers/{created['id']}",
+        json={"name": "Updated Customer", "client_id": client_item["id"]},
+    )
     assert response.status_code == 200
     payload = response.json()
     assert payload["id"] == created["id"]
@@ -158,7 +216,11 @@ def test_create_filter_plant():
     if not _db_available():
         pytest.skip("Database is not available.")
 
-    customer = client.post("/customers", json={"name": f"Plant Customer {uuid.uuid4()}"}).json()
+    client_item = _create_client()
+    customer = client.post(
+        "/customers",
+        json={"name": f"Plant Customer {uuid.uuid4()}", "client_id": client_item["id"]},
+    ).json()
     manufacturer = client.post(
         "/manufacturers",
         json={"name": f"Plant Manufacturer {uuid.uuid4()}"},
@@ -183,7 +245,11 @@ def test_list_filter_plants():
     if not _db_available():
         pytest.skip("Database is not available.")
 
-    customer = client.post("/customers", json={"name": f"Plant List {uuid.uuid4()}"}).json()
+    client_item = _create_client()
+    customer = client.post(
+        "/customers",
+        json={"name": f"Plant List {uuid.uuid4()}", "client_id": client_item["id"]},
+    ).json()
     manufacturer = client.post(
         "/manufacturers",
         json={"name": f"Plant List Manufacturer {uuid.uuid4()}"},
@@ -207,7 +273,11 @@ def test_get_filter_plant():
     if not _db_available():
         pytest.skip("Database is not available.")
 
-    customer = client.post("/customers", json={"name": f"Plant Get {uuid.uuid4()}"}).json()
+    client_item = _create_client()
+    customer = client.post(
+        "/customers",
+        json={"name": f"Plant Get {uuid.uuid4()}", "client_id": client_item["id"]},
+    ).json()
     manufacturer = client.post(
         "/manufacturers",
         json={"name": f"Plant Get Manufacturer {uuid.uuid4()}"},
@@ -232,7 +302,11 @@ def test_update_filter_plant():
     if not _db_available():
         pytest.skip("Database is not available.")
 
-    customer = client.post("/customers", json={"name": f"Plant Update {uuid.uuid4()}"}).json()
+    client_item = _create_client()
+    customer = client.post(
+        "/customers",
+        json={"name": f"Plant Update {uuid.uuid4()}", "client_id": client_item["id"]},
+    ).json()
     manufacturer = client.post(
         "/manufacturers",
         json={"name": f"Plant Update Manufacturer {uuid.uuid4()}"},
@@ -264,7 +338,11 @@ def test_delete_filter_plant():
     if not _db_available():
         pytest.skip("Database is not available.")
 
-    customer = client.post("/customers", json={"name": f"Plant Delete {uuid.uuid4()}"}).json()
+    client_item = _create_client()
+    customer = client.post(
+        "/customers",
+        json={"name": f"Plant Delete {uuid.uuid4()}", "client_id": client_item["id"]},
+    ).json()
     manufacturer = client.post(
         "/manufacturers",
         json={"name": f"Plant Delete Manufacturer {uuid.uuid4()}"},
@@ -286,7 +364,11 @@ def test_create_component():
     if not _db_available():
         pytest.skip("Database is not available.")
 
-    customer = client.post("/customers", json={"name": f"Comp Customer {uuid.uuid4()}"}).json()
+    client_item = _create_client()
+    customer = client.post(
+        "/customers",
+        json={"name": f"Comp Customer {uuid.uuid4()}", "client_id": client_item["id"]},
+    ).json()
     manufacturer = client.post(
         "/manufacturers",
         json={"name": f"Comp Manufacturer {uuid.uuid4()}"},
@@ -314,7 +396,11 @@ def test_list_components():
     if not _db_available():
         pytest.skip("Database is not available.")
 
-    customer = client.post("/customers", json={"name": f"Comp List {uuid.uuid4()}"}).json()
+    client_item = _create_client()
+    customer = client.post(
+        "/customers",
+        json={"name": f"Comp List {uuid.uuid4()}", "client_id": client_item["id"]},
+    ).json()
     manufacturer = client.post(
         "/manufacturers",
         json={"name": f"Comp List Manufacturer {uuid.uuid4()}"},
@@ -343,7 +429,11 @@ def test_get_update_delete_component():
     if not _db_available():
         pytest.skip("Database is not available.")
 
-    customer = client.post("/customers", json={"name": f"Comp Get {uuid.uuid4()}"}).json()
+    client_item = _create_client()
+    customer = client.post(
+        "/customers",
+        json={"name": f"Comp Get {uuid.uuid4()}", "client_id": client_item["id"]},
+    ).json()
     manufacturer = client.post(
         "/manufacturers",
         json={"name": f"Comp Get Manufacturer {uuid.uuid4()}"},
@@ -379,7 +469,11 @@ def test_create_report():
     if not _db_available():
         pytest.skip("Database is not available.")
 
-    customer = client.post("/customers", json={"name": f"Report Customer {uuid.uuid4()}"}).json()
+    client_item = _create_client()
+    customer = client.post(
+        "/customers",
+        json={"name": f"Report Customer {uuid.uuid4()}", "client_id": client_item["id"]},
+    ).json()
     manufacturer = client.post(
         "/manufacturers",
         json={"name": f"Report Manufacturer {uuid.uuid4()}"},
@@ -415,7 +509,11 @@ def test_list_reports():
     if not _db_available():
         pytest.skip("Database is not available.")
 
-    customer = client.post("/customers", json={"name": f"Report List {uuid.uuid4()}"}).json()
+    client_item = _create_client()
+    customer = client.post(
+        "/customers",
+        json={"name": f"Report List {uuid.uuid4()}", "client_id": client_item["id"]},
+    ).json()
     manufacturer = client.post(
         "/manufacturers",
         json={"name": f"Report List Manufacturer {uuid.uuid4()}"},
@@ -453,7 +551,11 @@ def test_list_customer_reports():
     if not _db_available():
         pytest.skip("Database is not available.")
 
-    customer = client.post("/customers", json={"name": f"Customer Reports {uuid.uuid4()}"}).json()
+    client_item = _create_client()
+    customer = client.post(
+        "/customers",
+        json={"name": f"Customer Reports {uuid.uuid4()}", "client_id": client_item["id"]},
+    ).json()
     manufacturer = client.post(
         "/manufacturers",
         json={"name": f"Customer Reports Manufacturer {uuid.uuid4()}"},
@@ -490,7 +592,11 @@ def test_get_report_detail():
     if not _db_available():
         pytest.skip("Database is not available.")
 
-    customer = client.post("/customers", json={"name": f"Report Detail {uuid.uuid4()}"}).json()
+    client_item = _create_client()
+    customer = client.post(
+        "/customers",
+        json={"name": f"Report Detail {uuid.uuid4()}", "client_id": client_item["id"]},
+    ).json()
     manufacturer = client.post(
         "/manufacturers",
         json={"name": f"Report Detail Manufacturer {uuid.uuid4()}"},

@@ -10,6 +10,37 @@
   <p class="status status--error" *ngIf="errorMessage()">{{ errorMessage() }}</p>
   <p class="status" *ngIf="isLoading()">Komponenten werden geladen...</p>
 
+  <div class="context" *ngIf="customer()">
+    <label class="field">
+      <span class="field__label">Auftraggeber</span>
+      <select
+        class="field__input"
+        name="clientId"
+        [(ngModel)]="selectedClientId"
+        disabled
+      >
+        <option *ngFor="let client of clients()" [ngValue]="client.id">
+          {{ client.name }}
+        </option>
+      </select>
+    </label>
+    <label class="field">
+      <span class="field__label">Kunde</span>
+      <input class="field__input" type="text" [value]="customer()?.name" disabled />
+    </label>
+  </div>
+  <div class="context" *ngIf="plant()">
+    <label class="field">
+      <span class="field__label">Filteranlage</span>
+      <input
+        class="field__input"
+        type="text"
+        [value]="plant()?.description"
+        disabled
+      />
+    </label>
+  </div>
+
   <div class="list" *ngIf="!isLoading()">
     <div class="list__row" *ngFor="let component of components(); trackBy: trackByComponentId">
       <div>

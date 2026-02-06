@@ -14,12 +14,23 @@ class Manufacturer(Base):
     filter_plants = relationship("FilterPlant", back_populates="manufacturer")
 
 
-class Customer(Base):
-    __tablename__ = "customers"
+class Client(Base):
+    __tablename__ = "clients"
 
     id = Column(Integer, primary_key=True, index=True)
     name = Column(String(255), nullable=False)
 
+    customers = relationship("Customer", back_populates="client")
+
+
+class Customer(Base):
+    __tablename__ = "customers"
+
+    id = Column(Integer, primary_key=True, index=True)
+    client_id = Column(Integer, ForeignKey("clients.id"), nullable=False, index=True)
+    name = Column(String(255), nullable=False)
+
+    client = relationship("Client", back_populates="customers")
     filter_plants = relationship("FilterPlant", back_populates="customer", cascade="all, delete-orphan")
 
 

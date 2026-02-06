@@ -5,17 +5,31 @@ from pydantic import BaseModel, ConfigDict, Field
 
 class CustomerCreate(BaseModel):
     name: str
+    client_id: int
 
 
 class CustomerRead(BaseModel):
     id: int
     name: str
+    client_id: int
 
     model_config = ConfigDict(from_attributes=True)
 
 
 class CustomerUpdate(BaseModel):
     name: str
+    client_id: int
+
+
+class ClientCreate(BaseModel):
+    name: str
+
+
+class ClientRead(BaseModel):
+    id: int
+    name: str
+
+    model_config = ConfigDict(from_attributes=True)
 
 
 class ManufacturerCreate(BaseModel):

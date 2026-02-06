@@ -1,5 +1,6 @@
 from fastapi import APIRouter
 
+from .routes.clients import router as clients_router
 from .routes.components import router as components_router
 from .routes.customers import router as customers_router
 from .routes.filter_plants import router as filter_plants_router
@@ -10,6 +11,7 @@ from .routes.reports import router as reports_router
 api_router = APIRouter()
 
 api_router.include_router(health_router)
+api_router.include_router(clients_router)
 api_router.include_router(customers_router)
 api_router.include_router(manufacturers_router)
 api_router.include_router(filter_plants_router)

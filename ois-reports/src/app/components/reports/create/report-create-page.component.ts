@@ -7,6 +7,12 @@ import {
   Component as PlantComponent,
   ComponentsService,
 } from '../../../services/components/components.service';
+import { Client, ClientsService } from '../../../services/clients/clients.service';
+import { Customer, CustomersService } from '../../../services/customers/customers.service';
+import {
+  FilterPlant,
+  FilterPlantsService,
+} from '../../../services/filter-plants/filter-plants.service';
 import { ReportsService } from '../../../services/reports/reports.service';
 
 type ComponentInput = {
@@ -24,15 +30,22 @@ type ComponentInput = {
 })
 export class ReportCreatePage implements OnInit {
   protected readonly components = signal<ComponentInput[]>([]);
+  protected readonly clients = signal<Client[]>([]);
+  protected readonly customer = signal<Customer | null>(null);
+  protected readonly plant = signal<FilterPlant | null>(null);
   protected readonly isLoading = signal(false);
   protected readonly errorMessage = signal('');
   protected readonly successMessage = signal('');
   protected customerId: number | null = null;
   protected plantId: number | null = null;
+  protected selectedClientId: number | null = null;
   private successTimer: number | null = null;
 
   constructor(
     private readonly componentsService: ComponentsService,
+    private readonly clientsService: ClientsService,
+    private readonly customersService: CustomersService,
+    private readonly filterPlantsService: FilterPlantsService,
     private readonly reportsService: ReportsService,
     private readonly route: ActivatedRoute,
     private readonly router: Router
@@ -49,6 +62,10 @@ export class ReportCreatePage implements OnInit {
       return;
     }
 
+    this.loadClients();
+    this.loadCustomer();
+    this.loadPlant();
+
     this.isLoading.set(true);
     this.componentsService.listComponents(this.plantId).subscribe({
       next: (components) => {
@@ -64,6 +81,46 @@ export class ReportCreatePage implements OnInit {
       error: () => {
         this.errorMessage.set('Komponenten konnten nicht geladen werden.');
         this.isLoading.set(false);
+      },
+    });
+  }
+
+  private loadClients(): void {
+    this.clientsService.listClients().subscribe({
+      next: (clients) => {
+        this.clients.set(clients);
+      },
+      error: () => {
+        this.errorMessage.set('Auftraggeber konnten nicht geladen werden.');
+      },
+    });
+  }
+
+  private loadCustomer(): void {
+    if (!this.customerId) {
+      return;
+    }
+    this.customersService.getCustomer(this.customerId).subscribe({
+      next: (customer) => {
+        this.customer.set(customer);
+        this.selectedClientId = customer.client_id ?? null;
+      },
+      error: () => {
+        this.errorMessage.set('Kunde konnte nicht geladen werden.');
+      },
+    });
+  }
+
+  private loadPlant(): void {
+    if (!this.plantId) {
+      return;
+    }
+    this.filterPlantsService.getFilterPlant(this.plantId).subscribe({
+      next: (plant) => {
+        this.plant.set(plant);
+      },
+      error: () => {
+        this.errorMessage.set('Filteranlage konnte nicht geladen werden.');
       },
     });
   }

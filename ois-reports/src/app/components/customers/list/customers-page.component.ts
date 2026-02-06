@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 
 import { Customer, CustomersService } from '../../../services/customers/customers.service';
+import { Client, ClientsService } from '../../../services/clients/clients.service';
 
 @Component({
   selector: 'app-customers-page',
@@ -14,20 +15,37 @@ import { Customer, CustomersService } from '../../../services/customers/customer
 })
 export class CustomersPage implements OnInit {
   protected readonly customers = signal<Customer[]>([]);
+  protected readonly clients = signal<Client[]>([]);
   protected readonly isLoading = signal(false);
   protected readonly errorMessage = signal('');
   protected readonly successMessage = signal('');
   protected newCustomerName = '';
+  protected selectedClientId: number | null = null;
   private successTimer: number | null = null;
 
-  constructor(private readonly customersService: CustomersService) {}
+  constructor(
+    private readonly customersService: CustomersService,
+    private readonly clientsService: ClientsService
+  ) {}
 
   ngOnInit(): void {
     const state = window.history.state as { deletedCustomer?: string };
     if (state?.deletedCustomer) {
       this.showSuccess(`Kunde "${state.deletedCustomer}" wurde gelöscht.`);
     }
+    this.loadClients();
     this.loadCustomers();
+  }
+
+  loadClients(): void {
+    this.clientsService.listClients().subscribe({
+      next: (clients) => {
+        this.clients.set(clients);
+      },
+      error: () => {
+        this.errorMessage.set('Auftraggeber konnten nicht geladen werden.');
+      },
+    });
   }
 
   loadCustomers(): void {
@@ -53,16 +71,27 @@ export class CustomersPage implements OnInit {
       return;
     }
 
-    this.customersService.createCustomer(name).subscribe({
+    if (!this.selectedClientId) {
+      this.errorMessage.set('Bitte einen Auftraggeber auswählen.');
+      return;
+    }
+
+    this.customersService.createCustomer(name, this.selectedClientId).subscribe({
       next: (customer) => {
         this.customers.update((items) => [...items, customer]);
         this.newCustomerName = '';
+        this.selectedClientId = null;
         this.errorMessage.set('');
       },
       error: () => {
         this.errorMessage.set('Kunde konnte nicht angelegt werden.');
       },
     });
+  }
+
+  getClientName(clientId: number): string {
+    const match = this.clients().find((client) => client.id === clientId);
+    return match ? match.name : 'Unbekannt';
   }
 
   dismissSuccess(): void {

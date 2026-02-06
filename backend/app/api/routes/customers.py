@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 
 from ...core.database import get_db
-from ...models import Customer
+from ...models import Client, Customer
 from ...schemas import CustomerCreate, CustomerRead, CustomerUpdate
 
 router = APIRouter(prefix="/customers", tags=["customers"])
@@ -27,7 +27,11 @@ def create_customer(payload: CustomerCreate, db: Session = Depends(get_db)):
     if not name:
         raise HTTPException(status_code=400, detail="Name is required.")
 
-    customer = Customer(name=name)
+    client = db.get(Client, payload.client_id)
+    if not client:
+        raise HTTPException(status_code=404, detail="Client not found.")
+
+    customer = Customer(name=name, client_id=payload.client_id)
     db.add(customer)
     db.commit()
     db.refresh(customer)
@@ -44,7 +48,12 @@ def update_customer(customer_id: int, payload: CustomerUpdate, db: Session = Dep
     if not name:
         raise HTTPException(status_code=400, detail="Name is required.")
 
+    client = db.get(Client, payload.client_id)
+    if not client:
+        raise HTTPException(status_code=404, detail="Client not found.")
+
     customer.name = name
+    customer.client_id = payload.client_id
     db.commit()
     db.refresh(customer)
     return customer

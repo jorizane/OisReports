@@ -39,7 +39,7 @@ describe('CustomerDetailPage', () => {
 
     const request = httpMock.expectOne('http://localhost:8000/customers/4');
     expect(request.request.method).toBe('GET');
-    request.flush({ id: 4, name: 'Aqua Filters' });
+    request.flush({ id: 4, name: 'Aqua Filters', client_id: 21 });
 
     const plantsRequest = httpMock.expectOne(
       'http://localhost:8000/customers/4/filter-plants'
@@ -55,6 +55,10 @@ describe('CustomerDetailPage', () => {
       },
     ]);
 
+    const clientsRequest = httpMock.expectOne('http://localhost:8000/clients');
+    expect(clientsRequest.request.method).toBe('GET');
+    clientsRequest.flush([{ id: 21, name: 'Auftraggeber A' }]);
+
     const manufacturersRequest = httpMock.expectOne('http://localhost:8000/manufacturers');
     expect(manufacturersRequest.request.method).toBe('GET');
     manufacturersRequest.flush([{ id: 7, name: 'FilterTech' }]);
@@ -67,6 +71,7 @@ describe('CustomerDetailPage', () => {
     const compiled = fixture.nativeElement as HTMLElement;
     expect(compiled.textContent).toContain('Aqua Filters');
     expect(compiled.textContent).toContain('#4');
+    expect(compiled.textContent).toContain('Auftraggeber A');
     expect(compiled.textContent).toContain('FilterTech');
   });
 
@@ -75,7 +80,7 @@ describe('CustomerDetailPage', () => {
     fixture.detectChanges();
 
     const request = httpMock.expectOne('http://localhost:8000/customers/4');
-    request.flush({ id: 4, name: 'Aqua Filters' });
+    request.flush({ id: 4, name: 'Aqua Filters', client_id: 21 });
 
     const plantsRequest = httpMock.expectOne(
       'http://localhost:8000/customers/4/filter-plants'
@@ -89,6 +94,9 @@ describe('CustomerDetailPage', () => {
         year_built: 2020,
       },
     ]);
+
+    const clientsRequest = httpMock.expectOne('http://localhost:8000/clients');
+    clientsRequest.flush([{ id: 21, name: 'Auftraggeber A' }]);
 
     const manufacturersRequest = httpMock.expectOne('http://localhost:8000/manufacturers');
     manufacturersRequest.flush([{ id: 7, name: 'FilterTech' }]);
@@ -139,7 +147,7 @@ describe('CustomerDetailPage', () => {
     fixture.detectChanges();
 
     const request = httpMock.expectOne('http://localhost:8000/customers/4');
-    request.flush({ id: 4, name: 'Aqua Filters' });
+    request.flush({ id: 4, name: 'Aqua Filters', client_id: 21 });
 
     const plantsRequest = httpMock.expectOne(
       'http://localhost:8000/customers/4/filter-plants'
@@ -153,6 +161,9 @@ describe('CustomerDetailPage', () => {
         year_built: 2020,
       },
     ]);
+
+    const clientsRequest = httpMock.expectOne('http://localhost:8000/clients');
+    clientsRequest.flush([{ id: 21, name: 'Auftraggeber A' }]);
 
     const manufacturersRequest = httpMock.expectOne('http://localhost:8000/manufacturers');
     manufacturersRequest.flush([{ id: 7, name: 'FilterTech' }]);

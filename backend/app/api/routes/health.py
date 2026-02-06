@@ -13,6 +13,8 @@ def root():
         "endpoints": {
             "health": "/health",
             "db_health": "/db-health",
+            "clients": "/clients",
+            "client_get": "/clients/{client_id}",
             "customers": "/customers",
             "customer_get": "/customers/{customer_id}",
             "manufacturers": "/manufacturers",

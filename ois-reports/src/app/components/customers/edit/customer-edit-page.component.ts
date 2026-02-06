@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 
 import { Customer, CustomersService } from '../../../services/customers/customers.service';
+import { Client, ClientsService } from '../../../services/clients/clients.service';
 
 @Component({
   selector: 'app-customer-edit-page',
@@ -14,6 +15,7 @@ import { Customer, CustomersService } from '../../../services/customers/customer
 })
 export class CustomerEditPage implements OnInit {
   protected readonly customers = signal<Customer[]>([]);
+  protected readonly clients = signal<Client[]>([]);
   protected readonly isLoading = signal(false);
   protected readonly errorMessage = signal('');
   protected readonly editMode = signal(false);
@@ -21,16 +23,30 @@ export class CustomerEditPage implements OnInit {
   protected readonly showConfirm = signal(false);
   protected readonly successMessage = signal('');
   protected editName = '';
+  protected selectedClientId: number | null = null;
   private successTimer: number | null = null;
 
   constructor(
     private readonly customersService: CustomersService,
+    private readonly clientsService: ClientsService,
     private readonly route: ActivatedRoute,
     private readonly router: Router
   ) {}
 
   ngOnInit(): void {
+    this.loadClients();
     this.loadCustomers();
+  }
+
+  loadClients(): void {
+    this.clientsService.listClients().subscribe({
+      next: (clients) => {
+        this.clients.set(clients);
+      },
+      error: () => {
+        this.errorMessage.set('Auftraggeber konnten nicht geladen werden.');
+      },
+    });
   }
 
   loadCustomers(): void {
@@ -50,6 +66,7 @@ export class CustomerEditPage implements OnInit {
             this.editMode.set(true);
             this.selectedCustomer.set(match);
             this.editName = match.name;
+            this.selectedClientId = match.client_id;
           } else {
             this.errorMessage.set('Kunde nicht gefunden.');
           }
@@ -110,10 +127,18 @@ export class CustomerEditPage implements OnInit {
       return;
     }
 
-    this.customersService.updateCustomer(customer.id, name).subscribe({
+    if (!this.selectedClientId) {
+      this.errorMessage.set('Bitte einen Auftraggeber auswählen.');
+      return;
+    }
+
+    this.customersService
+      .updateCustomer(customer.id, name, this.selectedClientId)
+      .subscribe({
       next: (updated) => {
         this.selectedCustomer.set(updated);
         this.editName = updated.name;
+        this.selectedClientId = updated.client_id;
         this.showSuccess(`Kunde "${updated.name}" wurde aktualisiert.`);
       },
       error: () => {

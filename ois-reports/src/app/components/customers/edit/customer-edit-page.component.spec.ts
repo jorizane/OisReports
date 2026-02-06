@@ -37,11 +37,15 @@ describe('CustomerEditPage', () => {
     const fixture = TestBed.createComponent(CustomerEditPage);
     fixture.detectChanges();
 
+    const clientsRequest = httpMock.expectOne('http://localhost:8000/clients');
+    expect(clientsRequest.request.method).toBe('GET');
+    clientsRequest.flush([{ id: 4, name: 'Auftraggeber A' }]);
+
     const request = httpMock.expectOne('http://localhost:8000/customers');
     expect(request.request.method).toBe('GET');
     request.flush([
-      { id: 3, name: 'Redwood Filters' },
-      { id: 7, name: 'Nova Filters' },
+      { id: 3, name: 'Redwood Filters', client_id: 4 },
+      { id: 7, name: 'Nova Filters', client_id: 4 },
     ]);
 
     fixture.detectChanges();
@@ -54,10 +58,13 @@ describe('CustomerEditPage', () => {
     const fixture = TestBed.createComponent(CustomerEditPage);
     fixture.detectChanges();
 
+    const clientsRequest = httpMock.expectOne('http://localhost:8000/clients');
+    clientsRequest.flush([{ id: 4, name: 'Auftraggeber A' }]);
+
     const request = httpMock.expectOne('http://localhost:8000/customers');
     request.flush([
-      { id: 7, name: 'Nova Filters' },
-      { id: 9, name: 'Orion Filters' },
+      { id: 7, name: 'Nova Filters', client_id: 4 },
+      { id: 9, name: 'Orion Filters', client_id: 4 },
     ]);
 
     const component = fixture.componentInstance as CustomerEditPage & {
@@ -81,10 +88,13 @@ describe('CustomerEditPage', () => {
     const fixture = TestBed.createComponent(CustomerEditPage);
     fixture.detectChanges();
 
+    const clientsRequest = httpMock.expectOne('http://localhost:8000/clients');
+    clientsRequest.flush([{ id: 4, name: 'Auftraggeber A' }]);
+
     const request = httpMock.expectOne('http://localhost:8000/customers');
     request.flush([
-      { id: 7, name: 'Nova Filters' },
-      { id: 9, name: 'Orion Filters' },
+      { id: 7, name: 'Nova Filters', client_id: 4 },
+      { id: 9, name: 'Orion Filters', client_id: 4 },
     ]);
 
     const component = fixture.componentInstance as CustomerEditPage & {
@@ -113,24 +123,29 @@ describe('CustomerEditPage', () => {
     const fixture = TestBed.createComponent(CustomerEditPage);
     fixture.detectChanges();
 
+    const clientsRequest = httpMock.expectOne('http://localhost:8000/clients');
+    clientsRequest.flush([{ id: 4, name: 'Auftraggeber A' }]);
+
     const request = httpMock.expectOne('http://localhost:8000/customers');
     request.flush([
-      { id: 7, name: 'Nova Filters' },
-      { id: 9, name: 'Orion Filters' },
+      { id: 7, name: 'Nova Filters', client_id: 4 },
+      { id: 9, name: 'Orion Filters', client_id: 4 },
     ]);
 
     const component = fixture.componentInstance as CustomerEditPage & {
       editName: string;
+      selectedClientId: number | null;
       saveChanges: () => void;
     };
 
     component.editName = 'Nova Filters GmbH';
+    component.selectedClientId = 4;
     component.saveChanges();
 
     const updateRequest = httpMock.expectOne('http://localhost:8000/customers/7');
     expect(updateRequest.request.method).toBe('PATCH');
-    expect(updateRequest.request.body).toEqual({ name: 'Nova Filters GmbH' });
-    updateRequest.flush({ id: 7, name: 'Nova Filters GmbH' });
+    expect(updateRequest.request.body).toEqual({ name: 'Nova Filters GmbH', client_id: 4 });
+    updateRequest.flush({ id: 7, name: 'Nova Filters GmbH', client_id: 4 });
 
     fixture.detectChanges();
     const compiled = fixture.nativeElement as HTMLElement;

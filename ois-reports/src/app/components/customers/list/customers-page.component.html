@@ -19,6 +19,20 @@
         autocomplete="off"
       />
     </label>
+    <label class="field">
+      <span class="field__label">Auftraggeber</span>
+      <select
+        class="field__input"
+        name="clientId"
+        [(ngModel)]="selectedClientId"
+        required
+      >
+        <option [ngValue]="null" disabled>Auftraggeber auswählen</option>
+        <option *ngFor="let client of clients()" [ngValue]="client.id">
+          {{ client.name }}
+        </option>
+      </select>
+    </label>
     <button class="primary-button" type="submit">Kunde anlegen</button>
   </form>
 
@@ -29,11 +43,13 @@
     <div class="list__header">
       <span>ID</span>
       <span>Name</span>
+      <span>Auftraggeber</span>
       <span>Aktion</span>
     </div>
     <div class="list__row" *ngFor="let customer of customers()">
       <span class="list__id">#{{ customer.id }}</span>
       <span class="list__name">{{ customer.name }}</span>
+      <span class="list__client">{{ getClientName(customer.client_id) }}</span>
       <a class="link-button" [routerLink]="['/customers', customer.id]">Details</a>
     </div>
     <p class="empty" *ngIf="customers().length === 0">Noch keine Kunden. Lege oben den ersten an.</p>

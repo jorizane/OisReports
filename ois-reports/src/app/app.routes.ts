@@ -3,6 +3,7 @@ import { Routes } from '@angular/router';
 import { CustomersPage } from './components/customers/list/customers-page.component';
 import { CustomerDetailPage } from './components/customers/detail/customer-detail-page.component';
 import { CustomerEditPage } from './components/customers/edit/customer-edit-page.component';
+import { ClientsPage } from './components/clients/list/clients-page.component';
 import { FilterPlantDetailPage } from './components/filter-plants/detail/filter-plant-detail-page.component';
 import { FilterPlantEditPage } from './components/filter-plants/edit/filter-plant-edit-page.component';
 import { ComponentDetailPage } from './components/components/detail/component-detail-page.component';
@@ -15,6 +16,7 @@ import { ManufacturerDetailPage } from './components/manufacturers/detail/manufa
 
 export const routes: Routes = [
   { path: '', component: CustomersPage },
+  { path: 'clients', component: ClientsPage },
   { path: 'customers/:id', component: CustomerDetailPage },
   { path: 'customers/:id/filter-plants/:plantId', component: FilterPlantDetailPage },
   {

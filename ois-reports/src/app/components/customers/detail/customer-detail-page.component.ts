@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 
 import { Customer, CustomersService } from '../../../services/customers/customers.service';
+import { Client, ClientsService } from '../../../services/clients/clients.service';
 import {
   FilterPlant,
   FilterPlantsService,
@@ -24,6 +25,7 @@ import { ReportRead, ReportsService } from '../../../services/reports/reports.se
 export class CustomerDetailPage implements OnInit {
   protected readonly customer = signal<Customer | null>(null);
   protected readonly filterPlants = signal<FilterPlant[]>([]);
+  protected readonly clients = signal<Client[]>([]);
   protected readonly manufacturers = signal<Manufacturer[]>([]);
   protected readonly reports = signal<ReportRead[]>([]);
   protected readonly isLoading = signal(false);
@@ -39,6 +41,7 @@ export class CustomerDetailPage implements OnInit {
 
   constructor(
     private readonly customersService: CustomersService,
+    private readonly clientsService: ClientsService,
     private readonly filterPlantsService: FilterPlantsService,
     private readonly manufacturersService: ManufacturersService,
     private readonly reportsService: ReportsService,
@@ -72,6 +75,7 @@ export class CustomerDetailPage implements OnInit {
       },
     });
 
+    this.loadClients();
     this.loadManufacturers();
   }
 
@@ -108,8 +112,24 @@ export class CustomerDetailPage implements OnInit {
     });
   }
 
+  private loadClients(): void {
+    this.clientsService.listClients().subscribe({
+      next: (clients) => {
+        this.clients.set(clients);
+      },
+      error: () => {
+        this.errorMessage.set('Auftraggeber konnten nicht geladen werden.');
+      },
+    });
+  }
+
   getManufacturerName(manufacturerId: number): string {
     const match = this.manufacturers().find((item) => item.id === manufacturerId);
+    return match ? match.name : 'Unbekannt';
+  }
+
+  getClientName(clientId: number): string {
+    const match = this.clients().find((client) => client.id === clientId);
     return match ? match.name : 'Unbekannt';
   }
 

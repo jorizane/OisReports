@@ -4,6 +4,7 @@ import { inject, Injectable } from '@angular/core';
 export type Customer = {
   id: number;
   name: string;
+  client_id: number;
 };
 
 @Injectable({ providedIn: 'root' })
@@ -19,15 +20,21 @@ export class CustomersService {
     return this.http.get<Customer>(`${this.baseUrl}/customers/${id}`);
   }
 
-  createCustomer(name: string) {
-    return this.http.post<Customer>(`${this.baseUrl}/customers`, { name });
+  createCustomer(name: string, clientId: number) {
+    return this.http.post<Customer>(`${this.baseUrl}/customers`, {
+      name,
+      client_id: clientId,
+    });
   }
 
   deleteCustomer(id: number) {
     return this.http.delete(`${this.baseUrl}/customers/${id}`);
   }
 
-  updateCustomer(id: number, name: string) {
-    return this.http.patch<Customer>(`${this.baseUrl}/customers/${id}`, { name });
+  updateCustomer(id: number, name: string, clientId: number) {
+    return this.http.patch<Customer>(`${this.baseUrl}/customers/${id}`, {
+      name,
+      client_id: clientId,
+    });
   }
 }

@@ -17,6 +17,10 @@
       <span class="detail__label">Name</span>
       <span class="detail__value">{{ customer()?.name }}</span>
     </div>
+    <div class="detail__row">
+      <span class="detail__label">Auftraggeber</span>
+      <span class="detail__value">{{ getClientName(customer()?.client_id ?? 0) }}</span>
+    </div>
   </div>
 
   <div class="plants" *ngIf="!isLoading() && customer()">
