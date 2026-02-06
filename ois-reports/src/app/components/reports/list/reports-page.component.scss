@@ -49,9 +49,9 @@
 .list__header,
 .list__row {
   display: grid;
-  grid-template-columns: 80px minmax(0, 1fr) minmax(0, 1fr) 140px;
+  grid-template-columns: 80px minmax(0, 1fr) minmax(0, 1fr) 140px 110px;
   align-items: center;
-  gap: 0.6rem;
+  gap: 1.45rem;
 }
 
 .list__header {
@@ -103,8 +103,24 @@
 }
 
 .link-button--customer {
-  max-width: 220px;
+  max-width: 150px;
   width: auto;
+}
+
+.list__plant .link-button--truncate {
+  max-width: 150px;
+}
+
+.ghost-link-button {
+  padding: 0.45rem 0.9rem;
+  border-radius: 999px;
+  border: 1px solid rgba(34, 34, 34, 0.25);
+  background: transparent;
+  color: #222222;
+  font-weight: 600;
+  font-size: 0.85rem;
+  text-decoration: none;
+  justify-self: start;
 }
 
 .empty {
