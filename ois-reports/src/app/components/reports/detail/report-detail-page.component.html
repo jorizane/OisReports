@@ -2,7 +2,7 @@
   <header class="panel__header">
     <p class="eyebrow">Berichte</p>
     <h1>Berichtsdetails</h1>
-    <p class="subtitle">Details und Komponenten des Berichts.</p>
+    <p class="subtitle">Details und Prüffelder des Berichts.</p>
   </header>
 
   <p class="status status--error" *ngIf="errorMessage()">{{ errorMessage() }}</p>
@@ -29,18 +29,21 @@
 
   <div class="components" *ngIf="!isLoading() && report()">
     <div class="components__header">
-      <h2>Komponenten</h2>
+      <h2>Prüffelder</h2>
     </div>
-    <div class="components__list" *ngIf="report()?.components?.length">
-      <div class="components__row" *ngFor="let item of report()?.components">
+    <div class="components__list" *ngIf="report()?.filter_values?.length">
+      <div class="components__row" *ngFor="let field of report()?.filter_values">
         <div>
-          <p class="components__name">{{ item.component_name }}</p>
-          <p class="components__meta">{{ item.description }}</p>
+          <p class="components__name">
+            {{ field.label }}
+            <span *ngIf="field.unit">({{ field.unit }})</span>
+          </p>
+          <p class="components__meta">{{ formatValue(field) }}</p>
         </div>
       </div>
     </div>
-    <p class="empty" *ngIf="!report()?.components?.length">
-      Keine Komponenten im Bericht.
+    <p class="empty" *ngIf="!report()?.filter_values?.length">
+      Keine Prüffelder im Bericht.
     </p>
   </div>
 

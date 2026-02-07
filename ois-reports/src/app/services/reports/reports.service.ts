@@ -1,13 +1,16 @@
 import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 
-export type ReportComponentCreate = {
-  component_id: number;
-  description: string;
+export type FilterReportValueCreate = {
+  filter_test_field_id: number;
+  value_text?: string | null;
+  value_number?: number | null;
+  value_option?: string | null;
+  value_bool?: boolean | null;
 };
 
 export type ReportCreate = {
-  component_descriptions: ReportComponentCreate[];
+  filter_values: FilterReportValueCreate[];
 };
 
 export type ReportRead = {
@@ -20,19 +23,28 @@ export type ReportRead = {
   completed: boolean;
 };
 
-export type ReportComponentRead = {
-  component_id: number;
-  component_name: string;
-  description: string;
+export type FilterReportValueRead = {
+  filter_test_field_id: number;
+  label: string;
+  field_type: 'radio' | 'text' | 'number' | 'boolean';
+  unit: string | null;
+  options: string | null;
+  required: boolean;
+  min_value: number | null;
+  max_value: number | null;
+  value_text: string | null;
+  value_number: number | null;
+  value_option: string | null;
+  value_bool: boolean | null;
 };
 
 export type ReportDetailRead = ReportRead & {
-  components: ReportComponentRead[];
+  filter_values: FilterReportValueRead[];
 };
 
 export type ReportUpdate = {
   completed: boolean;
-  component_descriptions: ReportComponentCreate[];
+  filter_values: FilterReportValueCreate[];
 };
 
 @Injectable({ providedIn: 'root' })

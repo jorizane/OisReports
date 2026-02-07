@@ -4,12 +4,17 @@ import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 
 import {
-  ReportComponentRead,
+  FilterReportValueRead,
   ReportDetailRead,
   ReportsService,
 } from '../../../services/reports/reports.service';
 
-type ComponentInput = ReportComponentRead & { description: string };
+type ComponentInput = FilterReportValueRead & {
+  value_text: string | null;
+  value_number: number | null;
+  value_option: string | null;
+  value_bool: boolean | null;
+};
 
 @Component({
   selector: 'app-report-edit-page',
@@ -47,9 +52,12 @@ export class ReportEditPage implements OnInit {
         this.report.set(report);
         this.completed = report.completed;
         this.components.set(
-          report.components.map((component) => ({
-            ...component,
-            description: component.description,
+          report.filter_values.map((field) => ({
+            ...field,
+            value_text: field.value_text ?? '',
+            value_number: field.value_number ?? null,
+            value_option: field.value_option ?? '',
+            value_bool: field.value_bool ?? null,
           }))
         );
         this.isLoading.set(false);
@@ -72,26 +80,58 @@ export class ReportEditPage implements OnInit {
       return;
     }
 
-    const payload = this.components().map((component) => ({
-      component_id: component.component_id,
-      description: component.description.trim(),
-    }));
+    const payload = this.components().map((field) => {
+      if (field.field_type === 'number') {
+        return {
+          filter_test_field_id: field.filter_test_field_id,
+          value_number: field.value_number,
+        };
+      }
+      if (field.field_type === 'radio') {
+        return {
+          filter_test_field_id: field.filter_test_field_id,
+          value_option: field.value_option,
+        };
+      }
+      if (field.field_type === 'boolean') {
+        return {
+          filter_test_field_id: field.filter_test_field_id,
+          value_bool: field.value_bool,
+        };
+      }
+      return {
+        filter_test_field_id: field.filter_test_field_id,
+        value_text: (field.value_text ?? '').trim(),
+      };
+    });
 
-    if (payload.some((item) => !item.description)) {
-      this.errorMessage.set('Bitte alle Beschreibungen ausfüllen.');
+    if (
+      this.components().some(
+        (field) =>
+          field.required &&
+          ((field.field_type === 'text' && !(field.value_text ?? '').trim()) ||
+            (field.field_type === 'number' && field.value_number === null) ||
+            (field.field_type === 'radio' && !field.value_option) ||
+            (field.field_type === 'boolean' && field.value_bool === null))
+      )
+    ) {
+      this.errorMessage.set('Bitte alle Pflichtfelder ausfüllen.');
       return;
     }
 
     this.reportsService
-      .updateReport(report.id, { completed: this.completed, component_descriptions: payload })
+      .updateReport(report.id, { completed: this.completed, filter_values: payload })
       .subscribe({
         next: (updated) => {
           this.report.set(updated);
           this.completed = updated.completed;
           this.components.set(
-            updated.components.map((component) => ({
-              ...component,
-              description: component.description,
+            updated.filter_values.map((field) => ({
+              ...field,
+              value_text: field.value_text ?? '',
+              value_number: field.value_number ?? null,
+              value_option: field.value_option ?? '',
+              value_bool: field.value_bool ?? null,
             }))
           );
           this.showSuccess('Bericht wurde aktualisiert.');
@@ -125,5 +165,17 @@ export class ReportEditPage implements OnInit {
       this.successTimer = null;
     }
     this.successMessage.set('');
+  }
+
+  protected optionsFor(field: FilterReportValueRead): string[] {
+    if (!field.options) {
+      return [];
+    }
+    try {
+      const parsed = JSON.parse(field.options);
+      return Array.isArray(parsed) ? parsed : [];
+    } catch {
+      return [];
+    }
   }
 }

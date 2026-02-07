@@ -2,7 +2,7 @@
   <header class="panel__header">
     <p class="eyebrow">Berichte</p>
     <h1>Bericht bearbeiten</h1>
-    <p class="subtitle">Passe die Beschreibungen an oder schließe den Bericht ab.</p>
+    <p class="subtitle">Passe die Prüffelder an oder schließe den Bericht ab.</p>
   </header>
 
   <p class="status status--error" *ngIf="errorMessage()">{{ errorMessage() }}</p>
@@ -31,17 +31,53 @@
   </div>
 
   <div class="list" *ngIf="report()">
-    <div class="list__row" *ngFor="let component of components()">
+    <div class="list__row" *ngFor="let field of components()">
       <div>
-        <p class="list__name">{{ component.component_name }}</p>
-        <textarea
-          class="field__textarea"
-          rows="3"
-          [(ngModel)]="component.description"
-          [name]="'desc-' + component.component_id"
-          placeholder="Beschreibung eingeben"
-          [disabled]="!!report()?.completed"
-        ></textarea>
+        <p class="list__name">
+          {{ field.label }}
+          <span *ngIf="field.unit">({{ field.unit }})</span>
+        </p>
+        <ng-container [ngSwitch]="field.field_type">
+          <textarea
+            *ngSwitchCase="'text'"
+            class="field__textarea"
+            rows="3"
+            [(ngModel)]="field.value_text"
+            [name]="'text-' + field.filter_test_field_id"
+            placeholder="Beschreibung eingeben"
+            [disabled]="!!report()?.completed"
+          ></textarea>
+          <input
+            *ngSwitchCase="'number'"
+            class="field__input"
+            type="number"
+            [(ngModel)]="field.value_number"
+            [name]="'number-' + field.filter_test_field_id"
+            placeholder="Wert eingeben"
+            [disabled]="!!report()?.completed"
+          />
+          <div *ngSwitchCase="'radio'" class="radio-group">
+            <label class="radio-option" *ngFor="let option of optionsFor(field)">
+              <input
+                type="radio"
+                [name]="'radio-' + field.filter_test_field_id"
+                [value]="option"
+                [(ngModel)]="field.value_option"
+                [disabled]="!!report()?.completed"
+              />
+              <span>{{ option }}</span>
+            </label>
+          </div>
+          <label *ngSwitchCase="'boolean'" class="checkbox">
+            <input
+              type="checkbox"
+              [(ngModel)]="field.value_bool"
+              [name]="'bool-' + field.filter_test_field_id"
+              [disabled]="!!report()?.completed"
+            />
+            <span>Ja</span>
+          </label>
+        </ng-container>
       </div>
     </div>
   </div>

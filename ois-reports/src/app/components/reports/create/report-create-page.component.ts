@@ -3,12 +3,12 @@ import { Component, OnInit, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 
-import {
-  Component as PlantComponent,
-  ComponentsService,
-} from '../../../services/components/components.service';
 import { Client, ClientsService } from '../../../services/clients/clients.service';
 import { Customer, CustomersService } from '../../../services/customers/customers.service';
+import {
+  FilterTestField,
+  FilterTestFieldsService,
+} from '../../../services/filter-test-fields/filter-test-fields.service';
 import {
   FilterPlant,
   FilterPlantsService,
@@ -17,8 +17,17 @@ import { ReportsService } from '../../../services/reports/reports.service';
 
 type ComponentInput = {
   id: number;
-  name: string;
-  description: string;
+  label: string;
+  field_type: FilterTestField['field_type'];
+  unit: string | null;
+  options: string[];
+  required: boolean;
+  min_value: number | null;
+  max_value: number | null;
+  value_text: string;
+  value_number: number | null;
+  value_option: string;
+  value_bool: boolean | null;
 };
 
 @Component({
@@ -42,7 +51,7 @@ export class ReportCreatePage implements OnInit {
   private successTimer: number | null = null;
 
   constructor(
-    private readonly componentsService: ComponentsService,
+    private readonly filterTestFieldsService: FilterTestFieldsService,
     private readonly clientsService: ClientsService,
     private readonly customersService: CustomersService,
     private readonly filterPlantsService: FilterPlantsService,
@@ -67,19 +76,28 @@ export class ReportCreatePage implements OnInit {
     this.loadPlant();
 
     this.isLoading.set(true);
-    this.componentsService.listComponents(this.plantId).subscribe({
-      next: (components) => {
+    this.filterTestFieldsService.listFilterTestFields().subscribe({
+      next: (fields) => {
         this.components.set(
-          components.map((component) => ({
-            id: component.id,
-            name: component.name,
-            description: '',
+          fields.map((field) => ({
+            id: field.id,
+            label: field.label,
+            field_type: field.field_type,
+            unit: field.unit,
+            options: field.options ? JSON.parse(field.options) : [],
+            required: field.required,
+            min_value: field.min_value,
+            max_value: field.max_value,
+            value_text: '',
+            value_number: null,
+            value_option: '',
+            value_bool: null,
           }))
         );
         this.isLoading.set(false);
       },
       error: () => {
-        this.errorMessage.set('Komponenten konnten nicht geladen werden.');
+        this.errorMessage.set('Prüffelder konnten nicht geladen werden.');
         this.isLoading.set(false);
       },
     });
@@ -130,18 +148,47 @@ export class ReportCreatePage implements OnInit {
       return;
     }
 
-    const payload = this.components().map((component) => ({
-      component_id: component.id,
-      description: component.description.trim(),
-    }));
+    const payload = this.components().map((field) => {
+      if (field.field_type === 'number') {
+        return {
+          filter_test_field_id: field.id,
+          value_number: field.value_number,
+        };
+      }
+      if (field.field_type === 'radio') {
+        return {
+          filter_test_field_id: field.id,
+          value_option: field.value_option,
+        };
+      }
+      if (field.field_type === 'boolean') {
+        return {
+          filter_test_field_id: field.id,
+          value_bool: field.value_bool,
+        };
+      }
+      return {
+        filter_test_field_id: field.id,
+        value_text: field.value_text.trim(),
+      };
+    });
 
-    if (payload.some((item) => !item.description)) {
-      this.errorMessage.set('Bitte alle Beschreibungen ausfüllen.');
+    if (
+      this.components().some(
+        (field) =>
+          field.required &&
+          ((field.field_type === 'text' && !field.value_text.trim()) ||
+            (field.field_type === 'number' && field.value_number === null) ||
+            (field.field_type === 'radio' && !field.value_option) ||
+            (field.field_type === 'boolean' && field.value_bool === null))
+      )
+    ) {
+      this.errorMessage.set('Bitte alle Pflichtfelder ausfüllen.');
       return;
     }
 
     this.reportsService
-      .createReport(this.customerId, this.plantId, { component_descriptions: payload })
+      .createReport(this.customerId, this.plantId, { filter_values: payload })
       .subscribe({
         next: () => {
           this.showSuccess('Bericht wurde zwischengespeichert.');

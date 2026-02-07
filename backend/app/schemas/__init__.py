@@ -81,13 +81,16 @@ class ComponentUpdate(BaseModel):
     name: str
 
 
-class ReportComponentCreate(BaseModel):
-    component_id: int
-    description: str
+class FilterReportValueCreate(BaseModel):
+    filter_test_field_id: int
+    value_text: str | None = None
+    value_number: float | None = None
+    value_option: str | None = None
+    value_bool: bool | None = None
 
 
 class ReportCreate(BaseModel):
-    component_descriptions: list[ReportComponentCreate]
+    filter_values: list[FilterReportValueCreate]
 
 
 class ReportRead(BaseModel):
@@ -112,10 +115,30 @@ class ReportListRead(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
 
-class ReportComponentRead(BaseModel):
-    component_id: int
-    component_name: str
-    description: str
+class FilterTestFieldRead(BaseModel):
+    id: int
+    label: str
+    field_type: str
+    unit: str | None = None
+    options: str | None = None
+    required: bool
+    min_value: float | None = None
+    max_value: float | None = None
+
+
+class FilterReportValueRead(BaseModel):
+    filter_test_field_id: int
+    label: str
+    field_type: str
+    unit: str | None = None
+    options: str | None = None
+    required: bool
+    min_value: float | None = None
+    max_value: float | None = None
+    value_text: str | None = None
+    value_number: float | None = None
+    value_option: str | None = None
+    value_bool: bool | None = None
 
 
 class ReportDetailRead(BaseModel):
@@ -126,9 +149,9 @@ class ReportDetailRead(BaseModel):
     filter_plant_description: str
     created_at: datetime
     completed: bool
-    components: list[ReportComponentRead]
+    filter_values: list[FilterReportValueRead]
 
 
 class ReportUpdate(BaseModel):
     completed: bool
-    component_descriptions: list[ReportComponentCreate]
+    filter_values: list[FilterReportValueCreate]

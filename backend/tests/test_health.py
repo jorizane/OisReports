@@ -4,8 +4,9 @@ import pytest
 from fastapi.testclient import TestClient
 from sqlalchemy import text
 
-from app.core.database import engine
+from app.core.database import SessionLocal, engine
 from app.main import app
+from app.models import FilterTestField
 
 
 client = TestClient(app)
@@ -24,6 +25,44 @@ def _db_available() -> bool:
         return True
     except Exception:
         return False
+
+
+def _ensure_filter_test_fields() -> list[int]:
+    db = SessionLocal()
+    try:
+        fields = db.query(FilterTestField).order_by(FilterTestField.id.asc()).all()
+        if fields:
+            # Normalize required flags so tests only need to provide two fields.
+            for field in fields:
+                field.required = False
+            if len(fields) >= 2:
+                fields[0].required = True
+                fields[1].required = True
+            db.commit()
+            return [field.id for field in fields]
+        fields = [
+            FilterTestField(
+                label="Differenzdruck",
+                field_type="number",
+                unit="bar",
+                required=True,
+                min_value=0,
+                max_value=10,
+            ),
+            FilterTestField(
+                label="Dichtheit geprüft",
+                field_type="radio",
+                options='["OK", "Nicht OK"]',
+                required=True,
+            ),
+        ]
+        db.add_all(fields)
+        db.commit()
+        for field in fields:
+            db.refresh(field)
+        return [field.id for field in fields]
+    finally:
+        db.close()
 
 
 def test_health():
@@ -105,6 +144,17 @@ def test_list_clients_includes_created_client():
     assert response.status_code == 200
     clients = response.json()
     assert any(item["id"] == created["id"] for item in clients)
+
+
+def test_list_filter_test_fields():
+    if not _db_available():
+        pytest.skip("Database is not available.")
+
+    _ensure_filter_test_fields()
+    response = client.get("/filter-test-fields")
+    assert response.status_code == 200
+    payload = response.json()
+    assert len(payload) >= 1
 
 
 def test_create_manufacturer():
@@ -469,6 +519,7 @@ def test_create_report():
     if not _db_available():
         pytest.skip("Database is not available.")
 
+    fields = _ensure_filter_test_fields()
     client_item = _create_client()
     customer = client.post(
         "/customers",
@@ -486,17 +537,14 @@ def test_create_report():
             "manufacturer_id": manufacturer["id"],
         },
     ).json()
-    component = client.post(
-        f"/filter-plants/{plant['id']}/components",
-        json={"name": "Messpunkt A"},
-    ).json()
 
     response = client.post(
         f"/customers/{customer['id']}/filter-plants/{plant['id']}/reports",
         json={
-            "component_descriptions": [
-                {"component_id": component["id"], "description": "OK"}
-            ]
+            "filter_values": [
+                    {"filter_test_field_id": fields[0], "value_number": 2.5},
+                    {"filter_test_field_id": fields[1], "value_option": "OK"},
+            ],
         },
     )
     assert response.status_code == 201
@@ -510,6 +558,7 @@ def test_list_reports():
     if not _db_available():
         pytest.skip("Database is not available.")
 
+    fields = _ensure_filter_test_fields()
     client_item = _create_client()
     customer = client.post(
         "/customers",
@@ -527,16 +576,13 @@ def test_list_reports():
             "manufacturer_id": manufacturer["id"],
         },
     ).json()
-    component = client.post(
-        f"/filter-plants/{plant['id']}/components",
-        json={"name": "Messpunkt B"},
-    ).json()
     client.post(
         f"/customers/{customer['id']}/filter-plants/{plant['id']}/reports",
         json={
-            "component_descriptions": [
-                {"component_id": component["id"], "description": "OK"}
-            ]
+            "filter_values": [
+                    {"filter_test_field_id": fields[0], "value_number": 3.0},
+                    {"filter_test_field_id": fields[1], "value_option": "OK"},
+            ],
         },
     )
 
@@ -553,6 +599,7 @@ def test_list_customer_reports():
     if not _db_available():
         pytest.skip("Database is not available.")
 
+    fields = _ensure_filter_test_fields()
     client_item = _create_client()
     customer = client.post(
         "/customers",
@@ -570,16 +617,13 @@ def test_list_customer_reports():
             "manufacturer_id": manufacturer["id"],
         },
     ).json()
-    component = client.post(
-        f"/filter-plants/{plant['id']}/components",
-        json={"name": "Messpunkt C"},
-    ).json()
     client.post(
         f"/customers/{customer['id']}/filter-plants/{plant['id']}/reports",
         json={
-            "component_descriptions": [
-                {"component_id": component["id"], "description": "OK"}
-            ]
+            "filter_values": [
+                    {"filter_test_field_id": fields[0], "value_number": 3.5},
+                    {"filter_test_field_id": fields[1], "value_option": "OK"},
+            ],
         },
     )
 
@@ -594,6 +638,7 @@ def test_get_report_detail():
     if not _db_available():
         pytest.skip("Database is not available.")
 
+    fields = _ensure_filter_test_fields()
     client_item = _create_client()
     customer = client.post(
         "/customers",
@@ -611,16 +656,13 @@ def test_get_report_detail():
             "manufacturer_id": manufacturer["id"],
         },
     ).json()
-    component = client.post(
-        f"/filter-plants/{plant['id']}/components",
-        json={"name": "Messpunkt D"},
-    ).json()
     report = client.post(
         f"/customers/{customer['id']}/filter-plants/{plant['id']}/reports",
         json={
-            "component_descriptions": [
-                {"component_id": component["id"], "description": "OK"}
-            ]
+            "filter_values": [
+                    {"filter_test_field_id": fields[0], "value_number": 4.0},
+                    {"filter_test_field_id": fields[1], "value_option": "OK"},
+            ],
         },
     ).json()
 
@@ -630,7 +672,7 @@ def test_get_report_detail():
     assert payload["id"] == report["id"]
     assert payload["customer_id"] == customer["id"]
     assert payload["filter_plant_id"] == plant["id"]
-    assert len(payload["components"]) == 1
+    assert len(payload["filter_values"]) >= 1
     assert payload["completed"] is False
 
 
@@ -638,6 +680,7 @@ def test_update_report_and_mark_completed():
     if not _db_available():
         pytest.skip("Database is not available.")
 
+    fields = _ensure_filter_test_fields()
     client_item = _create_client()
     customer = client.post(
         "/customers",
@@ -655,16 +698,13 @@ def test_update_report_and_mark_completed():
             "manufacturer_id": manufacturer["id"],
         },
     ).json()
-    component = client.post(
-        f"/filter-plants/{plant['id']}/components",
-        json={"name": "Messpunkt E"},
-    ).json()
     report = client.post(
         f"/customers/{customer['id']}/filter-plants/{plant['id']}/reports",
         json={
-            "component_descriptions": [
-                {"component_id": component["id"], "description": "OK"}
-            ]
+            "filter_values": [
+                    {"filter_test_field_id": fields[0], "value_number": 2.0},
+                    {"filter_test_field_id": fields[1], "value_option": "OK"},
+            ],
         },
     ).json()
 
@@ -672,8 +712,9 @@ def test_update_report_and_mark_completed():
         f"/reports/{report['id']}",
         json={
             "completed": True,
-            "component_descriptions": [
-                {"component_id": component["id"], "description": "Alles erledigt"}
+            "filter_values": [
+                {"filter_test_field_id": fields[0], "value_number": 2.2},
+                {"filter_test_field_id": fields[1], "value_option": "OK"},
             ],
         },
     )
@@ -685,8 +726,9 @@ def test_update_report_and_mark_completed():
         f"/reports/{report['id']}",
         json={
             "completed": True,
-            "component_descriptions": [
-                {"component_id": component["id"], "description": "Nochmal"}
+            "filter_values": [
+                {"filter_test_field_id": fields[0], "value_number": 2.3},
+                {"filter_test_field_id": fields[1], "value_option": "OK"},
             ],
         },
     )

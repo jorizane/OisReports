@@ -1,4 +1,4 @@
-from sqlalchemy import Boolean, Column, DateTime, ForeignKey, Integer, String
+from sqlalchemy import Boolean, Column, DateTime, Float, ForeignKey, Integer, String, Text
 from sqlalchemy.sql import func
 from sqlalchemy.orm import relationship
 
@@ -74,6 +74,9 @@ class Report(Base):
     customer = relationship("Customer")
     filter_plant = relationship("FilterPlant", back_populates="reports")
     items = relationship("ReportComponent", back_populates="report", cascade="all, delete-orphan")
+    filter_values = relationship(
+        "FilterReportValue", back_populates="report", cascade="all, delete-orphan"
+    )
 
 
 class ReportComponent(Base):
@@ -86,3 +89,37 @@ class ReportComponent(Base):
 
     report = relationship("Report", back_populates="items")
     component = relationship("Component", back_populates="report_components")
+
+
+class FilterTestField(Base):
+    __tablename__ = "filter_test_fields"
+
+    id = Column(Integer, primary_key=True, index=True)
+    label = Column(String(255), nullable=False, unique=True)
+    field_type = Column(String(50), nullable=False)
+    unit = Column(String(50), nullable=True)
+    options = Column(Text, nullable=True)
+    required = Column(Boolean, nullable=False, server_default="false")
+    min_value = Column(Float, nullable=True)
+    max_value = Column(Float, nullable=True)
+
+    report_values = relationship(
+        "FilterReportValue", back_populates="filter_test_field", cascade="all, delete-orphan"
+    )
+
+
+class FilterReportValue(Base):
+    __tablename__ = "filter_report_values"
+
+    id = Column(Integer, primary_key=True, index=True)
+    report_id = Column(Integer, ForeignKey("reports.id"), nullable=False, index=True)
+    filter_test_field_id = Column(
+        Integer, ForeignKey("filter_test_fields.id"), nullable=False, index=True
+    )
+    value_text = Column(Text, nullable=True)
+    value_number = Column(Float, nullable=True)
+    value_option = Column(String(255), nullable=True)
+    value_bool = Column(Boolean, nullable=True)
+
+    report = relationship("Report", back_populates="filter_values")
+    filter_test_field = relationship("FilterTestField", back_populates="report_values")

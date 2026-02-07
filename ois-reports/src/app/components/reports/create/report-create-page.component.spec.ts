@@ -33,7 +33,7 @@ describe('ReportCreatePage', () => {
     httpMock.verify();
   });
 
-  it('should load components for report', () => {
+  it('should load filter test fields for report', () => {
     const fixture = TestBed.createComponent(ReportCreatePage);
     fixture.detectChanges();
 
@@ -55,13 +55,24 @@ describe('ReportCreatePage', () => {
       year_built: 2020,
     });
 
-    const request = httpMock.expectOne('http://localhost:8000/filter-plants/11/components');
+    const request = httpMock.expectOne('http://localhost:8000/filter-test-fields');
     expect(request.request.method).toBe('GET');
-    request.flush([{ id: 5, filter_plant_id: 11, name: 'Pumpe A' }]);
+    request.flush([
+      {
+        id: 5,
+        label: 'Differenzdruck',
+        field_type: 'number',
+        unit: 'Pa',
+        options: null,
+        required: true,
+        min_value: null,
+        max_value: null,
+      },
+    ]);
 
     fixture.detectChanges();
     const compiled = fixture.nativeElement as HTMLElement;
-    expect(compiled.textContent).toContain('Pumpe A');
+    expect(compiled.textContent).toContain('Differenzdruck');
   });
 
   it('should save report', () => {
@@ -83,16 +94,27 @@ describe('ReportCreatePage', () => {
       year_built: 2020,
     });
 
-    const request = httpMock.expectOne('http://localhost:8000/filter-plants/11/components');
-    request.flush([{ id: 5, filter_plant_id: 11, name: 'Pumpe A' }]);
+    const request = httpMock.expectOne('http://localhost:8000/filter-test-fields');
+    request.flush([
+      {
+        id: 5,
+        label: 'Differenzdruck',
+        field_type: 'number',
+        unit: 'Pa',
+        options: null,
+        required: true,
+        min_value: null,
+        max_value: null,
+      },
+    ]);
 
     const component = fixture.componentInstance as ReportCreatePage & {
       saveReport: () => void;
-      components: () => { id: number; name: string; description: string }[];
+      components: () => { id: number; value_number: number | null }[];
     };
 
     component.components.update((items) =>
-      items.map((item) => (item.id === 5 ? { ...item, description: 'Alles ok' } : item))
+      items.map((item) => (item.id === 5 ? { ...item, value_number: 12 } : item))
     );
     component.saveReport();
 
@@ -100,6 +122,9 @@ describe('ReportCreatePage', () => {
       'http://localhost:8000/customers/4/filter-plants/11/reports'
     );
     expect(saveRequest.request.method).toBe('POST');
+    expect(saveRequest.request.body).toEqual({
+      filter_values: [{ filter_test_field_id: 5, value_number: 12 }],
+    });
     saveRequest.flush({
       id: 1,
       customer_id: 4,

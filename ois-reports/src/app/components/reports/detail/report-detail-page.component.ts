@@ -3,6 +3,7 @@ import { Component, OnInit, signal } from '@angular/core';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 
 import {
+  FilterReportValueRead,
   ReportDetailRead,
   ReportsService,
 } from '../../../services/reports/reports.service';
@@ -43,5 +44,21 @@ export class ReportDetailPage implements OnInit {
         this.isLoading.set(false);
       },
     });
+  }
+
+  protected formatValue(field: FilterReportValueRead): string {
+    if (field.field_type === 'number') {
+      return field.value_number !== null ? String(field.value_number) : '—';
+    }
+    if (field.field_type === 'radio') {
+      return field.value_option?.trim() ? field.value_option : '—';
+    }
+    if (field.field_type === 'boolean') {
+      if (field.value_bool === null) {
+        return '—';
+      }
+      return field.value_bool ? 'Ja' : 'Nein';
+    }
+    return field.value_text?.trim() ? field.value_text : '—';
   }
 }

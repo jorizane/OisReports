@@ -47,11 +47,20 @@ describe('ReportDetailPage', () => {
       filter_plant_description: 'Filteranlage X',
       created_at: '2025-01-01T10:00:00Z',
       completed: true,
-      components: [
+      filter_values: [
         {
-          component_id: 99,
-          component_name: 'Messpunkt A',
-          description: 'Alles ok',
+          filter_test_field_id: 4,
+          label: 'Differenzdruck',
+          field_type: 'number',
+          unit: 'Pa',
+          options: null,
+          required: true,
+          min_value: null,
+          max_value: null,
+          value_text: null,
+          value_number: 10,
+          value_option: null,
+          value_bool: null,
         },
       ],
     });
@@ -61,8 +70,8 @@ describe('ReportDetailPage', () => {
     expect(compiled.textContent).toContain('Berichtsdetails');
     expect(compiled.textContent).toContain('#7');
     expect(compiled.textContent).toContain('Aqua Filters');
-    expect(compiled.textContent).toContain('Messpunkt A');
-    expect(compiled.textContent).toContain('Alles ok');
+    expect(compiled.textContent).toContain('Differenzdruck');
+    expect(compiled.textContent).toContain('10');
     expect(compiled.textContent).toContain('Abgeschlossen');
   });
 });

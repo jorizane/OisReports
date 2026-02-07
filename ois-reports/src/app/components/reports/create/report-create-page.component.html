@@ -1,14 +1,14 @@
 <section class="panel">
   <header class="panel__header">
     <p class="eyebrow">Bericht erstellen</p>
-    <h1>Komponentenbeschreibung</h1>
+    <h1>Prüffelder</h1>
     <p class="subtitle">
-      Hinterlege für jede Komponente eine kurze Beschreibung.
+      Erfasse die Prüffelder für den Bericht.
     </p>
   </header>
 
   <p class="status status--error" *ngIf="errorMessage()">{{ errorMessage() }}</p>
-  <p class="status" *ngIf="isLoading()">Komponenten werden geladen...</p>
+  <p class="status" *ngIf="isLoading()">Prüffelder werden geladen...</p>
 
   <div class="context" *ngIf="customer()">
     <label class="field">
@@ -42,16 +42,45 @@
   </div>
 
   <div class="list" *ngIf="!isLoading()">
-    <div class="list__row" *ngFor="let component of components(); trackBy: trackByComponentId">
+    <div class="list__row" *ngFor="let field of components(); trackBy: trackByComponentId">
       <div>
-        <p class="list__name">{{ component.name }}</p>
-        <textarea
-          class="field__textarea"
-          rows="3"
-          [(ngModel)]="component.description"
-          [name]="'desc-' + component.id"
-          placeholder="Beschreibung eingeben"
-        ></textarea>
+        <p class="list__name">
+          {{ field.label }}
+          <span *ngIf="field.unit">({{ field.unit }})</span>
+        </p>
+        <ng-container [ngSwitch]="field.field_type">
+          <textarea
+            *ngSwitchCase="'text'"
+            class="field__textarea"
+            rows="3"
+            [(ngModel)]="field.value_text"
+            [name]="'text-' + field.id"
+            placeholder="Beschreibung eingeben"
+          ></textarea>
+          <input
+            *ngSwitchCase="'number'"
+            class="field__input"
+            type="number"
+            [(ngModel)]="field.value_number"
+            [name]="'number-' + field.id"
+            placeholder="Wert eingeben"
+          />
+          <div *ngSwitchCase="'radio'" class="radio-group">
+            <label class="radio-option" *ngFor="let option of field.options">
+              <input
+                type="radio"
+                [name]="'radio-' + field.id"
+                [value]="option"
+                [(ngModel)]="field.value_option"
+              />
+              <span>{{ option }}</span>
+            </label>
+          </div>
+          <label *ngSwitchCase="'boolean'" class="checkbox">
+            <input type="checkbox" [(ngModel)]="field.value_bool" [name]="'bool-' + field.id" />
+            <span>Ja</span>
+          </label>
+        </ng-container>
       </div>
     </div>
   </div>
