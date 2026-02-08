@@ -8,6 +8,7 @@
   </header>
 
   <p class="status status--error" *ngIf="errorMessage()">{{ errorMessage() }}</p>
+  <p class="status status--success" *ngIf="successMessage()">{{ successMessage() }}</p>
   <p class="status" *ngIf="isLoading()">Prüffelder werden geladen...</p>
 
   <div class="context" *ngIf="customer()">
@@ -47,6 +48,7 @@
         <p class="list__name">
           {{ field.label }}
           <span *ngIf="field.unit">({{ field.unit }})</span>
+          <span class="pill pill--required" *ngIf="field.required">Pflicht</span>
         </p>
         <ng-container [ngSwitch]="field.field_type">
           <textarea

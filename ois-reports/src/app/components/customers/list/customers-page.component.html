@@ -37,6 +37,7 @@
   </form>
 
   <p class="status status--error" *ngIf="errorMessage()">{{ errorMessage() }}</p>
+  <p class="status status--success" *ngIf="successMessage()">{{ successMessage() }}</p>
   <p class="status" *ngIf="isLoading()">Kunden werden geladen...</p>
 
   <div class="list" *ngIf="!isLoading()">

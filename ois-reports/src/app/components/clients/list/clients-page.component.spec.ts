@@ -52,5 +52,6 @@ describe('ClientsPage', () => {
     fixture.detectChanges();
     const compiled = fixture.nativeElement as HTMLElement;
     expect(compiled.textContent).toContain('Auftraggeber B');
+    expect(compiled.textContent).toContain('Auftraggeber wurde angelegt.');
   });
 });

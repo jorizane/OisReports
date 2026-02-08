@@ -69,6 +69,7 @@ describe('CustomersPage', () => {
     const rows = compiled.querySelectorAll('.list__row');
     expect(rows.length).toBe(1);
     expect(compiled.textContent).toContain('Nova Filters');
+    expect(compiled.textContent).toContain('Kunde "Nova Filters" wurde angelegt.');
   });
 
   it('should dismiss success popup', () => {

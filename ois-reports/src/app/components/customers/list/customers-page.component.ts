@@ -82,6 +82,7 @@ export class CustomersPage implements OnInit {
         this.newCustomerName = '';
         this.selectedClientId = null;
         this.errorMessage.set('');
+        this.showSuccess(`Kunde "${customer.name}" wurde angelegt.`);
       },
       error: () => {
         this.errorMessage.set('Kunde konnte nicht angelegt werden.');

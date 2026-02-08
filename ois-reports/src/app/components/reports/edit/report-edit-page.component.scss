@@ -102,6 +102,23 @@
   font-weight: 600;
 }
 
+.pill {
+  display: inline-flex;
+  align-items: center;
+  margin-left: 0.6rem;
+  padding: 0.15rem 0.6rem;
+  border-radius: 999px;
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.pill--required {
+  background: rgba(198, 68, 68, 0.1);
+  color: #c64444;
+}
+
 .field__input {
   padding: 0.85rem 1rem;
   border-radius: 12px;

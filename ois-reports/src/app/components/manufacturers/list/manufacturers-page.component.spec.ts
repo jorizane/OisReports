@@ -57,5 +57,6 @@ describe('ManufacturersPage', () => {
     fixture.detectChanges();
     const compiled = fixture.nativeElement as HTMLElement;
     expect(compiled.textContent).toContain('Aqua Systems');
+    expect(compiled.textContent).toContain('Hersteller wurde angelegt.');
   });
 });

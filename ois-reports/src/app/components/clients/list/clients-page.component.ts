@@ -15,7 +15,9 @@ export class ClientsPage implements OnInit {
   protected readonly clients = signal<Client[]>([]);
   protected readonly isLoading = signal(false);
   protected readonly errorMessage = signal('');
+  protected readonly successMessage = signal('');
   protected newClientName = '';
+  private successTimer: number | null = null;
 
   constructor(private readonly clientsService: ClientsService) {}
 
@@ -51,10 +53,31 @@ export class ClientsPage implements OnInit {
         this.clients.update((items) => [...items, client]);
         this.newClientName = '';
         this.errorMessage.set('');
+        this.showSuccess('Auftraggeber wurde angelegt.');
       },
       error: () => {
         this.errorMessage.set('Auftraggeber konnte nicht angelegt werden.');
       },
     });
+  }
+
+  dismissSuccess(): void {
+    this.clearSuccess();
+  }
+
+  private showSuccess(message: string): void {
+    this.clearSuccess();
+    this.successMessage.set(message);
+    this.successTimer = window.setTimeout(() => {
+      this.clearSuccess();
+    }, 2200);
+  }
+
+  private clearSuccess(): void {
+    if (this.successTimer !== null) {
+      window.clearTimeout(this.successTimer);
+      this.successTimer = null;
+    }
+    this.successMessage.set('');
   }
 }

@@ -39,6 +39,14 @@
   color: #c64444;
 }
 
+.status--success {
+  color: #222222;
+  background: rgba(34, 197, 94, 0.15);
+  padding: 0.5rem 0.85rem;
+  border-radius: 999px;
+  width: fit-content;
+}
+
 .context {
   display: grid;
   gap: 1rem;
@@ -106,6 +114,23 @@
 .list__name {
   margin: 0 0 0.5rem;
   font-weight: 600;
+}
+
+.pill {
+  display: inline-flex;
+  align-items: center;
+  margin-left: 0.6rem;
+  padding: 0.15rem 0.6rem;
+  border-radius: 999px;
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.pill--required {
+  background: rgba(198, 68, 68, 0.1);
+  color: #c64444;
 }
 
 .field__textarea {

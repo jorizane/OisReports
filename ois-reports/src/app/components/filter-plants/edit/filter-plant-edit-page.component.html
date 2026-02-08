@@ -6,6 +6,7 @@
   </header>
 
   <p class="status status--error" *ngIf="errorMessage()">{{ errorMessage() }}</p>
+  <p class="status status--success" *ngIf="successMessage()">{{ successMessage() }}</p>
   <p class="status" *ngIf="isLoading()">Filteranlage wird geladen...</p>
 
   <div class="single" *ngIf="!isLoading() && plant()">
