@@ -1,4 +1,5 @@
 from sqlalchemy import Boolean, Column, DateTime, Float, ForeignKey, Integer, String, Text
+from sqlalchemy import UniqueConstraint
 from sqlalchemy.sql import func
 from sqlalchemy.orm import relationship
 
@@ -45,8 +46,25 @@ class FilterPlant(Base):
 
     customer = relationship("Customer", back_populates="filter_plants")
     manufacturer = relationship("Manufacturer", back_populates="filter_plants")
+    filter = relationship(
+        "Filter", back_populates="filter_plant", uselist=False, cascade="all, delete-orphan"
+    )
     components = relationship("Component", back_populates="filter_plant", cascade="all, delete-orphan")
     reports = relationship("Report", back_populates="filter_plant", cascade="all, delete-orphan")
+
+
+class Filter(Base):
+    __tablename__ = "filters"
+
+    id = Column(Integer, primary_key=True, index=True)
+    filter_plant_id = Column(Integer, ForeignKey("filter_plants.id"), nullable=False, unique=True)
+    name = Column(String(255), nullable=False)
+    description = Column(String(1000), nullable=True)
+
+    filter_plant = relationship("FilterPlant", back_populates="filter")
+    test_fields = relationship(
+        "FilterTestField", back_populates="filter", cascade="all, delete-orphan"
+    )
 
 
 class Component(Base):
@@ -93,9 +111,11 @@ class ReportComponent(Base):
 
 class FilterTestField(Base):
     __tablename__ = "filter_test_fields"
+    __table_args__ = (UniqueConstraint("filter_id", "label", name="uq_filter_test_field"),)
 
     id = Column(Integer, primary_key=True, index=True)
-    label = Column(String(255), nullable=False, unique=True)
+    filter_id = Column(Integer, ForeignKey("filters.id"), nullable=False, index=True)
+    label = Column(String(255), nullable=False)
     field_type = Column(String(50), nullable=False)
     unit = Column(String(50), nullable=True)
     options = Column(Text, nullable=True)
@@ -103,6 +123,7 @@ class FilterTestField(Base):
     min_value = Column(Float, nullable=True)
     max_value = Column(Float, nullable=True)
 
+    filter = relationship("Filter", back_populates="test_fields")
     report_values = relationship(
         "FilterReportValue", back_populates="filter_test_field", cascade="all, delete-orphan"
     )

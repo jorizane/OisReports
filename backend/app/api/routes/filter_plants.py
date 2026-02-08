@@ -1,8 +1,10 @@
+import json
+
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 
 from ...core.database import get_db
-from ...models import Customer, FilterPlant, Manufacturer
+from ...models import Customer, Filter, FilterPlant, FilterTestField, Manufacturer
 from ...schemas import FilterPlantCreate, FilterPlantRead, FilterPlantUpdate
 
 router = APIRouter(tags=["filter-plants"])
@@ -58,6 +60,59 @@ def create_filter_plant(
         year_built=payload.year_built,
     )
     db.add(filter_plant)
+    db.flush()
+
+    filter_item = Filter(
+        filter_plant_id=filter_plant.id,
+        name="Standardfilter",
+        description="Automatisch angelegter Filter",
+    )
+    db.add(filter_item)
+    db.flush()
+
+    db.add_all(
+        [
+            FilterTestField(
+                filter_id=filter_item.id,
+                label="Differenzdruck",
+                field_type="number",
+                unit="bar",
+                required=True,
+                min_value=0,
+                max_value=10,
+            ),
+            FilterTestField(
+                filter_id=filter_item.id,
+                label="Dichtheit geprüft",
+                field_type="radio",
+                options=json.dumps(["OK", "Nicht OK"]),
+                required=True,
+            ),
+            FilterTestField(
+                filter_id=filter_item.id,
+                label="Filter beschädigt?",
+                field_type="radio",
+                options=json.dumps(["Nein", "Ja"]),
+                required=True,
+            ),
+            FilterTestField(
+                filter_id=filter_item.id,
+                label="Geräuschentwicklung",
+                field_type="number",
+                unit="dB",
+                required=False,
+                min_value=0,
+                max_value=120,
+            ),
+            FilterTestField(
+                filter_id=filter_item.id,
+                label="Beschreibung / Auffälligkeiten",
+                field_type="text",
+                required=False,
+            ),
+        ]
+    )
+
     db.commit()
     db.refresh(filter_plant)
     return filter_plant

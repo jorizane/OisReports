@@ -55,11 +55,14 @@ describe('ReportCreatePage', () => {
       year_built: 2020,
     });
 
-    const request = httpMock.expectOne('http://localhost:8000/filter-test-fields');
+    const request = httpMock.expectOne(
+      'http://localhost:8000/filter-plants/11/filter-test-fields'
+    );
     expect(request.request.method).toBe('GET');
     request.flush([
       {
         id: 5,
+        filter_id: 11,
         label: 'Differenzdruck',
         field_type: 'number',
         unit: 'Pa',
@@ -94,10 +97,13 @@ describe('ReportCreatePage', () => {
       year_built: 2020,
     });
 
-    const request = httpMock.expectOne('http://localhost:8000/filter-test-fields');
+    const request = httpMock.expectOne(
+      'http://localhost:8000/filter-plants/11/filter-test-fields'
+    );
     request.flush([
       {
         id: 5,
+        filter_id: 11,
         label: 'Differenzdruck',
         field_type: 'number',
         unit: 'Pa',

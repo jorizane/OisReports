@@ -117,6 +117,7 @@ class ReportListRead(BaseModel):
 
 class FilterTestFieldRead(BaseModel):
     id: int
+    filter_id: int
     label: str
     field_type: str
     unit: str | None = None

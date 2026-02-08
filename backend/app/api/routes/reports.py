@@ -119,7 +119,15 @@ def create_report(
     if not payload.filter_values:
         raise HTTPException(status_code=400, detail="Filter values are required.")
 
-    fields = db.query(FilterTestField).order_by(FilterTestField.id.asc()).all()
+    if not filter_plant.filter:
+        raise HTTPException(status_code=400, detail="Filter is missing for filter plant.")
+
+    fields = (
+        db.query(FilterTestField)
+        .filter(FilterTestField.filter_id == filter_plant.filter.id)
+        .order_by(FilterTestField.id.asc())
+        .all()
+    )
     field_map = {field.id: field for field in fields}
     provided_ids = {item.filter_test_field_id for item in payload.filter_values}
 
@@ -189,7 +197,15 @@ def update_report(report_id: int, payload: ReportUpdate, db: Session = Depends(g
     if not payload.filter_values:
         raise HTTPException(status_code=400, detail="Filter values are required.")
 
-    fields = db.query(FilterTestField).order_by(FilterTestField.id.asc()).all()
+    if not report.filter_plant or not report.filter_plant.filter:
+        raise HTTPException(status_code=400, detail="Filter is missing for filter plant.")
+
+    fields = (
+        db.query(FilterTestField)
+        .filter(FilterTestField.filter_id == report.filter_plant.filter.id)
+        .order_by(FilterTestField.id.asc())
+        .all()
+    )
     field_map = {field.id: field for field in fields}
     provided_ids = {item.filter_test_field_id for item in payload.filter_values}
 

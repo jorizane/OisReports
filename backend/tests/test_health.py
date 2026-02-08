@@ -6,7 +6,7 @@ from sqlalchemy import text
 
 from app.core.database import SessionLocal, engine
 from app.main import app
-from app.models import FilterTestField
+from app.models import Filter, FilterPlant, FilterTestField
 
 
 client = TestClient(app)
@@ -27,10 +27,29 @@ def _db_available() -> bool:
         return False
 
 
-def _ensure_filter_test_fields() -> list[int]:
+def _ensure_filter_test_fields(filter_plant_id: int) -> list[int]:
     db = SessionLocal()
     try:
-        fields = db.query(FilterTestField).order_by(FilterTestField.id.asc()).all()
+        filter_plant = db.get(FilterPlant, filter_plant_id)
+        if not filter_plant:
+            raise RuntimeError("Filter plant not found for test setup.")
+
+        filter_item = filter_plant.filter
+        if not filter_item:
+            filter_item = Filter(
+                filter_plant_id=filter_plant_id,
+                name="Testfilter",
+                description="Testfilter",
+            )
+            db.add(filter_item)
+            db.flush()
+
+        fields = (
+            db.query(FilterTestField)
+            .filter(FilterTestField.filter_id == filter_item.id)
+            .order_by(FilterTestField.id.asc())
+            .all()
+        )
         if fields:
             # Normalize required flags so tests only need to provide two fields.
             for field in fields:
@@ -42,6 +61,7 @@ def _ensure_filter_test_fields() -> list[int]:
             return [field.id for field in fields]
         fields = [
             FilterTestField(
+                filter_id=filter_item.id,
                 label="Differenzdruck",
                 field_type="number",
                 unit="bar",
@@ -50,6 +70,7 @@ def _ensure_filter_test_fields() -> list[int]:
                 max_value=10,
             ),
             FilterTestField(
+                filter_id=filter_item.id,
                 label="Dichtheit geprüft",
                 field_type="radio",
                 options='["OK", "Nicht OK"]',
@@ -150,8 +171,26 @@ def test_list_filter_test_fields():
     if not _db_available():
         pytest.skip("Database is not available.")
 
-    _ensure_filter_test_fields()
-    response = client.get("/filter-test-fields")
+    client_item = _create_client()
+    customer = client.post(
+        "/customers",
+        json={"name": f"Field Customer {uuid.uuid4()}", "client_id": client_item["id"]},
+    ).json()
+    manufacturer = client.post(
+        "/manufacturers",
+        json={"name": f"Field Manufacturer {uuid.uuid4()}"},
+    ).json()
+    plant = client.post(
+        f"/customers/{customer['id']}/filter-plants",
+        json={
+            "description": "Field Plant",
+            "year_built": 2020,
+            "manufacturer_id": manufacturer["id"],
+        },
+    ).json()
+
+    _ensure_filter_test_fields(plant["id"])
+    response = client.get(f"/filter-plants/{plant['id']}/filter-test-fields")
     assert response.status_code == 200
     payload = response.json()
     assert len(payload) >= 1
@@ -519,7 +558,6 @@ def test_create_report():
     if not _db_available():
         pytest.skip("Database is not available.")
 
-    fields = _ensure_filter_test_fields()
     client_item = _create_client()
     customer = client.post(
         "/customers",
@@ -537,6 +575,7 @@ def test_create_report():
             "manufacturer_id": manufacturer["id"],
         },
     ).json()
+    fields = _ensure_filter_test_fields(plant["id"])
 
     response = client.post(
         f"/customers/{customer['id']}/filter-plants/{plant['id']}/reports",
@@ -558,7 +597,6 @@ def test_list_reports():
     if not _db_available():
         pytest.skip("Database is not available.")
 
-    fields = _ensure_filter_test_fields()
     client_item = _create_client()
     customer = client.post(
         "/customers",
@@ -576,6 +614,7 @@ def test_list_reports():
             "manufacturer_id": manufacturer["id"],
         },
     ).json()
+    fields = _ensure_filter_test_fields(plant["id"])
     client.post(
         f"/customers/{customer['id']}/filter-plants/{plant['id']}/reports",
         json={
@@ -599,7 +638,6 @@ def test_list_customer_reports():
     if not _db_available():
         pytest.skip("Database is not available.")
 
-    fields = _ensure_filter_test_fields()
     client_item = _create_client()
     customer = client.post(
         "/customers",
@@ -617,6 +655,7 @@ def test_list_customer_reports():
             "manufacturer_id": manufacturer["id"],
         },
     ).json()
+    fields = _ensure_filter_test_fields(plant["id"])
     client.post(
         f"/customers/{customer['id']}/filter-plants/{plant['id']}/reports",
         json={
@@ -638,7 +677,6 @@ def test_get_report_detail():
     if not _db_available():
         pytest.skip("Database is not available.")
 
-    fields = _ensure_filter_test_fields()
     client_item = _create_client()
     customer = client.post(
         "/customers",
@@ -656,6 +694,7 @@ def test_get_report_detail():
             "manufacturer_id": manufacturer["id"],
         },
     ).json()
+    fields = _ensure_filter_test_fields(plant["id"])
     report = client.post(
         f"/customers/{customer['id']}/filter-plants/{plant['id']}/reports",
         json={
@@ -680,7 +719,6 @@ def test_update_report_and_mark_completed():
     if not _db_available():
         pytest.skip("Database is not available.")
 
-    fields = _ensure_filter_test_fields()
     client_item = _create_client()
     customer = client.post(
         "/customers",
@@ -698,6 +736,7 @@ def test_update_report_and_mark_completed():
             "manufacturer_id": manufacturer["id"],
         },
     ).json()
+    fields = _ensure_filter_test_fields(plant["id"])
     report = client.post(
         f"/customers/{customer['id']}/filter-plants/{plant['id']}/reports",
         json={

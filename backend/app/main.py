@@ -1,3 +1,4 @@
+import json
 import time
 from contextlib import asynccontextmanager
 
@@ -6,9 +7,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from .api.router import api_router
 from .core.database import Base, SessionLocal, engine
-import json
-
-from .models import Client, Customer, FilterTestField
+from .models import Client, Customer, Filter, FilterPlant, FilterTestField
 
 
 @asynccontextmanager
@@ -37,45 +36,68 @@ async def lifespan(app: FastAPI):
             db.add(Customer(name="Initial Customer", client_id=client.id))
             db.commit()
 
-        if db.query(FilterTestField).count() == 0:
-            db.add_all(
-                [
-                    FilterTestField(
-                        label="Differenzdruck",
-                        field_type="number",
-                        unit="bar",
-                        required=True,
-                        min_value=0,
-                        max_value=10,
-                    ),
-                    FilterTestField(
-                        label="Dichtheit geprüft",
-                        field_type="radio",
-                        options=json.dumps(["OK", "Nicht OK"]),
-                        required=True,
-                    ),
-                    FilterTestField(
-                        label="Filter beschädigt?",
-                        field_type="radio",
-                        options=json.dumps(["Nein", "Ja"]),
-                        required=True,
-                    ),
-                    FilterTestField(
-                        label="Geräuschentwicklung",
-                        field_type="number",
-                        unit="dB",
-                        required=False,
-                        min_value=0,
-                        max_value=120,
-                    ),
-                    FilterTestField(
-                        label="Beschreibung / Auffälligkeiten",
-                        field_type="text",
-                        required=False,
-                    ),
-                ]
+        filter_plants = db.query(FilterPlant).order_by(FilterPlant.id.asc()).all()
+        for filter_plant in filter_plants:
+            if not filter_plant.filter:
+                filter_item = Filter(
+                    filter_plant_id=filter_plant.id,
+                    name="Standardfilter",
+                    description="Automatisch angelegter Filter",
+                )
+                db.add(filter_item)
+                db.flush()
+            else:
+                filter_item = filter_plant.filter
+
+            existing_fields = (
+                db.query(FilterTestField)
+                .filter(FilterTestField.filter_id == filter_item.id)
+                .count()
             )
-            db.commit()
+            if existing_fields == 0:
+                db.add_all(
+                    [
+                        FilterTestField(
+                            filter_id=filter_item.id,
+                            label="Differenzdruck",
+                            field_type="number",
+                            unit="bar",
+                            required=True,
+                            min_value=0,
+                            max_value=10,
+                        ),
+                        FilterTestField(
+                            filter_id=filter_item.id,
+                            label="Dichtheit geprüft",
+                            field_type="radio",
+                            options=json.dumps(["OK", "Nicht OK"]),
+                            required=True,
+                        ),
+                        FilterTestField(
+                            filter_id=filter_item.id,
+                            label="Filter beschädigt?",
+                            field_type="radio",
+                            options=json.dumps(["Nein", "Ja"]),
+                            required=True,
+                        ),
+                        FilterTestField(
+                            filter_id=filter_item.id,
+                            label="Geräuschentwicklung",
+                            field_type="number",
+                            unit="dB",
+                            required=False,
+                            min_value=0,
+                            max_value=120,
+                        ),
+                        FilterTestField(
+                            filter_id=filter_item.id,
+                            label="Beschreibung / Auffälligkeiten",
+                            field_type="text",
+                            required=False,
+                        ),
+                    ]
+                )
+        db.commit()
     finally:
         db.close()
 

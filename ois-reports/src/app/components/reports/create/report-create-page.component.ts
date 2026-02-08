@@ -76,7 +76,7 @@ export class ReportCreatePage implements OnInit {
     this.loadPlant();
 
     this.isLoading.set(true);
-    this.filterTestFieldsService.listFilterTestFields().subscribe({
+    this.filterTestFieldsService.listFilterTestFields(this.plantId).subscribe({
       next: (fields) => {
         this.components.set(
           fields.map((field) => ({

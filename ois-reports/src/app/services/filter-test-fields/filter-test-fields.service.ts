@@ -3,6 +3,7 @@ import { inject, Injectable } from '@angular/core';
 
 export type FilterTestField = {
   id: number;
+  filter_id: number;
   label: string;
   field_type: 'radio' | 'text' | 'number' | 'boolean';
   unit: string | null;
@@ -17,7 +18,9 @@ export class FilterTestFieldsService {
   private readonly http = inject(HttpClient);
   private readonly baseUrl = 'http://localhost:8000';
 
-  listFilterTestFields() {
-    return this.http.get<FilterTestField[]>(`${this.baseUrl}/filter-test-fields`);
+  listFilterTestFields(filterPlantId: number) {
+    return this.http.get<FilterTestField[]>(
+      `${this.baseUrl}/filter-plants/${filterPlantId}/filter-test-fields`
+    );
   }
 }

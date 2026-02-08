@@ -28,7 +28,7 @@ def root():
             "component_get": "/components/{component_id}",
             "component_update": "/components/{component_id}",
             "component_delete": "/components/{component_id}",
-            "filter_test_fields": "/filter-test-fields",
+            "filter_test_fields": "/filter-plants/{filter_plant_id}/filter-test-fields",
             "customer_reports": "/customers/{customer_id}/reports",
             "report_get": "/reports/{report_id}",
             "report_update": "/reports/{report_id}",

@@ -7,3 +7,4 @@ weasyprint
 psycopg2-binary
 pytest
 httpx
+alembic
