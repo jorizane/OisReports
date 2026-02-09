@@ -51,6 +51,14 @@
     <a class="ghost-link-button" routerLink="/reports">Zurück zur Berichtsübersicht</a>
     <a
       class="ghost-link-button"
+      [href]="'http://localhost:8000/reports/' + report()?.id + '/pdf'"
+      target="_blank"
+      rel="noopener"
+    >
+      PDF herunterladen
+    </a>
+    <a
+      class="ghost-link-button"
       [routerLink]="['/reports', report()?.id, 'edit']"
       *ngIf="!report()?.completed"
     >

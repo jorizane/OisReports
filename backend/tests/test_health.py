@@ -715,6 +715,44 @@ def test_get_report_detail():
     assert payload["completed"] is False
 
 
+def test_get_report_pdf():
+    if not _db_available():
+        pytest.skip("Database is not available.")
+
+    client_item = _create_client()
+    customer = client.post(
+        "/customers",
+        json={"name": f"PDF Customer {uuid.uuid4()}", "client_id": client_item["id"]},
+    ).json()
+    manufacturer = client.post(
+        "/manufacturers",
+        json={"name": f"PDF Manufacturer {uuid.uuid4()}"},
+    ).json()
+    plant = client.post(
+        f"/customers/{customer['id']}/filter-plants",
+        json={
+            "description": "PDF Plant",
+            "year_built": 2024,
+            "manufacturer_id": manufacturer["id"],
+        },
+    ).json()
+    fields = _ensure_filter_test_fields(plant["id"])
+    report = client.post(
+        f"/customers/{customer['id']}/filter-plants/{plant['id']}/reports",
+        json={
+            "filter_values": [
+                {"filter_test_field_id": fields[0], "value_number": 2.1},
+                {"filter_test_field_id": fields[1], "value_option": "OK"},
+            ],
+        },
+    ).json()
+
+    response = client.get(f"/reports/{report['id']}/pdf")
+    assert response.status_code == 200
+    assert response.headers["content-type"].startswith("application/pdf")
+    assert response.content[:4] == b"%PDF"
+
+
 def test_update_report_and_mark_completed():
     if not _db_available():
         pytest.skip("Database is not available.")

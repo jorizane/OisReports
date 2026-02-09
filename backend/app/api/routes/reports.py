@@ -1,7 +1,10 @@
 import json
+import os
 
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Response
+from jinja2 import Environment, FileSystemLoader, select_autoescape
 from sqlalchemy.orm import Session
+from weasyprint import HTML
 
 from ...core.database import get_db
 from ...models import (
@@ -21,6 +24,26 @@ from ...schemas import (
 )
 
 router = APIRouter(tags=["reports"])
+
+TEMPLATE_DIR = os.path.abspath(
+    os.path.join(os.path.dirname(__file__), "..", "..", "templates")
+)
+TEMPLATE_ENV = Environment(
+    loader=FileSystemLoader(TEMPLATE_DIR),
+    autoescape=select_autoescape(["html", "xml"]),
+)
+
+
+def _format_value(value: FilterReportValueRead) -> str:
+    if value.field_type == "number":
+        return str(value.value_number) if value.value_number is not None else "—"
+    if value.field_type == "radio":
+        return value.value_option or "—"
+    if value.field_type == "boolean":
+        if value.value_bool is None:
+            return "—"
+        return "Ja" if value.value_bool else "Nein"
+    return (value.value_text or "").strip() or "—"
 
 
 @router.get("/reports", response_model=list[ReportListRead])
@@ -73,6 +96,60 @@ def get_report(report_id: int, db: Session = Depends(get_db)):
             )
             for value in report.filter_values
         ],
+    )
+
+
+@router.get("/reports/{report_id}/pdf")
+def get_report_pdf(report_id: int, db: Session = Depends(get_db)):
+    report = db.get(Report, report_id)
+    if not report:
+        raise HTTPException(status_code=404, detail="Report not found.")
+
+    report_values = [
+        FilterReportValueRead(
+            filter_test_field_id=value.filter_test_field_id,
+            label=value.filter_test_field.label,
+            field_type=value.filter_test_field.field_type,
+            unit=value.filter_test_field.unit,
+            options=value.filter_test_field.options,
+            required=value.filter_test_field.required,
+            min_value=value.filter_test_field.min_value,
+            max_value=value.filter_test_field.max_value,
+            value_text=value.value_text,
+            value_number=value.value_number,
+            value_option=value.value_option,
+            value_bool=value.value_bool,
+        )
+        for value in report.filter_values
+    ]
+
+    template = TEMPLATE_ENV.get_template("report.html")
+    html = template.render(
+        report={
+            "id": report.id,
+            "created_at": report.created_at,
+            "completed": report.completed,
+            "customer_name": report.customer.name if report.customer else "",
+            "filter_plant_description": report.filter_plant.description
+            if report.filter_plant
+            else "",
+        },
+        values=[
+            {
+                "label": value.label,
+                "unit": value.unit or "",
+                "value": _format_value(value),
+            }
+            for value in report_values
+        ],
+    )
+
+    pdf = HTML(string=html, base_url=TEMPLATE_DIR).write_pdf()
+    filename = f"report_{report.id}.pdf"
+    return Response(
+        content=pdf,
+        media_type="application/pdf",
+        headers={"Content-Disposition": f'inline; filename="{filename}"'},
     )
 
 

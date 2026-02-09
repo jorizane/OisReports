@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="de">
+  <head>
+    <meta charset="utf-8" />
+    <title>Bericht #{{ report.id }}</title>
+    <style>
+      body {
+        font-family: "Helvetica Neue", Arial, sans-serif;
+        color: #222222;
+        margin: 40px;
+      }
+      h1 {
+        font-size: 24px;
+        margin: 0 0 8px;
+      }
+      .subtitle {
+        color: #4b5563;
+        margin: 0 0 24px;
+      }
+      .meta {
+        border: 1px solid #e5e7eb;
+        border-radius: 12px;
+        padding: 16px;
+        margin-bottom: 24px;
+      }
+      .meta-row {
+        display: flex;
+        gap: 12px;
+        margin-bottom: 8px;
+      }
+      .meta-row span:first-child {
+        width: 140px;
+        font-weight: 700;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+      }
+      th,
+      td {
+        text-align: left;
+        padding: 10px 12px;
+        border-bottom: 1px solid #e5e7eb;
+      }
+      th {
+        background: #f3f4f6;
+      }
+      .pill {
+        display: inline-block;
+        padding: 4px 10px;
+        border-radius: 999px;
+        font-size: 12px;
+        font-weight: 700;
+        background: #e2f2f0;
+        color: #0f766e;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Bericht #{{ report.id }}</h1>
+    <p class="subtitle">Prüfbericht für Filteranlage</p>
+
+    <div class="meta">
+      <div class="meta-row">
+        <span>Kunde</span>
+        <span>{{ report.customer_name }}</span>
+      </div>
+      <div class="meta-row">
+        <span>Filteranlage</span>
+        <span>{{ report.filter_plant_description }}</span>
+      </div>
+      <div class="meta-row">
+        <span>Datum</span>
+        <span>{{ report.created_at }}</span>
+      </div>
+      <div class="meta-row">
+        <span>Status</span>
+        <span class="pill">{{ "Abgeschlossen" if report.completed else "Entwurf" }}</span>
+      </div>
+    </div>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Prüffeld</th>
+          <th>Wert</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for item in values %}
+        <tr>
+          <td>
+            {{ item.label }}{% if item.unit %} ({{ item.unit }}){% endif %}
+          </td>
+          <td>{{ item.value }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </body>
+</html>
