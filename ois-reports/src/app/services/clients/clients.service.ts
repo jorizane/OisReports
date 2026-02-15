@@ -1,5 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
+import { environment } from '../../../environments/environment';
 
 export type Client = {
   id: number;
@@ -9,7 +10,7 @@ export type Client = {
 @Injectable({ providedIn: 'root' })
 export class ClientsService {
   private readonly http = inject(HttpClient);
-  private readonly baseUrl = 'http://localhost:8000';
+  private readonly baseUrl = environment.apiBaseUrl;
 
   listClients() {
     return this.http.get<Client[]>(`${this.baseUrl}/clients`);

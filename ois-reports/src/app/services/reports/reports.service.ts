@@ -1,5 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
+import { environment } from '../../../environments/environment';
 
 export type FilterReportValueCreate = {
   filter_test_field_id: number;
@@ -50,7 +51,7 @@ export type ReportUpdate = {
 @Injectable({ providedIn: 'root' })
 export class ReportsService {
   private readonly http = inject(HttpClient);
-  private readonly baseUrl = 'http://localhost:8000';
+  private readonly baseUrl = environment.apiBaseUrl;
 
   createReport(customerId: number, filterPlantId: number, payload: ReportCreate) {
     return this.http.post<ReportRead>(

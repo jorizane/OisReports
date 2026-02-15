@@ -51,7 +51,7 @@
     <a class="ghost-link-button" routerLink="/reports">Zurück zur Berichtsübersicht</a>
     <a
       class="ghost-link-button"
-      [href]="'http://localhost:8000/reports/' + report()?.id + '/pdf'"
+      [href]="reportPdfUrl(report()?.id)"
       target="_blank"
       rel="noopener"
     >

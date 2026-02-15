@@ -1,5 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
+import { environment } from '../../../environments/environment';
 
 export type Component = {
   id: number;
@@ -14,7 +15,7 @@ export type ComponentCreate = {
 @Injectable({ providedIn: 'root' })
 export class ComponentsService {
   private readonly http = inject(HttpClient);
-  private readonly baseUrl = 'http://localhost:8000';
+  private readonly baseUrl = environment.apiBaseUrl;
 
   listComponents(filterPlantId: number) {
     return this.http.get<Component[]>(

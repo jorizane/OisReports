@@ -1,5 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
+import { environment } from '../../../environments/environment';
 
 export type FilterPlant = {
   id: number;
@@ -18,7 +19,7 @@ export type FilterPlantCreate = {
 @Injectable({ providedIn: 'root' })
 export class FilterPlantsService {
   private readonly http = inject(HttpClient);
-  private readonly baseUrl = 'http://localhost:8000';
+  private readonly baseUrl = environment.apiBaseUrl;
 
   listFilterPlants(customerId: number) {
     return this.http.get<FilterPlant[]>(`${this.baseUrl}/customers/${customerId}/filter-plants`);

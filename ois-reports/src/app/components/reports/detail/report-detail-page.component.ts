@@ -1,6 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnInit, signal } from '@angular/core';
 import { ActivatedRoute, RouterLink } from '@angular/router';
+import { environment } from '../../../../environments/environment';
 
 import {
   FilterReportValueRead,
@@ -60,5 +61,12 @@ export class ReportDetailPage implements OnInit {
       return field.value_bool ? 'Ja' : 'Nein';
     }
     return field.value_text?.trim() ? field.value_text : '—';
+  }
+
+  protected reportPdfUrl(reportId: number | null | undefined): string {
+    if (!reportId) {
+      return '#';
+    }
+    return `${environment.apiBaseUrl}/reports/${reportId}/pdf`;
   }
 }

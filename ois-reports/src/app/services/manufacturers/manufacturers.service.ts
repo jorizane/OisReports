@@ -1,5 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
+import { environment } from '../../../environments/environment';
 
 export type Manufacturer = {
   id: number;
@@ -9,7 +10,7 @@ export type Manufacturer = {
 @Injectable({ providedIn: 'root' })
 export class ManufacturersService {
   private readonly http = inject(HttpClient);
-  private readonly baseUrl = 'http://localhost:8000';
+  private readonly baseUrl = environment.apiBaseUrl;
 
   listManufacturers() {
     return this.http.get<Manufacturer[]>(`${this.baseUrl}/manufacturers`);
