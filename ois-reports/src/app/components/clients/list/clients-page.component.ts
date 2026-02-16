@@ -2,7 +2,7 @@ import { CommonModule } from '@angular/common';
 import { Component, OnInit, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 
-import { Client, ClientsService } from '../../../services/clients/clients.service';
+import { ClientsStore } from '../../../stores/clients/clients.store';
 
 @Component({
   selector: 'app-clients-page',
@@ -12,52 +12,27 @@ import { Client, ClientsService } from '../../../services/clients/clients.servic
   styleUrl: './clients-page.component.scss',
 })
 export class ClientsPage implements OnInit {
-  protected readonly clients = signal<Client[]>([]);
-  protected readonly isLoading = signal(false);
-  protected readonly errorMessage = signal('');
+  protected readonly clients;
+  protected readonly isLoading;
+  protected readonly errorMessage;
   protected readonly successMessage = signal('');
   protected newClientName = '';
   private successTimer: number | null = null;
 
-  constructor(private readonly clientsService: ClientsService) {}
-
-  ngOnInit(): void {
-    this.loadClients();
+  constructor(private readonly clientsStore: ClientsStore) {
+    this.clients = this.clientsStore.clients;
+    this.isLoading = this.clientsStore.isLoading;
+    this.errorMessage = this.clientsStore.errorMessage;
   }
 
-  loadClients(): void {
-    this.isLoading.set(true);
-    this.errorMessage.set('');
-
-    this.clientsService.listClients().subscribe({
-      next: (clients) => {
-        this.clients.set(clients);
-        this.isLoading.set(false);
-      },
-      error: () => {
-        this.errorMessage.set('Auftraggeber konnten nicht geladen werden.');
-        this.isLoading.set(false);
-      },
-    });
+  ngOnInit(): void {
+    this.clientsStore.loadClients();
   }
 
   addClient(): void {
-    const name = this.newClientName.trim();
-    if (!name) {
-      this.errorMessage.set('Bitte einen Auftraggebernamen eingeben.');
-      return;
-    }
-
-    this.clientsService.createClient(name).subscribe({
-      next: (client) => {
-        this.clients.update((items) => [...items, client]);
-        this.newClientName = '';
-        this.errorMessage.set('');
-        this.showSuccess('Auftraggeber wurde angelegt.');
-      },
-      error: () => {
-        this.errorMessage.set('Auftraggeber konnte nicht angelegt werden.');
-      },
+    this.clientsStore.addClient(this.newClientName, () => {
+      this.newClientName = '';
+      this.showSuccess('Auftraggeber wurde angelegt.');
     });
   }
 
