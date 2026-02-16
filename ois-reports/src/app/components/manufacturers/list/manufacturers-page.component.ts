@@ -3,10 +3,7 @@ import { Component, OnInit, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 
-import {
-  Manufacturer,
-  ManufacturersService,
-} from '../../../services/manufacturers/manufacturers.service';
+import { ManufacturersStore } from '../../../stores/manufacturers/manufacturers.store';
 
 @Component({
   selector: 'app-manufacturers-page',
@@ -16,52 +13,27 @@ import {
   styleUrl: './manufacturers-page.component.scss',
 })
 export class ManufacturersPage implements OnInit {
-  protected readonly manufacturers = signal<Manufacturer[]>([]);
-  protected readonly isLoading = signal(false);
-  protected readonly errorMessage = signal('');
+  protected readonly manufacturers;
+  protected readonly isLoading;
+  protected readonly errorMessage;
   protected readonly successMessage = signal('');
   protected newManufacturerName = '';
   private successTimer: number | null = null;
 
-  constructor(private readonly manufacturersService: ManufacturersService) {}
-
-  ngOnInit(): void {
-    this.loadManufacturers();
+  constructor(private readonly manufacturersStore: ManufacturersStore) {
+    this.manufacturers = this.manufacturersStore.manufacturers;
+    this.isLoading = this.manufacturersStore.isLoading;
+    this.errorMessage = this.manufacturersStore.errorMessage;
   }
 
-  loadManufacturers(): void {
-    this.isLoading.set(true);
-    this.errorMessage.set('');
-
-    this.manufacturersService.listManufacturers().subscribe({
-      next: (manufacturers) => {
-        this.manufacturers.set(manufacturers);
-        this.isLoading.set(false);
-      },
-      error: () => {
-        this.errorMessage.set('Hersteller konnten nicht geladen werden.');
-        this.isLoading.set(false);
-      },
-    });
+  ngOnInit(): void {
+    this.manufacturersStore.loadManufacturers();
   }
 
   addManufacturer(): void {
-    const name = this.newManufacturerName.trim();
-    if (!name) {
-      this.errorMessage.set('Bitte einen Herstellernamen eingeben.');
-      return;
-    }
-
-    this.manufacturersService.createManufacturer(name).subscribe({
-      next: (manufacturer) => {
-        this.manufacturers.update((items) => [...items, manufacturer]);
+    this.manufacturersStore.addManufacturer(this.newManufacturerName, () => {
         this.newManufacturerName = '';
-        this.errorMessage.set('');
         this.showSuccess('Hersteller wurde angelegt.');
-      },
-      error: () => {
-        this.errorMessage.set('Hersteller konnte nicht angelegt werden.');
-      },
     });
   }
 

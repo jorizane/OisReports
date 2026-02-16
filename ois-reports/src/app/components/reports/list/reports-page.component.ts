@@ -1,8 +1,8 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnInit, signal } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { RouterLink } from '@angular/router';
 
-import { ReportsService, ReportRead } from '../../../services/reports/reports.service';
+import { ReportsStore } from '../../../stores/reports/reports.store';
 
 @Component({
   selector: 'app-reports-page',
@@ -12,23 +12,17 @@ import { ReportsService, ReportRead } from '../../../services/reports/reports.se
   styleUrl: './reports-page.component.scss',
 })
 export class ReportsPage implements OnInit {
-  protected readonly reports = signal<ReportRead[]>([]);
-  protected readonly isLoading = signal(false);
-  protected readonly errorMessage = signal('');
+  protected readonly reports;
+  protected readonly isLoading;
+  protected readonly errorMessage;
 
-  constructor(private readonly reportsService: ReportsService) {}
+  constructor(private readonly reportsStore: ReportsStore) {
+    this.reports = this.reportsStore.reports;
+    this.isLoading = this.reportsStore.isLoading;
+    this.errorMessage = this.reportsStore.errorMessage;
+  }
 
   ngOnInit(): void {
-    this.isLoading.set(true);
-    this.reportsService.listReports().subscribe({
-      next: (reports) => {
-        this.reports.set(reports);
-        this.isLoading.set(false);
-      },
-      error: () => {
-        this.errorMessage.set('Berichte konnten nicht geladen werden.');
-        this.isLoading.set(false);
-      },
-    });
+    this.reportsStore.loadReports();
   }
 }
