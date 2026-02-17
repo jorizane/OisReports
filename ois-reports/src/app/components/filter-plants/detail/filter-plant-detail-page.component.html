@@ -30,9 +30,17 @@
   <div class="components" *ngIf="!isLoading() && plant()">
     <div class="components__header">
       <h2>Komponenten</h2>
-      <button class="primary-button" type="button" (click)="toggleComponentForm()">
-        Komponente anlegen
-      </button>
+      <div class="components__actions">
+        <button class="primary-button" type="button" (click)="toggleComponentForm()">
+          Komponente anlegen
+        </button>
+        <a
+          class="ghost-link-button"
+          [routerLink]="['/customers', customerId, 'filter-plants', plant()?.id, 'components', 'new']"
+        >
+          Auf eigener Seite
+        </a>
+      </div>
     </div>
     <form
       class="components__form"

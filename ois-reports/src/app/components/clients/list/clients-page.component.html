@@ -1,24 +1,16 @@
 <section class="panel">
   <header class="panel__header">
-    <p class="eyebrow">Auftraggeberübersicht</p>
-    <h1>Auftraggeber</h1>
+    <div class="panel__header-row">
+      <div>
+        <p class="eyebrow">Auftraggeberübersicht</p>
+        <h1>Auftraggeber</h1>
+      </div>
+      <div class="panel__header-actions">
+        <a class="link-button" routerLink="/clients/new">Auftraggeber anlegen</a>
+      </div>
+    </div>
     <p class="subtitle">Verwalte Auftraggeber, die mehrere Kunden betreuen.</p>
   </header>
-
-  <form class="panel__form" (ngSubmit)="addClient()">
-    <label class="field">
-      <span class="field__label">Neuer Auftraggeber</span>
-      <input
-        class="field__input"
-        type="text"
-        name="clientName"
-        [(ngModel)]="newClientName"
-        placeholder="Auftraggeber eingeben"
-        autocomplete="off"
-      />
-    </label>
-    <button class="primary-button" type="submit">Auftraggeber anlegen</button>
-  </form>
 
   <p class="status status--error" *ngIf="errorMessage()">{{ errorMessage() }}</p>
   <p class="status status--success" *ngIf="successMessage()">{{ successMessage() }}</p>

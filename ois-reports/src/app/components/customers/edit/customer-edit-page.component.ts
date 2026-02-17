@@ -14,11 +14,11 @@ import { Client, ClientsService } from '../../../services/clients/clients.servic
   styleUrl: './customer-edit-page.component.scss',
 })
 export class CustomerEditPage implements OnInit {
-  protected readonly customers = signal<Customer[]>([]);
   protected readonly clients = signal<Client[]>([]);
   protected readonly isLoading = signal(false);
   protected readonly errorMessage = signal('');
   protected readonly editMode = signal(false);
+  protected readonly createMode = signal(false);
   protected readonly selectedCustomer = signal<Customer | null>(null);
   protected readonly showConfirm = signal(false);
   protected readonly successMessage = signal('');
@@ -35,7 +35,17 @@ export class CustomerEditPage implements OnInit {
 
   ngOnInit(): void {
     this.loadClients();
-    this.loadCustomers();
+    const idParam = this.route.snapshot.paramMap.get('id');
+    if (idParam) {
+      this.loadCustomers();
+    } else {
+      this.createMode.set(true);
+    }
+
+    const state = window.history.state as { createdCustomer?: string };
+    if (state?.createdCustomer) {
+      this.showSuccess(`Kunde "${state.createdCustomer}" wurde angelegt.`);
+    }
   }
 
   loadClients(): void {
@@ -55,7 +65,6 @@ export class CustomerEditPage implements OnInit {
 
     this.customersService.listCustomers().subscribe({
       next: (customers) => {
-        this.customers.set(customers);
         this.isLoading.set(false);
 
         const idParam = this.route.snapshot.paramMap.get('id');
@@ -64,6 +73,7 @@ export class CustomerEditPage implements OnInit {
           const match = customers.find((item) => item.id === id);
           if (match) {
             this.editMode.set(true);
+            this.createMode.set(false);
             this.selectedCustomer.set(match);
             this.editName = match.name;
             this.selectedClientId = match.client_id;
@@ -116,11 +126,6 @@ export class CustomerEditPage implements OnInit {
   }
 
   saveChanges(): void {
-    const customer = this.selectedCustomer();
-    if (!customer) {
-      return;
-    }
-
     const name = this.editName.trim();
     if (!name) {
       this.errorMessage.set('Bitte einen Kundennamen eingeben.');
@@ -132,17 +137,32 @@ export class CustomerEditPage implements OnInit {
       return;
     }
 
-    this.customersService
-      .updateCustomer(customer.id, name, this.selectedClientId)
-      .subscribe({
-      next: (updated) => {
-        this.selectedCustomer.set(updated);
-        this.editName = updated.name;
-        this.selectedClientId = updated.client_id;
-        this.showSuccess(`Kunde "${updated.name}" wurde aktualisiert.`);
+    const customer = this.selectedCustomer();
+    if (this.editMode() && customer) {
+      this.customersService
+        .updateCustomer(customer.id, name, this.selectedClientId)
+        .subscribe({
+          next: (updated) => {
+            this.selectedCustomer.set(updated);
+            this.editName = updated.name;
+            this.selectedClientId = updated.client_id;
+            this.showSuccess(`Kunde "${updated.name}" wurde aktualisiert.`);
+          },
+          error: () => {
+            this.errorMessage.set('Kunde konnte nicht aktualisiert werden.');
+          },
+        });
+      return;
+    }
+
+    this.customersService.createCustomer(name, this.selectedClientId).subscribe({
+      next: (created) => {
+        this.router.navigate(['/customers', created.id, 'edit'], {
+          state: { createdCustomer: created.name },
+        });
       },
       error: () => {
-        this.errorMessage.set('Kunde konnte nicht aktualisiert werden.');
+        this.errorMessage.set('Kunde konnte nicht angelegt werden.');
       },
     });
   }

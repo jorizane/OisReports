@@ -1,40 +1,18 @@
 <section class="panel">
   <header class="panel__header">
-    <p class="eyebrow">Kundenübersicht</p>
-    <h1>Kunden</h1>
+    <div class="panel__header-row">
+      <div>
+        <p class="eyebrow">Kundenübersicht</p>
+        <h1>Kunden</h1>
+      </div>
+      <div class="panel__header-actions">
+        <a class="link-button" routerLink="/customers/new">Kunde anlegen</a>
+      </div>
+    </div>
     <p class="subtitle">
       Verwalte Industriefilter-Kunden und behalte die Berichte zentral im Blick.
     </p>
   </header>
-
-  <form class="panel__form" (ngSubmit)="addCustomer()">
-    <label class="field">
-      <span class="field__label">Neuer Kundenname</span>
-      <input
-        class="field__input"
-        type="text"
-        name="customerName"
-        [(ngModel)]="newCustomerName"
-        placeholder="Kundenname eingeben"
-        autocomplete="off"
-      />
-    </label>
-    <label class="field">
-      <span class="field__label">Auftraggeber</span>
-      <select
-        class="field__input"
-        name="clientId"
-        [(ngModel)]="selectedClientId"
-        required
-      >
-        <option [ngValue]="null" disabled>Auftraggeber auswählen</option>
-        <option *ngFor="let client of clients()" [ngValue]="client.id">
-          {{ client.name }}
-        </option>
-      </select>
-    </label>
-    <button class="primary-button" type="submit">Kunde anlegen</button>
-  </form>
 
   <p class="status status--error" *ngIf="errorMessage()">{{ errorMessage() }}</p>
   <p class="status status--success" *ngIf="successMessage()">{{ successMessage() }}</p>

@@ -1,0 +1,30 @@
+<section class="panel">
+  <header class="panel__header">
+    <p class="eyebrow">Hersteller anlegen</p>
+    <h1>Herstellerverwaltung</h1>
+    <p class="subtitle">Lege einen neuen Hersteller an.</p>
+  </header>
+
+  <p class="status status--error" *ngIf="errorMessage()">{{ errorMessage() }}</p>
+  <p class="status" *ngIf="isLoading()">Hersteller wird gespeichert...</p>
+
+  <form class="edit-form" (ngSubmit)="saveManufacturer()">
+    <label class="field">
+      <span class="field__label">Name</span>
+      <input
+        class="field__input"
+        type="text"
+        name="manufacturerName"
+        [(ngModel)]="name"
+        placeholder="Herstellername"
+        maxlength="100"
+        autocomplete="off"
+      />
+    </label>
+    <div class="edit-form__actions">
+      <button class="primary-button" type="submit">Hersteller anlegen</button>
+    </div>
+  </form>
+
+  <a class="ghost-link-button" routerLink="/manufacturers">Zurück zur Herstellerübersicht</a>
+</section>

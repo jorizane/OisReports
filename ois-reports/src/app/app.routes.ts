@@ -4,6 +4,7 @@ import { CustomersPage } from './components/customers/list/customers-page.compon
 import { CustomerDetailPage } from './components/customers/detail/customer-detail-page.component';
 import { CustomerEditPage } from './components/customers/edit/customer-edit-page.component';
 import { ClientsPage } from './components/clients/list/clients-page.component';
+import { ClientCreatePage } from './components/clients/create/client-create-page.component';
 import { FilterPlantDetailPage } from './components/filter-plants/detail/filter-plant-detail-page.component';
 import { FilterPlantEditPage } from './components/filter-plants/edit/filter-plant-edit-page.component';
 import { ComponentDetailPage } from './components/components/detail/component-detail-page.component';
@@ -14,11 +15,15 @@ import { ReportEditPage } from './components/reports/edit/report-edit-page.compo
 import { ReportsPage } from './components/reports/list/reports-page.component';
 import { ManufacturersPage } from './components/manufacturers/list/manufacturers-page.component';
 import { ManufacturerDetailPage } from './components/manufacturers/detail/manufacturer-detail-page.component';
+import { ManufacturerCreatePage } from './components/manufacturers/create/manufacturer-create-page.component';
 
 export const routes: Routes = [
   { path: '', component: CustomersPage },
+  { path: 'clients/new', component: ClientCreatePage },
   { path: 'clients', component: ClientsPage },
+  { path: 'customers/new', component: CustomerEditPage },
   { path: 'customers/:id', component: CustomerDetailPage },
+  { path: 'customers/:id/filter-plants/new', component: FilterPlantEditPage },
   { path: 'customers/:id/filter-plants/:plantId', component: FilterPlantDetailPage },
   {
     path: 'customers/:id/filter-plants/:plantId/reports/new',
@@ -27,8 +32,13 @@ export const routes: Routes = [
   { path: 'reports/:reportId', component: ReportDetailPage },
   { path: 'reports/:reportId/edit', component: ReportEditPage },
   { path: 'reports', component: ReportsPage },
+  { path: 'manufacturers/new', component: ManufacturerCreatePage },
   { path: 'manufacturers/:id', component: ManufacturerDetailPage },
   { path: 'manufacturers', component: ManufacturersPage },
+  {
+    path: 'customers/:id/filter-plants/:plantId/components/new',
+    component: ComponentEditPage,
+  },
   {
     path: 'customers/:id/filter-plants/:plantId/components/:componentId',
     component: ComponentDetailPage,

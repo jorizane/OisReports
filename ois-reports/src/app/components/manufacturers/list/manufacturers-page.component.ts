@@ -1,6 +1,5 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnInit, signal } from '@angular/core';
-import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 
 import { ManufacturersStore } from '../../../stores/manufacturers/manufacturers.store';
@@ -8,7 +7,7 @@ import { ManufacturersStore } from '../../../stores/manufacturers/manufacturers.
 @Component({
   selector: 'app-manufacturers-page',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterLink],
+  imports: [CommonModule, RouterLink],
   templateUrl: './manufacturers-page.component.html',
   styleUrl: './manufacturers-page.component.scss',
 })
@@ -17,7 +16,6 @@ export class ManufacturersPage implements OnInit {
   protected readonly isLoading;
   protected readonly errorMessage;
   protected readonly successMessage = signal('');
-  protected newManufacturerName = '';
   private successTimer: number | null = null;
 
   constructor(private readonly manufacturersStore: ManufacturersStore) {
@@ -27,14 +25,11 @@ export class ManufacturersPage implements OnInit {
   }
 
   ngOnInit(): void {
+    const state = window.history.state as { createdManufacturer?: string };
+    if (state?.createdManufacturer) {
+      this.showSuccess(`Hersteller "${state.createdManufacturer}" wurde angelegt.`);
+    }
     this.manufacturersStore.loadManufacturers();
-  }
-
-  addManufacturer(): void {
-    this.manufacturersStore.addManufacturer(this.newManufacturerName, () => {
-        this.newManufacturerName = '';
-        this.showSuccess('Hersteller wurde angelegt.');
-    });
   }
 
   dismissSuccess(): void {

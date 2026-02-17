@@ -1,6 +1,7 @@
 import { provideHttpClient } from '@angular/common/http';
 import { provideHttpClientTesting, HttpTestingController } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
+import { provideRouter } from '@angular/router';
 
 import { ClientsPage } from './clients-page.component';
 
@@ -10,7 +11,7 @@ describe('ClientsPage', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [ClientsPage],
-      providers: [provideHttpClient(), provideHttpClientTesting()],
+      providers: [provideHttpClient(), provideHttpClientTesting(), provideRouter([])],
     }).compileComponents();
 
     httpMock = TestBed.inject(HttpTestingController);
@@ -33,25 +34,18 @@ describe('ClientsPage', () => {
     expect(compiled.textContent).toContain('Auftraggeber A');
   });
 
-  it('should add a client', () => {
+  it('should render create button in header', () => {
     const fixture = TestBed.createComponent(ClientsPage);
     fixture.detectChanges();
 
-    const initialRequest = httpMock.expectOne('http://localhost:8000/clients');
-    initialRequest.flush([]);
-
-    const component = fixture.componentInstance as ClientsPage & { newClientName: string };
-    component.newClientName = 'Auftraggeber B';
-    component.addClient();
-
-    const createRequest = httpMock.expectOne('http://localhost:8000/clients');
-    expect(createRequest.request.method).toBe('POST');
-    expect(createRequest.request.body).toEqual({ name: 'Auftraggeber B' });
-    createRequest.flush({ id: 2, name: 'Auftraggeber B' });
+    const request = httpMock.expectOne('http://localhost:8000/clients');
+    request.flush([]);
 
     fixture.detectChanges();
     const compiled = fixture.nativeElement as HTMLElement;
-    expect(compiled.textContent).toContain('Auftraggeber B');
-    expect(compiled.textContent).toContain('Auftraggeber wurde angelegt.');
+    const createLink = compiled.querySelector('a.link-button') as HTMLAnchorElement;
+    expect(createLink).toBeTruthy();
+    expect(createLink.textContent).toContain('Auftraggeber anlegen');
   });
+
 });

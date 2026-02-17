@@ -1,6 +1,5 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnInit, signal } from '@angular/core';
-import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 
 import { CustomersStore } from '../../../stores/customers/customers.store';
@@ -8,7 +7,7 @@ import { CustomersStore } from '../../../stores/customers/customers.store';
 @Component({
   selector: 'app-customers-page',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterLink],
+  imports: [CommonModule, RouterLink],
   templateUrl: './customers-page.component.html',
   styleUrl: './customers-page.component.scss',
 })
@@ -18,8 +17,6 @@ export class CustomersPage implements OnInit {
   protected readonly isLoading;
   protected readonly errorMessage;
   protected readonly successMessage = signal('');
-  protected newCustomerName = '';
-  protected selectedClientId: number | null = null;
   private successTimer: number | null = null;
 
   constructor(private readonly customersStore: CustomersStore) {
@@ -36,14 +33,6 @@ export class CustomersPage implements OnInit {
     }
     this.customersStore.loadClients();
     this.customersStore.loadCustomers();
-  }
-
-  addCustomer(): void {
-    this.customersStore.addCustomer(this.newCustomerName, this.selectedClientId, (customer) => {
-        this.newCustomerName = '';
-        this.selectedClientId = null;
-        this.showSuccess(`Kunde "${customer.name}" wurde angelegt.`);
-    });
   }
 
   getClientName(clientId: number): string {

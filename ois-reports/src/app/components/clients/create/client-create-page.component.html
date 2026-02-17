@@ -1,0 +1,29 @@
+<section class="panel">
+  <header class="panel__header">
+    <p class="eyebrow">Auftraggeber anlegen</p>
+    <h1>Auftraggeberverwaltung</h1>
+    <p class="subtitle">Lege einen neuen Auftraggeber an.</p>
+  </header>
+
+  <p class="status status--error" *ngIf="errorMessage()">{{ errorMessage() }}</p>
+  <p class="status" *ngIf="isLoading()">Auftraggeber wird gespeichert...</p>
+
+  <form class="edit-form" (ngSubmit)="saveClient()">
+    <label class="field">
+      <span class="field__label">Name</span>
+      <input
+        class="field__input"
+        type="text"
+        name="clientName"
+        [(ngModel)]="name"
+        placeholder="Auftraggebername"
+        autocomplete="off"
+      />
+    </label>
+    <div class="edit-form__actions">
+      <button class="primary-button" type="submit">Auftraggeber anlegen</button>
+    </div>
+  </form>
+
+  <a class="ghost-link-button" routerLink="/clients">Zurück zur Auftraggeberübersicht</a>
+</section>

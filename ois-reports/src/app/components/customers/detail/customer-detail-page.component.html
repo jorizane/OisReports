@@ -26,9 +26,17 @@
   <div class="plants" *ngIf="!isLoading() && customer()">
     <div class="plants__header">
       <h2>Filteranlagen</h2>
-      <button class="primary-button" type="button" (click)="togglePlantForm()">
-        Filteranlage anlegen
-      </button>
+      <div class="plants__actions">
+        <button class="primary-button" type="button" (click)="togglePlantForm()">
+          Filteranlage anlegen
+        </button>
+        <a
+          class="ghost-link-button"
+          [routerLink]="['/customers', customer()?.id, 'filter-plants', 'new']"
+        >
+          Auf eigener Seite
+        </a>
+      </div>
     </div>
     <form class="plants__form" *ngIf="showPlantForm()" (ngSubmit)="createFilterPlant()">
       <label class="field">

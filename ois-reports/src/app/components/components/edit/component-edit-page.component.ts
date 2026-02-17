@@ -19,6 +19,7 @@ export class ComponentEditPage implements OnInit {
   protected readonly component = signal<PlantComponent | null>(null);
   protected readonly isLoading = signal(false);
   protected readonly errorMessage = signal('');
+  protected readonly createMode = signal(false);
   protected readonly showConfirm = signal(false);
   protected readonly successMessage = signal('');
   protected name = '';
@@ -41,30 +42,40 @@ export class ComponentEditPage implements OnInit {
     this.customerId = customerIdParam ? Number(customerIdParam) : null;
     this.plantId = plantIdParam ? Number(plantIdParam) : null;
 
-    if (!componentId || !this.customerId || !this.plantId) {
-      this.errorMessage.set('Komponente nicht gefunden.');
-      return;
+    if (!componentId) {
+      if (!this.customerId || !this.plantId) {
+        this.errorMessage.set('Komponente nicht gefunden.');
+        return;
+      }
+      this.createMode.set(true);
+    } else {
+      if (!this.customerId || !this.plantId) {
+        this.errorMessage.set('Komponente nicht gefunden.');
+        return;
+      }
+
+      this.isLoading.set(true);
+      this.componentsService.getComponent(componentId).subscribe({
+        next: (component) => {
+          this.component.set(component);
+          this.name = component.name;
+          this.isLoading.set(false);
+        },
+        error: () => {
+          this.errorMessage.set('Komponente nicht gefunden.');
+          this.isLoading.set(false);
+        },
+      });
     }
 
-    this.isLoading.set(true);
-    this.componentsService.getComponent(componentId).subscribe({
-      next: (component) => {
-        this.component.set(component);
-        this.name = component.name;
-        this.isLoading.set(false);
-      },
-      error: () => {
-        this.errorMessage.set('Komponente nicht gefunden.');
-        this.isLoading.set(false);
-      },
-    });
+    const state = window.history.state as { createdComponent?: string };
+    if (state?.createdComponent) {
+      this.showSuccess(`Komponente "${state.createdComponent}" wurde angelegt.`);
+    }
   }
 
   saveChanges(): void {
     const component = this.component();
-    if (!component) {
-      return;
-    }
 
     const name = this.name.trim();
     if (!name) {
@@ -72,14 +83,42 @@ export class ComponentEditPage implements OnInit {
       return;
     }
 
-    this.componentsService.updateComponent(component.id, { name }).subscribe({
-      next: (updated) => {
-        this.component.set(updated);
-        this.name = updated.name;
-        this.showSuccess('Komponente wurde aktualisiert.');
+    if (component) {
+      this.componentsService.updateComponent(component.id, { name }).subscribe({
+        next: (updated) => {
+          this.component.set(updated);
+          this.name = updated.name;
+          this.showSuccess('Komponente wurde aktualisiert.');
+        },
+        error: () => {
+          this.errorMessage.set('Komponente konnte nicht aktualisiert werden.');
+        },
+      });
+      return;
+    }
+
+    if (!this.plantId || !this.customerId) {
+      this.errorMessage.set('Komponente nicht gefunden.');
+      return;
+    }
+
+    this.componentsService.createComponent(this.plantId, { name }).subscribe({
+      next: (created) => {
+        this.router.navigate(
+          [
+            '/customers',
+            this.customerId,
+            'filter-plants',
+            this.plantId,
+            'components',
+            created.id,
+            'edit',
+          ],
+          { state: { createdComponent: created.name } }
+        );
       },
       error: () => {
-        this.errorMessage.set('Komponente konnte nicht aktualisiert werden.');
+        this.errorMessage.set('Komponente konnte nicht angelegt werden.');
       },
     });
   }

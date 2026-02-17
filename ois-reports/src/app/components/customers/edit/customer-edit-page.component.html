@@ -1,11 +1,15 @@
 <section class="panel panel--danger">
   <header class="panel__header">
     <div>
-      <p class="eyebrow">Bearbeiten oder löschen</p>
-      <h1>Kundenverwaltung</h1>
+      <p class="eyebrow">{{ createMode() ? 'Neu anlegen' : 'Bearbeiten oder löschen' }}</p>
+      <h1>{{ createMode() ? 'Kunden anlegen' : 'Kundenverwaltung' }}</h1>
     </div>
     <p class="subtitle">
-      Diese Seite wird später zur Bearbeitungsansicht. Löschen kann nicht rückgängig gemacht werden.
+      {{
+        createMode()
+          ? 'Lege einen neuen Kunden an. Du kannst die Details später jederzeit bearbeiten.'
+          : 'Diese Seite wird später zur Bearbeitungsansicht. Löschen kann nicht rückgängig gemacht werden.'
+      }}
     </p>
   </header>
 
@@ -13,8 +17,8 @@
   <p class="status status--success" *ngIf="successMessage()">{{ successMessage() }}</p>
   <p class="status" *ngIf="isLoading()">Kunde wird geladen...</p>
 
-  <div class="single" *ngIf="!isLoading() && editMode() && selectedCustomer()">
-    <div class="single__row">
+  <div class="single" *ngIf="!isLoading() && ((editMode() && selectedCustomer()) || createMode())">
+    <div class="single__row" *ngIf="editMode() && selectedCustomer()">
       <span class="list__id">#{{ selectedCustomer()?.id }}</span>
       <span class="list__name">{{ selectedCustomer()?.name }}</span>
     </div>
@@ -44,11 +48,13 @@
         </select>
       </label>
       <div class="edit-form__actions">
-        <button class="primary-button" type="submit">Änderungen speichern</button>
+        <button class="primary-button" type="submit">
+          {{ createMode() ? 'Kunde anlegen' : 'Änderungen speichern' }}
+        </button>
       </div>
     </form>
 
-    <div class="danger-zone">
+    <div class="danger-zone" *ngIf="editMode() && selectedCustomer()">
       <p class="danger-zone__title">Löschen</p>
       <p class="danger-zone__text">
         Entferne diesen Kunden dauerhaft. Dieser Schritt kann nicht rückgängig gemacht werden.
@@ -63,8 +69,15 @@
     </div>
   </div>
 
-  <a class="ghost-link-button" [routerLink]="['/customers', selectedCustomer()?.id]">
+  <a
+    class="ghost-link-button"
+    *ngIf="editMode() && selectedCustomer()"
+    [routerLink]="['/customers', selectedCustomer()?.id]"
+  >
     Zurück zum Kunden
+  </a>
+  <a class="ghost-link-button" *ngIf="createMode()" routerLink="/">
+    Zurück zur Kundenübersicht
   </a>
 </section>
 

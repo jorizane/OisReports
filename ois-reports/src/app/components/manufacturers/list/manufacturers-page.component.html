@@ -1,25 +1,16 @@
 <section class="panel">
   <header class="panel__header">
-    <p class="eyebrow">Herstellerübersicht</p>
-    <h1>Hersteller</h1>
+    <div class="panel__header-row">
+      <div>
+        <p class="eyebrow">Herstellerübersicht</p>
+        <h1>Hersteller</h1>
+      </div>
+      <div class="panel__header-actions">
+        <a class="link-button" routerLink="/manufacturers/new">Hersteller anlegen</a>
+      </div>
+    </div>
     <p class="subtitle">Verwalte Hersteller für Filteranlagen und Komponenten.</p>
   </header>
-
-  <form class="panel__form" (ngSubmit)="addManufacturer()">
-    <label class="field">
-      <span class="field__label">Neuer Herstellername</span>
-      <input
-        class="field__input"
-        type="text"
-        name="manufacturerName"
-        [(ngModel)]="newManufacturerName"
-        placeholder="Herstellername eingeben"
-        maxlength="100"
-        autocomplete="off"
-      />
-    </label>
-    <button class="primary-button" type="submit">Hersteller anlegen</button>
-  </form>
 
   <p class="status status--error" *ngIf="errorMessage()">{{ errorMessage() }}</p>
   <p class="status status--success" *ngIf="successMessage()">{{ successMessage() }}</p>

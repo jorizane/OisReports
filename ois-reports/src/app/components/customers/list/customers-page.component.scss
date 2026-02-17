@@ -15,6 +15,19 @@
   margin: 0.5rem 0 0.75rem;
 }
 
+.panel__header-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+}
+
+.panel__header-actions {
+  display: flex;
+  align-items: center;
+}
+
 .eyebrow {
   text-transform: uppercase;
   letter-spacing: 0.12em;

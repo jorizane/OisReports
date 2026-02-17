@@ -34,29 +34,17 @@ describe('ManufacturersPage', () => {
     expect(compiled.textContent).toContain('FilterTech');
   });
 
-  it('should add a manufacturer', () => {
+  it('should render create button in header', () => {
     const fixture = TestBed.createComponent(ManufacturersPage);
     fixture.detectChanges();
 
     const request = httpMock.expectOne('http://localhost:8000/manufacturers');
     request.flush([]);
 
-    const component = fixture.componentInstance as ManufacturersPage & {
-      newManufacturerName: string;
-      addManufacturer: () => void;
-    };
-
-    component.newManufacturerName = 'Aqua Systems';
-    component.addManufacturer();
-
-    const createRequest = httpMock.expectOne('http://localhost:8000/manufacturers');
-    expect(createRequest.request.method).toBe('POST');
-    expect(createRequest.request.body).toEqual({ name: 'Aqua Systems' });
-    createRequest.flush({ id: 2, name: 'Aqua Systems' });
-
     fixture.detectChanges();
     const compiled = fixture.nativeElement as HTMLElement;
-    expect(compiled.textContent).toContain('Aqua Systems');
-    expect(compiled.textContent).toContain('Hersteller wurde angelegt.');
+    const createLink = compiled.querySelector('a.link-button') as HTMLAnchorElement;
+    expect(createLink).toBeTruthy();
+    expect(createLink.textContent).toContain('Hersteller anlegen');
   });
 });

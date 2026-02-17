@@ -41,35 +41,21 @@ describe('CustomersPage', () => {
     expect(compiled.textContent).toContain('Auftraggeber A');
   });
 
-  it('should add a customer', () => {
+  it('should render create button in header', () => {
     const fixture = TestBed.createComponent(CustomersPage);
     fixture.detectChanges();
 
     const clientsRequest = httpMock.expectOne('http://localhost:8000/clients');
-    clientsRequest.flush([{ id: 12, name: 'Auftraggeber B' }]);
+    clientsRequest.flush([]);
 
-    const initialRequest = httpMock.expectOne('http://localhost:8000/customers');
-    initialRequest.flush([]);
-
-    const component = fixture.componentInstance as CustomersPage & {
-      newCustomerName: string;
-      selectedClientId: number | null;
-    };
-    component.newCustomerName = 'Nova Filters';
-    component.selectedClientId = 12;
-    component.addCustomer();
-
-    const createRequest = httpMock.expectOne('http://localhost:8000/customers');
-    expect(createRequest.request.method).toBe('POST');
-    expect(createRequest.request.body).toEqual({ name: 'Nova Filters', client_id: 12 });
-    createRequest.flush({ id: 2, name: 'Nova Filters', client_id: 12 });
+    const request = httpMock.expectOne('http://localhost:8000/customers');
+    request.flush([]);
 
     fixture.detectChanges();
     const compiled = fixture.nativeElement as HTMLElement;
-    const rows = compiled.querySelectorAll('.list__row');
-    expect(rows.length).toBe(1);
-    expect(compiled.textContent).toContain('Nova Filters');
-    expect(compiled.textContent).toContain('Kunde "Nova Filters" wurde angelegt.');
+    const createLink = compiled.querySelector('a.link-button') as HTMLAnchorElement;
+    expect(createLink).toBeTruthy();
+    expect(createLink.textContent).toContain('Kunde anlegen');
   });
 
   it('should dismiss success popup', () => {
