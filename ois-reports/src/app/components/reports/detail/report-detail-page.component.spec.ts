@@ -9,6 +9,7 @@ describe('ReportDetailPage', () => {
   let httpMock: HttpTestingController;
 
   beforeEach(async () => {
+    TestBed.resetTestingModule();
     await TestBed.configureTestingModule({
       imports: [ReportDetailPage],
       providers: [
@@ -73,5 +74,98 @@ describe('ReportDetailPage', () => {
     expect(compiled.textContent).toContain('Differenzdruck');
     expect(compiled.textContent).toContain('10');
     expect(compiled.textContent).toContain('Abgeschlossen');
+  });
+
+  it('should format values and build pdf url', () => {
+    const fixture = TestBed.createComponent(ReportDetailPage);
+
+    const component = fixture.componentInstance as ReportDetailPage & {
+      formatValue: (field: {
+        field_type: string;
+        value_text: string | null;
+        value_number: number | null;
+        value_option: string | null;
+        value_bool: boolean | null;
+      }) => string;
+      reportPdfUrl: (id: number | null | undefined) => string;
+    };
+
+    expect(
+      component.formatValue({
+        field_type: 'number',
+        value_number: null,
+        value_text: null,
+        value_option: null,
+        value_bool: null,
+      })
+    ).toBe('—');
+    expect(
+      component.formatValue({
+        field_type: 'radio',
+        value_number: null,
+        value_text: null,
+        value_option: '  ',
+        value_bool: null,
+      })
+    ).toBe('—');
+    expect(
+      component.formatValue({
+        field_type: 'boolean',
+        value_number: null,
+        value_text: null,
+        value_option: null,
+        value_bool: true,
+      })
+    ).toBe('Ja');
+    expect(
+      component.formatValue({
+        field_type: 'text',
+        value_number: null,
+        value_text: '',
+        value_option: null,
+        value_bool: null,
+      })
+    ).toBe('—');
+
+    const pdfUrl = component.reportPdfUrl(12);
+    expect(pdfUrl).toContain('/reports/12/pdf');
+    expect(component.reportPdfUrl(null)).toBe('#');
+  });
+});
+
+describe('ReportDetailPage (missing id)', () => {
+  let httpMock: HttpTestingController;
+
+  beforeEach(async () => {
+    await TestBed.configureTestingModule({
+      imports: [ReportDetailPage],
+      providers: [
+        provideHttpClient(),
+        provideHttpClientTesting(),
+        provideRouter([]),
+        {
+          provide: ActivatedRoute,
+          useValue: {
+            snapshot: {
+              paramMap: convertToParamMap({}),
+            },
+          },
+        },
+      ],
+    }).compileComponents();
+
+    httpMock = TestBed.inject(HttpTestingController);
+  });
+
+  afterEach(() => {
+    httpMock.verify();
+  });
+
+  it('should show error when report id is missing', () => {
+    const fixture = TestBed.createComponent(ReportDetailPage);
+    fixture.detectChanges();
+
+    const compiled = fixture.nativeElement as HTMLElement;
+    expect(compiled.textContent).toContain('Bericht nicht gefunden.');
   });
 });

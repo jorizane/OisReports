@@ -200,4 +200,218 @@ describe('CustomerDetailPage', () => {
     const compiled = fixture.nativeElement as HTMLElement;
     expect(compiled.textContent).toContain('Filteranlage wurde angelegt.');
   });
+
+  it('should show validation errors for invalid plant input', () => {
+    const fixture = TestBed.createComponent(CustomerDetailPage);
+    fixture.detectChanges();
+
+    const request = httpMock.expectOne('http://localhost:8000/customers/4');
+    request.flush({ id: 4, name: 'Aqua Filters', client_id: 21 });
+
+    const plantsRequest = httpMock.expectOne(
+      'http://localhost:8000/customers/4/filter-plants'
+    );
+    plantsRequest.flush([]);
+
+    const clientsRequest = httpMock.expectOne('http://localhost:8000/clients');
+    clientsRequest.flush([{ id: 21, name: 'Auftraggeber A' }]);
+
+    const manufacturersRequest = httpMock.expectOne('http://localhost:8000/manufacturers');
+    manufacturersRequest.flush([{ id: 7, name: 'FilterTech' }]);
+
+    const reportsRequest = httpMock.expectOne('http://localhost:8000/customers/4/reports');
+    reportsRequest.flush([]);
+
+    const component = fixture.componentInstance as CustomerDetailPage & {
+      plantDescription: string;
+      plantYear: number | null;
+      selectedManufacturerId: number | null;
+      createFilterPlant: () => void;
+    };
+
+    component.createFilterPlant();
+    fixture.detectChanges();
+    let compiled = fixture.nativeElement as HTMLElement;
+    expect(compiled.textContent).toContain('Bitte eine Beschreibung eingeben.');
+
+    component.plantDescription = 'Test';
+    component.plantYear = 1700;
+    component.selectedManufacturerId = 7;
+    component.createFilterPlant();
+    fixture.detectChanges();
+    compiled = fixture.nativeElement as HTMLElement;
+    expect(compiled.textContent).toContain('Bitte ein gültiges Baujahr eingeben.');
+
+    component.plantYear = 2020;
+    component.selectedManufacturerId = null;
+    component.createFilterPlant();
+    fixture.detectChanges();
+    compiled = fixture.nativeElement as HTMLElement;
+    expect(compiled.textContent).toContain('Bitte einen Hersteller auswählen.');
+  });
+
+  it('should show empty states for plants and reports', () => {
+    const fixture = TestBed.createComponent(CustomerDetailPage);
+    fixture.detectChanges();
+
+    const request = httpMock.expectOne('http://localhost:8000/customers/4');
+    request.flush({ id: 4, name: 'Aqua Filters', client_id: 21 });
+
+    const plantsRequest = httpMock.expectOne(
+      'http://localhost:8000/customers/4/filter-plants'
+    );
+    plantsRequest.flush([]);
+
+    const clientsRequest = httpMock.expectOne('http://localhost:8000/clients');
+    clientsRequest.flush([{ id: 21, name: 'Auftraggeber A' }]);
+
+    const manufacturersRequest = httpMock.expectOne('http://localhost:8000/manufacturers');
+    manufacturersRequest.flush([]);
+
+    const reportsRequest = httpMock.expectOne('http://localhost:8000/customers/4/reports');
+    reportsRequest.flush([]);
+
+    fixture.detectChanges();
+    const compiled = fixture.nativeElement as HTMLElement;
+    expect(compiled.textContent).toContain('Noch keine Filteranlagen.');
+    expect(compiled.textContent).toContain('Noch keine Berichte vorhanden.');
+  });
+
+  it('should render reports list when available', () => {
+    const fixture = TestBed.createComponent(CustomerDetailPage);
+    fixture.detectChanges();
+
+    const request = httpMock.expectOne('http://localhost:8000/customers/4');
+    request.flush({ id: 4, name: 'Aqua Filters', client_id: 21 });
+
+    const plantsRequest = httpMock.expectOne(
+      'http://localhost:8000/customers/4/filter-plants'
+    );
+    plantsRequest.flush([]);
+
+    const clientsRequest = httpMock.expectOne('http://localhost:8000/clients');
+    clientsRequest.flush([{ id: 21, name: 'Auftraggeber A' }]);
+
+    const manufacturersRequest = httpMock.expectOne('http://localhost:8000/manufacturers');
+    manufacturersRequest.flush([]);
+
+    const reportsRequest = httpMock.expectOne('http://localhost:8000/customers/4/reports');
+    reportsRequest.flush([
+      {
+        id: 5,
+        customer_id: 4,
+        filter_plant_id: 11,
+        filter_plant_description: 'Filteranlage Z',
+        created_at: '2025-01-01T10:00:00Z',
+        completed: false,
+      },
+    ]);
+
+    fixture.detectChanges();
+    const compiled = fixture.nativeElement as HTMLElement;
+    expect(compiled.textContent).toContain('Bericht #5');
+    expect(compiled.textContent).toContain('Filteranlage Z');
+    expect(compiled.textContent).toContain('Bericht öffnen');
+  });
+
+  it('should toggle plant form via cancel button', () => {
+    const fixture = TestBed.createComponent(CustomerDetailPage);
+    fixture.detectChanges();
+
+    const request = httpMock.expectOne('http://localhost:8000/customers/4');
+    request.flush({ id: 4, name: 'Aqua Filters', client_id: 21 });
+
+    const plantsRequest = httpMock.expectOne(
+      'http://localhost:8000/customers/4/filter-plants'
+    );
+    plantsRequest.flush([]);
+
+    const clientsRequest = httpMock.expectOne('http://localhost:8000/clients');
+    clientsRequest.flush([{ id: 21, name: 'Auftraggeber A' }]);
+
+    const manufacturersRequest = httpMock.expectOne('http://localhost:8000/manufacturers');
+    manufacturersRequest.flush([{ id: 7, name: 'FilterTech' }]);
+
+    const reportsRequest = httpMock.expectOne('http://localhost:8000/customers/4/reports');
+    reportsRequest.flush([]);
+
+    const component = fixture.componentInstance as CustomerDetailPage & {
+      togglePlantForm: () => void;
+    };
+    component.togglePlantForm();
+
+    fixture.detectChanges();
+    let compiled = fixture.nativeElement as HTMLElement;
+    expect(compiled.querySelector('form.plants__form')).toBeTruthy();
+
+    const cancelButton = compiled.querySelector(
+      'form.plants__form .ghost-link-button'
+    ) as HTMLButtonElement;
+    cancelButton.click();
+
+    fixture.detectChanges();
+    compiled = fixture.nativeElement as HTMLElement;
+    expect(compiled.querySelector('form.plants__form')).toBeFalsy();
+  });
+
+  it('should show report error on failure', () => {
+    const fixture = TestBed.createComponent(CustomerDetailPage);
+    fixture.detectChanges();
+
+    const request = httpMock.expectOne('http://localhost:8000/customers/4');
+    request.flush({ id: 4, name: 'Aqua Filters', client_id: 21 });
+
+    const plantsRequest = httpMock.expectOne(
+      'http://localhost:8000/customers/4/filter-plants'
+    );
+    plantsRequest.flush([]);
+
+    const clientsRequest = httpMock.expectOne('http://localhost:8000/clients');
+    clientsRequest.flush([{ id: 21, name: 'Auftraggeber A' }]);
+
+    const manufacturersRequest = httpMock.expectOne('http://localhost:8000/manufacturers');
+    manufacturersRequest.flush([]);
+
+    const reportsRequest = httpMock.expectOne('http://localhost:8000/customers/4/reports');
+    reportsRequest.flush({}, { status: 500, statusText: 'Server Error' });
+
+    fixture.detectChanges();
+    const compiled = fixture.nativeElement as HTMLElement;
+    expect(compiled.textContent).toContain('Berichte konnten nicht geladen werden.');
+  });
+
+  it('should show deleted plant success from history state and dismiss modal', () => {
+    window.history.replaceState({ deletedPlant: 'Altanlage' }, '');
+
+    const fixture = TestBed.createComponent(CustomerDetailPage);
+    fixture.detectChanges();
+
+    const request = httpMock.expectOne('http://localhost:8000/customers/4');
+    request.flush({ id: 4, name: 'Aqua Filters', client_id: 21 });
+
+    const plantsRequest = httpMock.expectOne(
+      'http://localhost:8000/customers/4/filter-plants'
+    );
+    plantsRequest.flush([]);
+
+    const clientsRequest = httpMock.expectOne('http://localhost:8000/clients');
+    clientsRequest.flush([{ id: 21, name: 'Auftraggeber A' }]);
+
+    const manufacturersRequest = httpMock.expectOne('http://localhost:8000/manufacturers');
+    manufacturersRequest.flush([]);
+
+    const reportsRequest = httpMock.expectOne('http://localhost:8000/customers/4/reports');
+    reportsRequest.flush([]);
+
+    fixture.detectChanges();
+    let compiled = fixture.nativeElement as HTMLElement;
+    expect(compiled.textContent).toContain('Filteranlage "Altanlage" wurde gelöscht.');
+
+    const okButton = compiled.querySelector('.modal--success .ghost-button') as HTMLButtonElement;
+    okButton.click();
+
+    fixture.detectChanges();
+    compiled = fixture.nativeElement as HTMLElement;
+    expect(compiled.textContent).not.toContain('Filteranlage "Altanlage" wurde gelöscht.');
+  });
 });

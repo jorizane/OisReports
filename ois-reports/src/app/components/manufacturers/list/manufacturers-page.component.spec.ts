@@ -47,4 +47,30 @@ describe('ManufacturersPage', () => {
     expect(createLink).toBeTruthy();
     expect(createLink.textContent).toContain('Hersteller anlegen');
   });
+
+  it('should show error on load failure', () => {
+    const fixture = TestBed.createComponent(ManufacturersPage);
+    fixture.detectChanges();
+
+    const request = httpMock.expectOne('http://localhost:8000/manufacturers');
+    request.flush({}, { status: 500, statusText: 'Server Error' });
+
+    fixture.detectChanges();
+    const compiled = fixture.nativeElement as HTMLElement;
+    expect(compiled.textContent).toContain('Hersteller konnten nicht geladen werden.');
+  });
+
+  it('should show created success from history state', () => {
+    window.history.replaceState({ createdManufacturer: 'Acme' }, '');
+
+    const fixture = TestBed.createComponent(ManufacturersPage);
+    fixture.detectChanges();
+
+    const request = httpMock.expectOne('http://localhost:8000/manufacturers');
+    request.flush([]);
+
+    fixture.detectChanges();
+    const compiled = fixture.nativeElement as HTMLElement;
+    expect(compiled.textContent).toContain('Hersteller "Acme" wurde angelegt.');
+  });
 });

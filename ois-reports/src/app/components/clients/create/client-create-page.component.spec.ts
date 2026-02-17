@@ -39,7 +39,11 @@ describe('ClientCreatePage', () => {
     const fixture = TestBed.createComponent(ClientCreatePage);
     fixture.detectChanges();
 
-    const navigateSpy = spyOn(router, 'navigate');
+    const navigateCalls: Array<[unknown[], unknown?]> = [];
+    router.navigate = ((...args: unknown[]) => {
+      navigateCalls.push([args[0] as unknown[], args[1]]);
+      return Promise.resolve(true);
+    }) as Router['navigate'];
     const component = fixture.componentInstance as ClientCreatePage & { name: string };
     component.name = 'Auftraggeber A';
     component.saveClient();
@@ -49,8 +53,9 @@ describe('ClientCreatePage', () => {
     expect(createRequest.request.body).toEqual({ name: 'Auftraggeber A' });
     createRequest.flush({ id: 3, name: 'Auftraggeber A' });
 
-    expect(navigateSpy).toHaveBeenCalledWith(['/clients'], {
-      state: { createdClient: 'Auftraggeber A' },
-    });
+    expect(navigateCalls[0]).toEqual([
+      ['/clients'],
+      { state: { createdClient: 'Auftraggeber A' } },
+    ]);
   });
 });

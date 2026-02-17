@@ -54,7 +54,11 @@ describe('ManufacturerCreatePage', () => {
     const fixture = TestBed.createComponent(ManufacturerCreatePage);
     fixture.detectChanges();
 
-    const navigateSpy = spyOn(router, 'navigate');
+    const navigateCalls: Array<[unknown[], unknown?]> = [];
+    router.navigate = ((...args: unknown[]) => {
+      navigateCalls.push([args[0] as unknown[], args[1]]);
+      return Promise.resolve(true);
+    }) as Router['navigate'];
     const component = fixture.componentInstance as ManufacturerCreatePage & { name: string };
     component.name = 'FilterTech';
     component.saveManufacturer();
@@ -64,8 +68,9 @@ describe('ManufacturerCreatePage', () => {
     expect(createRequest.request.body).toEqual({ name: 'FilterTech' });
     createRequest.flush({ id: 5, name: 'FilterTech' });
 
-    expect(navigateSpy).toHaveBeenCalledWith(['/manufacturers'], {
-      state: { createdManufacturer: 'FilterTech' },
-    });
+    expect(navigateCalls[0]).toEqual([
+      ['/manufacturers'],
+      { state: { createdManufacturer: 'FilterTech' } },
+    ]);
   });
 });

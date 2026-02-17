@@ -48,4 +48,29 @@ describe('ClientsPage', () => {
     expect(createLink.textContent).toContain('Auftraggeber anlegen');
   });
 
+  it('should show error on load failure', () => {
+    const fixture = TestBed.createComponent(ClientsPage);
+    fixture.detectChanges();
+
+    const request = httpMock.expectOne('http://localhost:8000/clients');
+    request.flush({}, { status: 500, statusText: 'Server Error' });
+
+    fixture.detectChanges();
+    const compiled = fixture.nativeElement as HTMLElement;
+    expect(compiled.textContent).toContain('Auftraggeber konnten nicht geladen werden.');
+  });
+
+  it('should show created success from history state', () => {
+    window.history.replaceState({ createdClient: 'Client X' }, '');
+
+    const fixture = TestBed.createComponent(ClientsPage);
+    fixture.detectChanges();
+
+    const request = httpMock.expectOne('http://localhost:8000/clients');
+    request.flush([]);
+
+    fixture.detectChanges();
+    const compiled = fixture.nativeElement as HTMLElement;
+    expect(compiled.textContent).toContain('Auftraggeber "Client X" wurde angelegt.');
+  });
 });
