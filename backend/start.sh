@@ -22,6 +22,8 @@ has_version_table = inspector.has_table("alembic_version")
 has_users = inspector.has_table("users")
 has_sessions = inspector.has_table("auth_sessions")
 has_filters = inspector.has_table("filters")
+all_tables = [name for name in inspector.get_table_names() if name != "alembic_version"]
+is_empty_schema = len(all_tables) == 0
 
 has_version_rows = False
 if has_version_table:
@@ -35,6 +37,8 @@ elif has_users and has_sessions:
     print("20260216_0001")
 elif has_filters:
     print("ff77a7b7e42f")
+elif is_empty_schema:
+    print("__EMPTY__")
 else:
     print("")
 PY
@@ -45,8 +49,18 @@ PY
     exit "$migration_status"
   fi
 
-  echo "[startup] Stamping existing schema to revision: $STAMP_TARGET"
-  alembic stamp "$STAMP_TARGET"
+  if [ "$STAMP_TARGET" = "__EMPTY__" ]; then
+    if [ "${AUTO_CREATE_SCHEMA:-false}" != "true" ]; then
+      echo "[startup] Empty schema detected. Set AUTO_CREATE_SCHEMA=true for first boot recovery."
+      exit "$migration_status"
+    fi
+    echo "[startup] Empty schema detected, stamping head and relying on AUTO_CREATE_SCHEMA=true"
+    alembic stamp head
+  else
+
+    echo "[startup] Stamping existing schema to revision: $STAMP_TARGET"
+    alembic stamp "$STAMP_TARGET"
+  fi
   alembic upgrade head
   echo "[startup] Recovery migration finished"
 fi
