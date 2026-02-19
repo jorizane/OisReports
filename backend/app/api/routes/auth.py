@@ -23,6 +23,13 @@ def _cookie_secure() -> bool:
     return os.getenv("AUTH_COOKIE_SECURE", "false").strip().lower() == "true"
 
 
+def _cookie_samesite() -> str:
+    value = os.getenv("AUTH_COOKIE_SAMESITE", "lax").strip().lower()
+    if value not in {"lax", "strict", "none"}:
+        return "lax"
+    return value
+
+
 @router.post("/login", response_model=LoginResponse)
 def login(payload: LoginRequest, response: Response, db: Session = Depends(get_db)):
     email = payload.email.strip().lower()
@@ -41,7 +48,7 @@ def login(payload: LoginRequest, response: Response, db: Session = Depends(get_d
         value=token,
         httponly=True,
         secure=_cookie_secure(),
-        samesite="lax",
+        samesite=_cookie_samesite(),
         max_age=7 * 24 * 60 * 60,
         path="/",
     )
@@ -56,7 +63,12 @@ def logout(
 ):
     if session_cookie:
         revoke_session(db, session_cookie)
-    response.delete_cookie(key=SESSION_COOKIE_NAME, path="/")
+    response.delete_cookie(
+        key=SESSION_COOKIE_NAME,
+        path="/",
+        secure=_cookie_secure(),
+        samesite=_cookie_samesite(),
+    )
     return None
 
 

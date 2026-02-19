@@ -141,3 +141,4 @@ npm test -- --watch=false
 - Railway deploy note: backend startup runs `alembic upgrade head` automatically.
 - If Railway DB already had tables but no `alembic_version`, set `AUTO_STAMP_EXISTING_SCHEMA=true` once, redeploy, then remove it again.
 - If Railway DB is completely empty, startup now auto-creates the schema and stamps Alembic head before running migrations.
+- For FE/API on different domains, set backend vars `AUTH_COOKIE_SECURE=true` and `AUTH_COOKIE_SAMESITE=none`.
