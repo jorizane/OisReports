@@ -58,4 +58,17 @@ describe('AuthService', () => {
     expect(service.isAuthenticated()).toBe(false);
     expect(service.currentUser()).toBeNull();
   });
+
+  it('changes password with credentials', () => {
+    service.changePassword('old-password', 'new-password').subscribe();
+
+    const request = httpMock.expectOne('http://localhost:8000/auth/change-password');
+    expect(request.request.method).toBe('POST');
+    expect(request.request.withCredentials).toBe(true);
+    expect(request.request.body).toEqual({
+      current_password: 'old-password',
+      new_password: 'new-password',
+    });
+    request.flush({});
+  });
 });

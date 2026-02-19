@@ -8,12 +8,13 @@ from ...core.database import get_db
 from ...core.security import (
     SESSION_COOKIE_NAME,
     create_session,
+    hash_password,
     get_current_user,
     revoke_session,
     verify_password,
 )
 from ...models import User
-from ...schemas import AuthUserRead, LoginRequest, LoginResponse
+from ...schemas import AuthUserRead, ChangePasswordRequest, LoginRequest, LoginResponse
 
 router = APIRouter(prefix="/auth", tags=["auth"])
 
@@ -62,3 +63,15 @@ def logout(
 @router.get("/me", response_model=AuthUserRead)
 def me(current_user: User = Depends(get_current_user)):
     return current_user
+
+
+@router.post("/change-password", status_code=204)
+def change_password(payload: ChangePasswordRequest, current_user: User = Depends(get_current_user), db: Session = Depends(get_db)):
+    if not verify_password(payload.current_password, current_user.password_hash):
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Current password is invalid.")
+    if payload.current_password == payload.new_password:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="New password must be different.")
+
+    current_user.password_hash = hash_password(payload.new_password)
+    db.commit()
+    return None

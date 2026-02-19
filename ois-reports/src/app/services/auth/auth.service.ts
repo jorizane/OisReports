@@ -81,4 +81,17 @@ export class AuthService {
         })
       );
   }
+
+  changePassword(currentPassword: string, newPassword: string): Observable<void> {
+    return this.http.post<void>(
+      `${this.baseUrl}/auth/change-password`,
+      {
+        current_password: currentPassword,
+        new_password: newPassword,
+      },
+      {
+        withCredentials: true,
+      }
+    );
+  }
 }

@@ -2,6 +2,7 @@ import { Routes } from '@angular/router';
 
 import { authGuard } from './guards/auth.guard';
 import { LoginPageComponent } from './components/auth/login/login-page.component';
+import { ChangePasswordPageComponent } from './components/auth/change-password/change-password-page.component';
 import { CustomersPage } from './components/customers/list/customers-page.component';
 import { CustomerDetailPage } from './components/customers/detail/customer-detail-page.component';
 import { CustomerEditPage } from './components/customers/edit/customer-edit-page.component';
@@ -21,6 +22,7 @@ import { ManufacturerCreatePage } from './components/manufacturers/create/manufa
 
 export const routes: Routes = [
   { path: 'login', component: LoginPageComponent },
+  { path: 'account/password', component: ChangePasswordPageComponent, canActivate: [authGuard] },
   { path: '', component: CustomersPage, canActivate: [authGuard] },
   { path: 'clients/new', component: ClientCreatePage, canActivate: [authGuard] },
   { path: 'clients', component: ClientsPage, canActivate: [authGuard] },
