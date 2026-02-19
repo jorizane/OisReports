@@ -138,3 +138,5 @@ npm test -- --watch=false
 - The project uses a containerized Postgres database for local development.
 - The frontend communicates with the backend at `http://localhost:8000`.
 - All data endpoints are admin-protected; use the login flow first.
+- Railway deploy note: backend startup runs `alembic upgrade head` automatically.
+- If Railway DB already had tables but no `alembic_version`, set `AUTO_STAMP_EXISTING_SCHEMA=true` once, redeploy, then remove it again.
