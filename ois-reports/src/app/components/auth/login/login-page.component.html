@@ -1,0 +1,39 @@
+<section class="login-panel">
+  <header>
+    <h1>Admin Login</h1>
+    <p>Zugriff auf personenbezogene Daten nur nach Anmeldung.</p>
+  </header>
+
+  <form (ngSubmit)="login()" class="login-form">
+    <label class="field">
+      <span>E-Mail</span>
+      <input type="email" name="email" [(ngModel)]="email" autocomplete="username" />
+    </label>
+
+    <label class="field">
+      <span>Passwort</span>
+      <div class="password-field">
+        <input
+          [type]="showPassword() ? 'text' : 'password'"
+          name="password"
+          [(ngModel)]="password"
+          autocomplete="current-password"
+        />
+        <button
+          class="password-toggle"
+          type="button"
+          (click)="togglePasswordVisibility()"
+          [attr.aria-label]="showPassword() ? 'Passwort verbergen' : 'Passwort anzeigen'"
+        >
+          {{ showPassword() ? 'Verbergen' : 'Anzeigen' }}
+        </button>
+      </div>
+    </label>
+
+    <button type="submit" [disabled]="isLoading()">
+      {{ isLoading() ? 'Anmeldung läuft...' : 'Anmelden' }}
+    </button>
+  </form>
+
+  <p class="error" *ngIf="errorMessage()">{{ errorMessage() }}</p>
+</section>

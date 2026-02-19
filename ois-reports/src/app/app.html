@@ -7,13 +7,14 @@
         <p class="shell__subtitle">Industriefiltration im Blick</p>
       </div>
     </a>
-    <div class="shell__links">
+    <div class="shell__links" *ngIf="authService.isAuthenticated()">
       <a routerLink="/" routerLinkActive="is-active" [routerLinkActiveOptions]="{ exact: true }">
         Kundenübersicht
       </a>
       <a routerLink="/clients" routerLinkActive="is-active">Auftraggeberübersicht</a>
       <a routerLink="/manufacturers" routerLinkActive="is-active">Herstellerübersicht</a>
       <a routerLink="/reports" routerLinkActive="is-active">Berichtsübersicht</a>
+      <button class="shell__logout" type="button" (click)="logout()">Abmelden</button>
     </div>
   </nav>
 

@@ -32,10 +32,42 @@ OIS Reports is a full‑stack application for managing industrial filtration cus
 ### 1) Start services
 
 ```bash
-docker-compose up --build
+docker-compose up -d --build db backend
 ```
 
-### 2) Frontend
+### 2) Run migrations
+
+```bash
+docker-compose exec backend alembic upgrade head
+```
+
+### 3) Bootstrap admin user (local)
+
+```bash
+docker-compose exec -T backend python - <<'PY'
+from app.core.database import SessionLocal
+from app.core.security import hash_password
+from app.models import User
+
+email = "admin@local"
+password = "ChangeMe123!"
+
+db = SessionLocal()
+try:
+    user = db.query(User).filter(User.email == email).first()
+    if user:
+        user.password_hash = hash_password(password)
+        user.role = "admin"
+        user.is_active = True
+    else:
+        db.add(User(email=email, password_hash=hash_password(password), role="admin", is_active=True))
+    db.commit()
+finally:
+    db.close()
+PY
+```
+
+### 4) Frontend
 
 ```bash
 cd ois-reports
@@ -44,6 +76,10 @@ npm start
 ```
 
 Open `http://localhost:4200/`.
+Login at `http://localhost:4200/login` with:
+
+- `admin@local`
+- `ChangeMe123!`
 
 ## Backend
 
@@ -51,6 +87,12 @@ Open `http://localhost:4200/`.
 
 - `GET /health`
 - `GET /db-health`
+
+### Auth
+
+- `POST /auth/login`
+- `POST /auth/logout`
+- `GET /auth/me`
 
 ### Customers
 
@@ -95,3 +137,4 @@ npm test -- --watch=false
 
 - The project uses a containerized Postgres database for local development.
 - The frontend communicates with the backend at `http://localhost:8000`.
+- All data endpoints are admin-protected; use the login flow first.

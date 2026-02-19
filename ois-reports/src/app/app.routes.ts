@@ -1,5 +1,7 @@
 import { Routes } from '@angular/router';
 
+import { authGuard } from './guards/auth.guard';
+import { LoginPageComponent } from './components/auth/login/login-page.component';
 import { CustomersPage } from './components/customers/list/customers-page.component';
 import { CustomerDetailPage } from './components/customers/detail/customer-detail-page.component';
 import { CustomerEditPage } from './components/customers/edit/customer-edit-page.component';
@@ -18,36 +20,53 @@ import { ManufacturerDetailPage } from './components/manufacturers/detail/manufa
 import { ManufacturerCreatePage } from './components/manufacturers/create/manufacturer-create-page.component';
 
 export const routes: Routes = [
-  { path: '', component: CustomersPage },
-  { path: 'clients/new', component: ClientCreatePage },
-  { path: 'clients', component: ClientsPage },
-  { path: 'customers/new', component: CustomerEditPage },
-  { path: 'customers/:id', component: CustomerDetailPage },
-  { path: 'customers/:id/filter-plants/new', component: FilterPlantEditPage },
-  { path: 'customers/:id/filter-plants/:plantId', component: FilterPlantDetailPage },
+  { path: 'login', component: LoginPageComponent },
+  { path: '', component: CustomersPage, canActivate: [authGuard] },
+  { path: 'clients/new', component: ClientCreatePage, canActivate: [authGuard] },
+  { path: 'clients', component: ClientsPage, canActivate: [authGuard] },
+  { path: 'customers/new', component: CustomerEditPage, canActivate: [authGuard] },
+  { path: 'customers/:id', component: CustomerDetailPage, canActivate: [authGuard] },
+  {
+    path: 'customers/:id/filter-plants/new',
+    component: FilterPlantEditPage,
+    canActivate: [authGuard],
+  },
+  {
+    path: 'customers/:id/filter-plants/:plantId',
+    component: FilterPlantDetailPage,
+    canActivate: [authGuard],
+  },
   {
     path: 'customers/:id/filter-plants/:plantId/reports/new',
     component: ReportCreatePage,
+    canActivate: [authGuard],
   },
-  { path: 'reports/:reportId', component: ReportDetailPage },
-  { path: 'reports/:reportId/edit', component: ReportEditPage },
-  { path: 'reports', component: ReportsPage },
-  { path: 'manufacturers/new', component: ManufacturerCreatePage },
-  { path: 'manufacturers/:id', component: ManufacturerDetailPage },
-  { path: 'manufacturers', component: ManufacturersPage },
+  { path: 'reports/:reportId', component: ReportDetailPage, canActivate: [authGuard] },
+  { path: 'reports/:reportId/edit', component: ReportEditPage, canActivate: [authGuard] },
+  { path: 'reports', component: ReportsPage, canActivate: [authGuard] },
+  { path: 'manufacturers/new', component: ManufacturerCreatePage, canActivate: [authGuard] },
+  { path: 'manufacturers/:id', component: ManufacturerDetailPage, canActivate: [authGuard] },
+  { path: 'manufacturers', component: ManufacturersPage, canActivate: [authGuard] },
   {
     path: 'customers/:id/filter-plants/:plantId/components/new',
     component: ComponentEditPage,
+    canActivate: [authGuard],
   },
   {
     path: 'customers/:id/filter-plants/:plantId/components/:componentId',
     component: ComponentDetailPage,
+    canActivate: [authGuard],
   },
   {
     path: 'customers/:id/filter-plants/:plantId/components/:componentId/edit',
     component: ComponentEditPage,
+    canActivate: [authGuard],
   },
-  { path: 'customers/:id/filter-plants/:plantId/edit', component: FilterPlantEditPage },
-  { path: 'customers/:id/edit', component: CustomerEditPage },
+  {
+    path: 'customers/:id/filter-plants/:plantId/edit',
+    component: FilterPlantEditPage,
+    canActivate: [authGuard],
+  },
+  { path: 'customers/:id/edit', component: CustomerEditPage, canActivate: [authGuard] },
   { path: '**', redirectTo: '' },
 ];

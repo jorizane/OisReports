@@ -156,3 +156,20 @@ class ReportDetailRead(BaseModel):
 class ReportUpdate(BaseModel):
     completed: bool
     filter_values: list[FilterReportValueCreate]
+
+
+class LoginRequest(BaseModel):
+    email: str
+    password: str
+
+
+class AuthUserRead(BaseModel):
+    id: int
+    email: str
+    role: str
+
+    model_config = ConfigDict(from_attributes=True)
+
+
+class LoginResponse(BaseModel):
+    user: AuthUserRead

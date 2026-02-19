@@ -68,7 +68,24 @@
   transition: background 0.2s ease, transform 0.2s ease;
 }
 
+.shell__logout {
+  color: #222222;
+  font-weight: 600;
+  padding: 0.5rem 1rem;
+  border-radius: 999px;
+  background: rgba(15, 118, 110, 0.12);
+  border: none;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background 0.2s ease, transform 0.2s ease;
+}
+
 .shell__links a:hover {
+  background: rgba(15, 118, 110, 0.2);
+  transform: translateY(-1px);
+}
+
+.shell__logout:hover {
   background: rgba(15, 118, 110, 0.2);
   transform: translateY(-1px);
 }

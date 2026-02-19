@@ -8,20 +8,30 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from .api.router import api_router
 from .core.database import Base, SessionLocal, engine
-from .models import Client, Customer, Filter, FilterPlant, FilterTestField
+from .core.security import hash_password
+from .models import Client, Customer, Filter, FilterPlant, FilterTestField, User
+
+
+def _env_flag(name: str, default: bool = False) -> bool:
+    raw = os.getenv(name)
+    if raw is None:
+        return default
+    return raw.strip().lower() in {"1", "true", "yes", "on"}
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    # Wait briefly for the DB container to accept connections.
-    for _ in range(10):
-        try:
+    # Keep schema creation opt-in to avoid conflicts with Alembic migrations.
+    if _env_flag("AUTO_CREATE_SCHEMA", default=False):
+        # Wait briefly for the DB container to accept connections.
+        for _ in range(10):
+            try:
+                Base.metadata.create_all(bind=engine)
+                break
+            except Exception:
+                time.sleep(1)
+        else:
             Base.metadata.create_all(bind=engine)
-            break
-        except Exception:
-            time.sleep(1)
-    else:
-        Base.metadata.create_all(bind=engine)
 
     db = SessionLocal()
     try:
@@ -35,6 +45,19 @@ async def lifespan(app: FastAPI):
 
         if client and db.query(Customer).count() == 0:
             db.add(Customer(name="Initial Customer", client_id=client.id))
+            db.commit()
+
+        if db.query(User).count() == 0:
+            admin_email = os.getenv("ADMIN_BOOTSTRAP_EMAIL", "admin@local").strip().lower()
+            admin_password = os.getenv("ADMIN_BOOTSTRAP_PASSWORD", "admin12345")
+            db.add(
+                User(
+                    email=admin_email,
+                    password_hash=hash_password(admin_password),
+                    role="admin",
+                    is_active=True,
+                )
+            )
             db.commit()
 
         filter_plants = db.query(FilterPlant).order_by(FilterPlant.id.asc()).all()

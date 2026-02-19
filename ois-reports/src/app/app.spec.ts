@@ -1,12 +1,25 @@
 import { TestBed } from '@angular/core/testing';
 import { provideRouter } from '@angular/router';
+import { of } from 'rxjs';
+
 import { App } from './app';
+import { AuthService } from './services/auth/auth.service';
 
 describe('App', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [App],
-      providers: [provideRouter([])],
+      providers: [
+        provideRouter([]),
+        {
+          provide: AuthService,
+          useValue: {
+            isAuthenticated: () => true,
+            restoreSession: () => of({ id: 1, email: 'admin@local', role: 'admin' }),
+            logout: () => of(void 0),
+          },
+        },
+      ],
     }).compileComponents();
   });
 
