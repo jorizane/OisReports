@@ -4,7 +4,7 @@ import os
 import secrets
 from datetime import datetime, timedelta, timezone
 
-from fastapi import Cookie, Depends, HTTPException, status
+from fastapi import Cookie, Depends, HTTPException, Request, status
 from sqlalchemy.orm import Session
 
 from .database import get_db
@@ -12,6 +12,14 @@ from ..models import AuthSession, User
 
 SESSION_COOKIE_NAME = "ois_session"
 SESSION_TTL_DAYS = int(os.getenv("SESSION_TTL_DAYS", "7"))
+
+
+def _allowed_origins() -> set[str]:
+    return {
+        origin.strip()
+        for origin in os.getenv("CORS_ALLOW_ORIGINS", "http://localhost:4200").split(",")
+        if origin.strip()
+    }
 
 
 def hash_password(password: str) -> str:
@@ -98,3 +106,12 @@ def require_admin(user: User = Depends(get_current_user)) -> User:
     if user.role != "admin":
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Forbidden")
     return user
+
+
+def verify_csrf_origin(request: Request) -> None:
+    if request.method.upper() in {"GET", "HEAD", "OPTIONS"}:
+        return
+
+    origin = request.headers.get("origin", "").strip()
+    if not origin or origin not in _allowed_origins():
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Invalid request origin")

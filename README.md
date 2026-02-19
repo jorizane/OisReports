@@ -142,3 +142,5 @@ npm test -- --watch=false
 - If Railway DB already had tables but no `alembic_version`, set `AUTO_STAMP_EXISTING_SCHEMA=true` once, redeploy, then remove it again.
 - If Railway DB is completely empty, startup now auto-creates the schema and stamps Alembic head before running migrations.
 - For FE/API on different domains, set backend vars `AUTH_COOKIE_SECURE=true` and `AUTH_COOKIE_SAMESITE=none`.
+- For login brute-force protection, you can tune `LOGIN_RATE_LIMIT_MAX_ATTEMPTS` and `LOGIN_RATE_LIMIT_WINDOW_SECONDS`.
+- Write requests require an allowed `Origin` header (`CORS_ALLOW_ORIGINS`) to reduce CSRF risk.
